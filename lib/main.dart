@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:riden/splash.dart';
+import 'package:get/get.dart';
+import 'package:riden/My%20profile/profile_management.dart';
+
+// ✅ COUNTER CONTROLLER - GetX State Management
+class CounterController extends GetxController {
+  RxInt counter = 0.obs;
+
+  void incrementCounter() {
+    counter.value++;
+  }
+
+  void decrementCounter() {
+    counter.value--;
+  }
+
+  void resetCounter() {
+    counter.value = 0;
+  }
+}
 
 void main() {
   runApp(const MyApp());
@@ -8,77 +26,109 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: const Splash(),
+    return GetMaterialApp(
+      // ✅ Change MaterialApp to GetMaterialApp
+      title: 'GetX Counter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: ProfileSidebar(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+// ✅ CHANGED: StatefulWidget → StatelessWidget
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // ✅ Get.put() - Dependency Injection (Creates controller once)
+    final counterController = Get.put(CounterController());
+
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+
+            // ✅ Obx() - Reactive widget (rebuilds when counter.value changes)
+            Obx(
+              () => Text(
+                '${counterController.counter.value}',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ),
+
+            SizedBox(height: 32),
+
+            // ✅ Additional buttons to show GetX features
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Decrement Button
+                FloatingActionButton(
+                  onPressed: counterController.decrementCounter,
+                  tooltip: 'Decrement',
+                  heroTag: 'decrement',
+                  child: const Icon(Icons.remove),
+                ),
+                SizedBox(width: 16),
+
+                // Reset Button
+                FloatingActionButton(
+                  onPressed: () {
+                    counterController.resetCounter();
+                    Get.snackbar(
+                      'Reset',
+                      'Counter has been reset to 0',
+                      snackPosition: SnackPosition.BOTTOM,
+                      duration: Duration(milliseconds: 800),
+                    );
+                  },
+                  tooltip: 'Reset',
+                  heroTag: 'reset',
+                  backgroundColor: Colors.orange,
+                  child: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 24),
+
+            // ✅ Show reactive state in text
+            Obx(
+              () => Text(
+                counterController.counter.value > 10
+                    ? 'Counter is greater than 10! 🎉'
+                    : 'Counter is ${counterController.counter.value}',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: counterController.counter.value > 10
+                      ? Colors.green
+                      : Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ],
         ),
       ),
+
+      // ✅ Increment Button
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: counterController.incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),

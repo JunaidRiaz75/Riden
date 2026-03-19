@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/colors.dart';
-import 'package:riden/on1.dart'; // ← import your On1 screen
+import 'package:riden/Booking/bookingdetail.dart';
+import 'package:riden/onbording/on1.dart'; // ← import your On1 screen
 
 class Splash extends StatefulWidget {
   const Splash({super.key});

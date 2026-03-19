@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:riden/Booking/bookride.dart';
 
 class BookingDetailsScreen extends StatelessWidget {
   const BookingDetailsScreen({super.key});
@@ -22,7 +23,12 @@ class BookingDetailsScreen extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.all(20),
                     child: GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BookARideScreen(),
+                        ),
+                      ),
                       child: Row(
                         children: [
                           Icon(
@@ -80,15 +86,14 @@ class BookingDetailsScreen extends StatelessWidget {
                             height: 70,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              image: DecorationImage(
-                                image: AssetImage('assets/driver.jpg'),
-                                fit: BoxFit.cover,
-                              ),
                               color: Colors.grey.shade800,
                             ),
-                            child: Image.network(
-                              'https://i.pravatar.cc/150?img=33',
-                              fit: BoxFit.cover,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                'https://i.pravatar.cc/150?img=33',
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           SizedBox(width: 16),
@@ -147,8 +152,8 @@ class BookingDetailsScreen extends StatelessWidget {
                                   );
                                 },
                                 child: Container(
-                                  width: 40,
-                                  height: 40,
+                                  width: 50,
+                                  height: 50,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -163,7 +168,7 @@ class BookingDetailsScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              SizedBox(width: 15),
                               // Message Button
                               GestureDetector(
                                 onTap: () {
@@ -174,8 +179,8 @@ class BookingDetailsScreen extends StatelessWidget {
                                   );
                                 },
                                 child: Container(
-                                  width: 40,
-                                  height: 40,
+                                  width: 50,
+                                  height: 50,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -465,44 +470,123 @@ class BookingDetailsScreen extends StatelessWidget {
                               color: RidenColors.textPrimary,
                             ),
                           ),
-                          SizedBox(height: 14),
+                          SizedBox(height: 16),
 
-                          // Share Ride Details
-                          _buildManageOption(
-                            icon: Icons.share,
-                            label: 'Share Ride Details',
+                          // Share Ride Details Button
+                          GestureDetector(
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Sharing ride details...'),
-                                ),
+                              showDialog(
+                                context: context,
+                                builder: (context) => AccessContactsDialog(),
                               );
                             },
+                            child: Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.share,
+                                    color: RidenColors.textPrimary,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 16),
+                                  Text(
+                                    'Share Ride Details',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: RidenColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          SizedBox(height: 8),
+                          SizedBox(height: 12),
 
-                          // Need Support
-                          _buildManageOption(
-                            icon: Icons.headphones,
-                            label: 'Need Support',
+                          // Need Support Button
+                          GestureDetector(
                             onTap: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('Opening support...')),
                               );
                             },
+                            child: Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.headphones,
+                                    color: RidenColors.textPrimary,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 16),
+                                  Text(
+                                    'Need Support',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: RidenColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                           SizedBox(height: 12),
 
-                          // Cancel Ride
-                          _buildManageOption(
-                            icon: Icons.close,
-                            label: 'Cancel Ride',
-                            isCancel: true,
+                          // Cancel Ride Button
+                          GestureDetector(
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Cancelling ride...')),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CancelRideScreen(),
+                                ),
                               );
                             },
+                            child: Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: RidenColors.brandRed,
+                                  width: 1.5,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.close,
+                                    color: RidenColors.brandRed,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 16),
+                                  Text(
+                                    'Cancel Ride',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: RidenColors.brandRed,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -546,37 +630,199 @@ class BookingDetailsScreen extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildManageOption({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    bool isCancel = false,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Row(
+// ════════════════════════════════════════════════════════════
+//  CANCEL RIDE SCREEN
+// ════════════════════════════════════════════════════════════
+
+class CancelRideScreen extends StatefulWidget {
+  const CancelRideScreen({super.key});
+
+  @override
+  State<CancelRideScreen> createState() => _CancelRideScreenState();
+}
+
+class _CancelRideScreenState extends State<CancelRideScreen> {
+  String selectedReason = 'I don\'t need a ride anymore';
+
+  final List<String> cancelReasons = [
+    'I don\'t need a ride anymore',
+    'Driver asked me to cancel',
+    'I found another ride',
+    'I booked by mistake',
+    'other',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isCancel ? RidenColors.brandRed : Colors.transparent,
-            ),
-            child: Icon(
-              icon,
-              color: isCancel ? Colors.white : RidenColors.textPrimary,
-              size: 20,
-            ),
-          ),
-          SizedBox(width: 16),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: isCancel ? RidenColors.brandRed : RidenColors.textPrimary,
+          // ✨ RIDEN Dark Gradient Background
+          const RidenDarkBackground(),
+
+          // Content
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Back Button
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.arrow_back_ios,
+                            color: RidenColors.textPrimary,
+                            size: 24,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Back',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: RidenColors.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 30),
+
+                  // Title
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'You need to tell us why you want to cancel your ride',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: RidenColors.textPrimary,
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 40),
+
+                  // Radio Options
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: List.generate(cancelReasons.length, (index) {
+                        String reason = cancelReasons[index];
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedReason = reason;
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: selectedReason == reason
+                                          ? RidenColors.brandRed
+                                          : Colors.white.withOpacity(0.5),
+                                      width: selectedReason == reason ? 2 : 2,
+                                    ),
+                                    color: selectedReason == reason
+                                        ? RidenColors.brandRed
+                                        : Colors.transparent,
+                                  ),
+                                  child: selectedReason == reason
+                                      ? Center(
+                                          child: Container(
+                                            width: 8,
+                                            height: 8,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        )
+                                      : SizedBox(),
+                                ),
+                                SizedBox(width: 16),
+                                Text(
+                                  reason,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: RidenColors.textPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+
+                  SizedBox(height: 50),
+
+                  // Submit Button
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: GestureDetector(
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Ride cancelled - Reason: $selectedReason',
+                            ),
+                          ),
+                        );
+                        Future.delayed(Duration(seconds: 2), () {
+                          Navigator.pop(context);
+                        });
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: RidenColors.brandRed,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: RidenColors.brandRed.withOpacity(0.4),
+                              blurRadius: 20,
+                              offset: Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Submit',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ],
@@ -585,6 +831,170 @@ class BookingDetailsScreen extends StatelessWidget {
   }
 }
 
+// ════════════════════════════════════════════════════════════
+//  ACCESS CONTACTS DIALOG
+// ════════════════════════════════════════════════════════════
+
+class AccessContactsDialog extends StatelessWidget {
+  const AccessContactsDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.black12,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        decoration: BoxDecoration(
+          // ✅ Glassy surface effect
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.white.withOpacity(0.3),
+              blurRadius: 30,
+              offset: Offset(0, 10),
+            ),
+          ],
+          // For frosted glass effect if needed
+        ),
+        padding: EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Icon - Red glowing circle
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: RidenColors.brandRed.withOpacity(0.15),
+              ),
+              child: Center(
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: RidenColors.brandRed,
+                    boxShadow: [
+                      BoxShadow(
+                        color: RidenColors.brandRed.withOpacity(0.6),
+                        blurRadius: 20,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Icon(Icons.person, color: Colors.white, size: 36),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 28),
+
+            // Title
+            Text(
+              'Access Contacts',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: RidenColors.textPrimary,
+              ),
+            ),
+
+            SizedBox(height: 16),
+
+            // Description
+            Text(
+              'You want to access your contacts while using this app.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: RidenColors.textSecondary,
+                height: 1.6,
+              ),
+            ),
+
+            SizedBox(height: 36),
+
+            // Access Contacts Button
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Accessing contacts...'),
+                    backgroundColor: RidenColors.brandRed,
+                    duration: Duration(milliseconds: 800),
+                  ),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: RidenColors.brandRed,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: RidenColors.brandRed.withOpacity(0.5),
+                      blurRadius: 15,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    'Access Contacts',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 12),
+
+            // Skip for now Button
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(
+                    'Skip for now',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: RidenColors.textSecondary,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 // ════════════════════════════════════════════════════════════
 //  RIDEN COLOR PALETTE
 // ════════════════════════════════════════════════════════════

@@ -10,9 +10,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/on2.dart';
+import 'package:riden/Booking/bookingdetail.dart';
+import 'package:riden/onbording/on2.dart';
 
-import 'colors.dart';
+import '../theme/colors.dart';
 
 // ── Color palette ─────────────────────────────────────────
 // ── Dark theme colors ─────────────────────────────────────

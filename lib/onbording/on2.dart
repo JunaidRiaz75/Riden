@@ -1,5 +1,5 @@
 // ============================================================
-//  RIDEN — Onboarding Screen 3  "Wherever You Go"
+//  RIDEN — Onboarding Screen 2  "Ride with Ease"
 //
 //  The right-side red wave (assets/1.png / Group_3.png) has
 //  a baked-in arrow circle at y=68–87 % of image height.
@@ -10,10 +10,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/colors.dart';
-import 'package:riden/on2.dart'; // Update to next screen or login/signup when ready
+import 'package:riden/Booking/bookingdetail.dart';
+import 'package:riden/theme/colors.dart';
+import 'package:riden/onbording/on3.dart';
 
 // ── Color palette ─────────────────────────────────────────
+// ── Dark theme colors ─────────────────────────────────────
 class _C {
   static const background = RidenColors.backgroundBase;
   static const brandRed = RidenColors.brandRed;
@@ -22,17 +24,17 @@ class _C {
 }
 
 // ════════════════════════════════════════════════════════════
-//  ONBOARDING SCREEN 3
+//  ONBOARDING SCREEN 1
 // ════════════════════════════════════════════════════════════
 
-class On3 extends StatefulWidget {
-  const On3({super.key});
+class On2 extends StatefulWidget {
+  const On2({super.key});
 
   @override
-  State<On3> createState() => _On3State();
+  State<On2> createState() => _On2State();
 }
 
-class _On3State extends State<On3> with SingleTickerProviderStateMixin {
+class _On2State extends State<On2> with SingleTickerProviderStateMixin {
   late final AnimationController _anim;
   late final Animation<double> _fade;
   late final Animation<Offset> _slide;
@@ -65,7 +67,7 @@ class _On3State extends State<On3> with SingleTickerProviderStateMixin {
   void _onNext() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const On2()),
+      MaterialPageRoute(builder: (_) => const On3()),
       // ↑ Replace On2 with your actual next screen widget
     );
   }
@@ -102,6 +104,7 @@ class _On3State extends State<On3> with SingleTickerProviderStateMixin {
         body: Stack(
           clipBehavior: Clip.hardEdge,
           children: [
+            // ── 1. Dark glossy gradient background ──────
             const RidenDarkBackground(),
 
             // ── 2. Top-left floral decoration ─────────────────
@@ -192,7 +195,7 @@ class _On3State extends State<On3> with SingleTickerProviderStateMixin {
                         vertical: 8,
                       ),
                       child: Center(
-                        child: Image.asset('assets/3.png', fit: BoxFit.contain),
+                        child: Image.asset('assets/2.png', fit: BoxFit.contain),
                       ),
                     ),
                   ),
@@ -213,7 +216,7 @@ class _On3State extends State<On3> with SingleTickerProviderStateMixin {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Wherever You Go',
+                              'Ride with Ease',
                               style: GoogleFonts.outfit(
                                 fontSize: 30,
                                 fontWeight: FontWeight.w800,
@@ -225,8 +228,8 @@ class _On3State extends State<On3> with SingleTickerProviderStateMixin {
                             const SizedBox(height: 10),
 
                             Text(
-                              'Stay connected, stay comfortable \n'
-                              '— smart travel solutions for every destination.',
+                              'Experience smooth, stress-free \n'
+                              'travel designed for comfort,freedom, and simplicity.',
                               style: GoogleFonts.outfit(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -261,6 +264,7 @@ class _On3State extends State<On3> with SingleTickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
+
               ),
             ),
           ],
