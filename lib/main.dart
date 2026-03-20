@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:riden/My%20profile/profile_management.dart';
+import 'package:riden/notification.dart';
 
 // ✅ COUNTER CONTROLLER - GetX State Management
 class CounterController extends GetxController {
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: ProfileSidebar(),
+      home: NotificationsScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
