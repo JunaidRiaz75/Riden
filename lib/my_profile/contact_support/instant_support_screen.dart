@@ -1,134 +1,155 @@
+// instant_support_bottom_sheet.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/theme/app_colors.dart'; // For RidenDarkBackground
+import 'package:riden/theme/app_colors.dart';
 
-class InstantSupportScreen extends StatelessWidget {
-  const InstantSupportScreen({Key? key}) : super(key: key);
+class InstantSupportBottomSheet extends StatelessWidget {
+  final ScrollController scrollController;
+
+  const InstantSupportBottomSheet({required this.scrollController, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SizedBox.expand(
-        child: Stack(
-          children: [
-            const RidenDarkBackground(),
-            SafeArea(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            RidenColors.backgroundBase.withOpacity(0.98),
+            RidenColors.backgroundBase.withOpacity(0.95),
+            RidenColors.backgroundBase.withOpacity(0.92),
+          ],
+          stops: const [0.0, 0.6, 1.0],
+        ),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 25,
+            offset: const Offset(0, -5),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Drag Handle
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Center(
+              child: Container(
+                width: 45,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+            ),
+          ),
+          // Content
+          Expanded(
+            child: SingleChildScrollView(
+              controller: scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
-                  // Spacer for top area
                   const SizedBox(height: 40),
-                  // Avatar illustration
+                  // Avatar
                   Center(
-                    child: CircleAvatar(
-                      radius: 39,
-                      backgroundColor: Colors.white,
-                      child: CircleAvatar(
-                        radius: 36,
-                        backgroundImage: AssetImage('assets/images/avatar.png'), // Your icon asset
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.red.withOpacity(0.2),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.support_agent,
+                          size: 40,
+                          color: Colors.red,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 22),
-                  // Helpline title
-                  Center(
-                    child: Text(
-                      "Helpline",
-                      style: GoogleFonts.poppins(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20.5,
-                      ),
+                  const SizedBox(height: 24),
+                  // Title
+                  Text(
+                    "Helpline",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 22,
                     ),
                   ),
-                  const SizedBox(height: 7),
-                  Center(
-                    child: Text(
-                      "Calling...",
-                      style: GoogleFonts.poppins(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14.2,
-                      ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Connecting to support...",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white70,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
                     ),
                   ),
-                  // Expanded to push bottom bar to the bottom
                   const Spacer(),
-
                   // Bottom action bar
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 26, left: 12, right: 12),
+                    padding: const EdgeInsets.only(bottom: 30),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        // Camera
-                        CircleActionIcon(
-                          icon: Icons.photo_camera_outlined,
-                        ),
-                        // Mic
-                        CircleActionIcon(
-                          icon: Icons.mic_none_outlined,
-                        ),
-                        // Call cut-off (RED)
-                        CircleActionIcon(
-                          icon: Icons.call_end_rounded,
-                          bgColor: Colors.red,
-                          iconColor: Colors.white,
+                        _buildActionButton(Icons.photo_camera_outlined),
+                        _buildActionButton(Icons.mic_none_outlined),
+                        GestureDetector(
                           onTap: () => Navigator.pop(context),
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.red.withOpacity(0.4),
+                                  blurRadius: 12,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.call_end_rounded,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
                         ),
-                        // Share
-                        CircleActionIcon(
-                          icon: Icons.file_copy_outlined,
-                        ),
-                        // More
-                        CircleActionIcon(
-                          icon: Icons.more_horiz,
-                        ),
+                        _buildActionButton(Icons.file_copy_outlined),
+                        _buildActionButton(Icons.more_horiz),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-}
 
-// Bottom bar icons
-class CircleActionIcon extends StatelessWidget {
-  final IconData icon;
-  final Color bgColor;
-  final Color iconColor;
-  final VoidCallback? onTap;
-
-  const CircleActionIcon({
-    required this.icon,
-    this.bgColor = const Color(0xFFF5F5F5),
-    this.iconColor = Colors.black54,
-    this.onTap,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(25),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(25),
-        onTap: onTap,
-        child: CircleAvatar(
-          radius: 26,
-          backgroundColor: bgColor,
-          child: Icon(
-            icon,
-            color: iconColor,
-            size: 26,
-          ),
-        ),
+  Widget _buildActionButton(IconData icon) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        shape: BoxShape.circle,
       ),
+      child: Icon(icon, color: Colors.white70, size: 24),
     );
   }
 }

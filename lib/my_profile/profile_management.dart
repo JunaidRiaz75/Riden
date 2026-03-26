@@ -1,13 +1,14 @@
+// profile_management.dart - Complete Fixed Version
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:riden/my_profile/app_setting/app_setting.dart';
 import 'package:riden/controllers/profile_controllers.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/my_profile/payment_methods/payment_methods_screen.dart';
-import 'package:riden/my_profile/in_app_wallet/in_app_wallet_screen.dart';
-import 'package:riden/my_profile/about_us/about_us_screen.dart';
-import 'package:riden/my_profile/contact_support/contact_support_screen.dart';
+import 'package:riden/my_profile/about_us/about_us_bottom_sheet.dart';
+import 'package:riden/my_profile/app_setting/app_setting.dart';
 import 'package:riden/my_profile/complaint_ticket/complaint_tickets_screen.dart';
+import 'package:riden/my_profile/contact_support/contact_support_screen.dart';
+import 'package:riden/my_profile/in_app_wallet/in_app_wallet_screen.dart';
+import 'package:riden/my_profile/payment_methods/payment_methods_screen.dart';
+import 'package:riden/theme/app_colors.dart';
 
 // ✅ MAIN PROFILE SIDEBAR SCREEN - GETX
 class ProfileSidebar extends StatelessWidget {
@@ -145,42 +146,42 @@ class ProfileSidebar extends StatelessWidget {
                               icon: Icons.payment,
                               label: 'Payment Methods',
                               onTap: () {
-                                Get.to(() => PaymentMethodsScreen());
+                                Get.to(() => const PaymentMethodsScreen());
                               },
                             ),
                             _MenuItem(
                               icon: Icons.wallet,
                               label: 'In App Wallet',
                               onTap: () {
-                                Get.to(() => InAppWalletScreen());
+                                Get.to(() => const InAppWalletScreen());
                               },
                             ),
                             _MenuItem(
                               icon: Icons.rocket,
                               label: 'Complaint Tickets',
                               onTap: () {
-                              Get.to(() => ComplaintTicketsScreen());
+                                Get.to(() => const ComplaintTicketsScreen());
                               },
                             ),
                             _MenuItem(
                               icon: Icons.info,
                               label: 'About us',
                               onTap: () {
-                                Get.to(() => AboutUsScreen());
+                                _openAboutUsBottomSheet(context);
                               },
                             ),
                             _MenuItem(
                               icon: Icons.settings,
                               label: 'App Settings',
                               onTap: () {
-                                Get.to(() => AppSettingsScreen());
+                                _openAppSettingsBottomSheet(context);
                               },
                             ),
                             _MenuItem(
                               icon: Icons.support_agent,
                               label: 'Contact Support',
                               onTap: () {
-                               Get.to(() => ContactSupportScreen());
+                                _openContactSupportBottomSheet(context);
                               },
                             ),
                             _MenuItem(
@@ -313,6 +314,68 @@ class ProfileSidebar extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _openAppSettingsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return AppSettingsBottomSheet(scrollController: scrollController);
+          },
+        );
+      },
+    );
+  }
+
+  void _openAboutUsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return AboutUsBottomSheet(scrollController: scrollController);
+          },
+        );
+      },
+    );
+  }
+
+  void _openContactSupportBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return ContactSupportBottomSheet(
+              scrollController: scrollController,
+            );
+          },
+        );
+      },
     );
   }
 
@@ -491,65 +554,40 @@ class ProfileSettingsScreen extends StatelessWidget {
                         SizedBox(height: 16),
 
                         // Edit Profile Button
-                        Obx(
-                          () => GestureDetector(
-                            onTapDown: (_) {
-                              controller.editProfileTap();
-                            },
-                            onTapUp: (_) {
-                              controller.editProfileRelease();
-                              Get.to(() => EditProfileScreen());
-                            },
-                            onTapCancel: () {
-                              controller.editProfileCancel();
-                            },
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 150),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: controller.isEditHovered.value
-                                    ? RidenColors.brandRed.withOpacity(0.85)
-                                    : RidenColors.brandRed,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: RidenColors.brandRed.withOpacity(
-                                      controller.isEditHovered.value
-                                          ? 0.5
-                                          : 0.3,
-                                    ),
-                                    blurRadius: controller.isEditHovered.value
-                                        ? 12
-                                        : 8,
-                                    offset: Offset(
-                                      0,
-                                      controller.isEditHovered.value ? 6 : 4,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.edit,
+                        GestureDetector(
+                          onTap: () {
+                            Get.to(() => EditProfileScreen());
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: RidenColors.brandRed,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: RidenColors.brandRed.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.edit, color: Colors.white, size: 16),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Edit Profile',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
                                     color: Colors.white,
-                                    size: 16,
                                   ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Edit Profile',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -714,7 +752,7 @@ class EditProfileScreen extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
-                      'Profile Settings',
+                      'Edit Profile',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
@@ -811,22 +849,12 @@ class EditProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ✅ Full Name - READ ONLY with dialog trigger
-                        GestureDetector(
-                          onTap: () {
-                            controller.showNameEditDialog();
-                          },
-                          child: _buildFormSection(
-                            label: 'Full Name',
-                            controller: controller.fullNameController,
-                            icon: Icons.person,
-                            isReadOnly: true,
-                            onTap: () {
-                              controller.showNameEditDialog();
-                            },
-                          ),
+                        // Full Name
+                        _buildFormSection(
+                          label: 'Full Name',
+                          controller: controller.fullNameController,
+                          icon: Icons.person,
                         ),
-
                         SizedBox(height: 20),
 
                         // Email
@@ -836,159 +864,14 @@ class EditProfileScreen extends StatelessWidget {
                           icon: Icons.email,
                           keyboardType: TextInputType.emailAddress,
                         ),
-
                         SizedBox(height: 20),
 
                         // Phone Number
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Phone Number*',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: RidenColors.textSecondary,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.08),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.15),
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  // Country Code
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 14,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          '🇨🇦',
-                                          style: TextStyle(fontSize: 18),
-                                        ),
-                                        SizedBox(width: 6),
-                                        Text(
-                                          '+1',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: RidenColors.textPrimary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // Divider
-                                  Container(
-                                    width: 1,
-                                    height: 24,
-                                    color: Colors.white.withOpacity(0.1),
-                                  ),
-
-                                  // Phone Input
-                                  Expanded(
-                                    child: TextField(
-                                      controller: controller.phoneController,
-                                      keyboardType: TextInputType.phone,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: RidenColors.textPrimary,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      decoration: InputDecoration(
-                                        hintText: 'Phone number',
-                                        hintStyle: TextStyle(
-                                          color: Colors.white.withOpacity(0.4),
-                                        ),
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 14,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 20),
-
-                        // Gender Dropdown
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Gender',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: RidenColors.textSecondary,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Obx(
-                              () => Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.08),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.15),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    value: controller.selectedGender.value,
-                                    isExpanded: true,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: RidenColors.textPrimary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    dropdownColor: Color(0xFF2a2a3a),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 14,
-                                    ),
-                                    items: [
-                                      DropdownMenuItem(
-                                        value: 'Male',
-                                        child: Text('Male'),
-                                      ),
-                                      DropdownMenuItem(
-                                        value: 'Female',
-                                        child: Text('Female'),
-                                      ),
-                                      DropdownMenuItem(
-                                        value: 'Other',
-                                        child: Text('Other'),
-                                      ),
-                                    ],
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        controller.setGender(value);
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                        _buildFormSection(
+                          label: 'Phone Number',
+                          controller: controller.phoneController,
+                          icon: Icons.phone,
+                          keyboardType: TextInputType.phone,
                         ),
                       ],
                     ),
@@ -999,51 +882,32 @@ class EditProfileScreen extends StatelessWidget {
                   // Update Button
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Obx(
-                      () => GestureDetector(
-                        onTapDown: (_) {
-                          controller.setUpdatePressed(true);
-                        },
-                        onTapUp: (_) {
-                          controller.setUpdatePressed(false);
-                          controller.updateProfile();
-                        },
-                        onTapCancel: () {
-                          controller.setUpdatePressed(false);
-                        },
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 150),
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          decoration: BoxDecoration(
-                            color: controller.isUpdatePressed.value
-                                ? RidenColors.brandRed.withOpacity(0.85)
-                                : RidenColors.brandRed,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: RidenColors.brandRed.withOpacity(
-                                  controller.isUpdatePressed.value ? 0.6 : 0.4,
-                                ),
-                                blurRadius: controller.isUpdatePressed.value
-                                    ? 20
-                                    : 15,
-                                offset: Offset(
-                                  0,
-                                  controller.isUpdatePressed.value ? 10 : 8,
-                                ),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Update',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
-                              ),
+                    child: GestureDetector(
+                      onTap: () {
+                        controller.updateProfile();
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: RidenColors.brandRed,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: RidenColors.brandRed.withOpacity(0.4),
+                              blurRadius: 15,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Update',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ),
@@ -1066,8 +930,6 @@ class EditProfileScreen extends StatelessWidget {
     required TextEditingController controller,
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
-    bool isReadOnly = false,
-    VoidCallback? onTap,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1082,74 +944,47 @@ class EditProfileScreen extends StatelessWidget {
           ),
         ),
         SizedBox(height: 10),
-        GestureDetector(
-          onTap: isReadOnly ? onTap : null,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.15),
-                width: 1.5,
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.15),
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                child: Icon(icon, color: RidenColors.brandRed, size: 20),
               ),
-            ),
-            child: Row(
-              children: [
-                // Icon
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                  child: Icon(icon, color: RidenColors.brandRed, size: 20),
+              Container(
+                width: 1,
+                height: 24,
+                color: Colors.white.withOpacity(0.1),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  keyboardType: keyboardType,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: RidenColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: label,
+                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                  ),
                 ),
-
-                // Divider
-                Container(
-                  width: 1,
-                  height: 24,
-                  color: Colors.white.withOpacity(0.1),
-                ),
-
-                // Input Field or Text
-                Expanded(
-                  child: isReadOnly
-                      ? // ✅ Read-only text display
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 14,
-                          ),
-                          child: Text(
-                            controller.text,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: RidenColors.textPrimary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        )
-                      : // Editable text field
-                        TextField(
-                          controller: controller,
-                          keyboardType: keyboardType,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: RidenColors.textPrimary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: label,
-                            hintStyle: TextStyle(
-                              color: Colors.white.withOpacity(0.4),
-                            ),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 14,
-                            ),
-                          ),
-                        ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],

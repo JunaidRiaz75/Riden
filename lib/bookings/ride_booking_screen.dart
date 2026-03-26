@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/bookings/my_bookings_detail_screen.dart';
-import 'package:riden/bookings/my_bookings_screen.dart';
+import 'package:riden/bookings/my_bookings_screen.dart'; // Import the chat bottom sheet
 import 'package:riden/call_and_chat/chat_screen.dart';
 import 'package:riden/my_profile/profile_management.dart';
 import 'package:riden/notifications/notification.dart';
@@ -38,6 +38,26 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
 
   String paymentMethod = 'Payment via Wallet';
   final paymentOptions = ['Payment via Wallet', 'Debit/Credit Card'];
+
+  void _openChatBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return ChatBottomSheet(scrollController: scrollController);
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -320,7 +340,8 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
           } else if (index == 2) {
             Get.to(() => const NotificationsScreen());
           } else if (index == 3) {
-            Get.to(() => const ChatScreen());
+            // Open Chat as Bottom Sheet instead of using Get.to()
+            _openChatBottomSheet(context);
           } else if (index == 4) {
             Get.to(() => ProfileSidebar());
           }

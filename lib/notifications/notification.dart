@@ -1,7 +1,7 @@
 // notifications_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:riden/bookings/my_bookings_screen.dart';
+import 'package:riden/bookings/my_bookings_screen.dart'; // Import the chat bottom sheet
 import 'package:riden/call_and_chat/chat_screen.dart';
 import 'package:riden/my_profile/profile_management.dart';
 import 'package:riden/theme/app_colors.dart';
@@ -223,12 +223,33 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           } else if (index == 2) {
             // Already on notifications
           } else if (index == 3) {
-            Get.to(() => const ChatScreen());
+            // Open Chat as Bottom Sheet instead of using Get.to()
+            _openChatBottomSheet(context);
           } else if (index == 4) {
             Get.to(() => ProfileSidebar());
           }
         },
       ),
+    );
+  }
+
+  void _openChatBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return ChatBottomSheet(scrollController: scrollController);
+          },
+        );
+      },
     );
   }
 

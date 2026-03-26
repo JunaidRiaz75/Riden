@@ -1,10 +1,12 @@
-// home_screen.dart - Updated with navigation bar raised and full background
+// home_screen.dart - Updated with Chat Bottom Sheet
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/home/add_place_screen.dart';
+import 'package:get/get.dart';
+import 'package:riden/call_and_chat/chat_screen.dart';
+import 'package:riden/home/your_locations_screen.dart';
+import 'package:riden/my_profile/profilesheet.dart';
 import 'package:riden/widgets/bottom_navbar.dart';
 
-import '../theme/app_colors.dart';
+import '../theme/app_colors.dart'; // Add this import
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,16 +21,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     const accentRed = Color(0xFFFF2B2B);
-    final screenHeight = MediaQuery.of(context).size.height;
-    final bottomNavHeight = 70.0; // Bottom nav height
-    final bottomNavBottomMargin = 16.0; // Margin from bottom
+    final bottomNavHeight = 70.0;
+    final bottomNavBottomMargin = 16.0;
 
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // ✅ FULL SCREEN MAP BACKGROUND - Extends to full screen
+          // ✅ FULL SCREEN MAP BACKGROUND
           Positioned.fill(
             child: Image.asset(
               'assets/images/map1.png',
@@ -45,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: bottomNavHeight + bottomNavBottomMargin + 20,
             child: Column(
               children: [
-                // Location button
                 GestureDetector(
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -78,7 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Direction button
                 GestureDetector(
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -114,15 +113,15 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // ✅ DRAGGABLE SLIDER SHEET - Positioned above bottom nav
+          // ✅ DRAGGABLE SLIDER SHEET (Your Locations)
           Positioned(
             left: 0,
             right: 0,
-            bottom: bottomNavHeight + bottomNavBottomMargin, // Above bottom nav
+            bottom: bottomNavHeight + bottomNavBottomMargin,
             child: DraggableScrollableSheet(
-              initialChildSize: 0.15, // Start small
-              minChildSize: 0.12, // Minimum size
-              maxChildSize: 0.65, // Maximum size
+              initialChildSize: 0.15,
+              minChildSize: 0.12,
+              maxChildSize: 0.65,
               snap: true,
               snapSizes: const [0.15, 0.35, 0.65],
               builder: (context, scrollController) {
@@ -153,7 +152,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     children: [
-                      // ✅ DRAG HANDLE
                       Padding(
                         padding: const EdgeInsets.only(top: 12),
                         child: Center(
@@ -167,10 +165,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-
-                      // ✅ LOCATION SEARCH & CONTENT
                       Expanded(
-                        child: YourLocationsContent(
+                        child: YourLocationsScreen(
                           scrollController: scrollController,
                         ),
                       ),
@@ -183,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-      // ✅ BOTTOM NAVIGATION BAR - Raised from bottom
+      // ✅ BOTTOM NAVIGATION BAR
       bottomNavigationBar: Container(
         margin: EdgeInsets.only(bottom: bottomNavBottomMargin),
         child: GlassyBottomNavBar(
@@ -192,443 +188,61 @@ class _HomeScreenState extends State<HomeScreen> {
             setState(() {
               _selectedNavIndex = value;
             });
-            // Handle navigation
+
+            // Handle navigation based on selected tab
             if (value == 1) {
               // Navigate to bookings
+              Get.toNamed('/my-bookings');
             } else if (value == 2) {
-              // Navigate to support
+              // Open Chat as Bottom Sheet
+              _openChatBottomSheet(context);
             } else if (value == 3) {
-              // Navigate to account
+              // Open Profile as Bottom Sheet
+              _openProfileBottomSheet(context);
             }
           },
         ),
       ),
     );
   }
-}
 
-// ✅ YOUR LOCATIONS CONTENT (Inside Bottom Sheet)
-class YourLocationsContent extends StatelessWidget {
-  final ScrollController scrollController;
-
-  const YourLocationsContent({required this.scrollController, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final Color accentRed = const Color(0xFFFF2B2B);
-    final locations = [
-      {
-        "title": "Office",
-        "address": "2972 Westheimer Rd, Santa Ana, Illinois 85486",
-      },
-      {
-        "title": "Coffee shop",
-        "address": "1901 Thornridge Cir. Shiloh, Hawaii 81063",
-      },
-      {
-        "title": "Shopping center",
-        "address": "4140 Parker Rd. Allentown, New Mexico 31134",
-      },
-    ];
-
-    return SingleChildScrollView(
-      controller: scrollController,
-      physics: const ClampingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ✅ LOCATION SEARCH FIELDS
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Pickup Field
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white.withOpacity(0.15)),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 14,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.circle, color: Colors.black, size: 12),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Pickup",
-                              style: GoogleFonts.poppins(
-                                color: Colors.white.withOpacity(0.7),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Text(
-                              "2972 Westheimer Rd. Santa Ana, Illinois 85486",
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // Destination Field
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white.withOpacity(0.15)),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 2,
-                    horizontal: 14,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.flag, color: accentRed, size: 14),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: "Where to go?",
-                            hintStyle: GoogleFonts.poppins(
-                              color: Colors.white.withOpacity(0.6),
-                              fontSize: 15,
-                            ),
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // ✅ SAVED LOCATIONS HEADER
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Saved Locations",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  "See All",
-                  style: TextStyle(
-                    color: accentRed,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          // ✅ SAVED LOCATIONS LIST (Horizontal Scroll)
-          SizedBox(
-            height: 120,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: locations.length,
-              itemBuilder: (ctx, i) {
-                final loc = locations[i];
-                return Container(
-                  width: 200,
-                  margin: const EdgeInsets.only(right: 12),
-                  child: GestureDetector(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Selected: ${loc["title"]}'),
-                          backgroundColor: accentRed,
-                          duration: const Duration(seconds: 1),
-                        ),
-                      );
-                    },
-                    child: GlassSection(
-                      opacity: 0.15,
-                      radius: 15,
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.place, color: accentRed, size: 18),
-                              const SizedBox(width: 6),
-                              Text(
-                                loc["title"]?.toString() ?? "",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            loc["address"]?.toString() ?? "",
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 11,
-                              height: 1.3,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // ✅ ADD NEW ADDRESS BUTTON
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: GestureDetector(
-              onTap: () {
-                _openAddPlacePersistentSheet(context);
-              },
-              child: Container(
-                width: double.infinity,
-                height: 48,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFF2B2B), Color(0xFFFF4B4B)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFF2B2B).withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.add_location_alt_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      "Add New Address",
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 30),
-        ],
-      ),
-    );
-  }
-
-  void _openAddPlacePersistentSheet(BuildContext context) {
+  void _openChatBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: RidenColors.backgroundBase,
+      backgroundColor: Colors.transparent,
       builder: (context) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.12,
-          minChildSize: 0.12,
-          maxChildSize: 0.85,
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
           snap: true,
-          snapSizes: const [0.12, 0.45, 0.85],
+          snapSizes: const [0.5, 0.85, 0.95],
           builder: (context, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                color: RidenColors.backgroundBase,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
-                    blurRadius: 25,
-                    offset: const Offset(0, -5),
-                    spreadRadius: 0,
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Drag Handle
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: Center(
-                      child: Container(
-                        width: 45,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(2.5),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Add Place Content
-                  Expanded(
-                    child: AddPlaceContent(scrollController: scrollController),
-                  ),
-                ],
-              ),
-            );
+            return ChatBottomSheet(scrollController: scrollController);
           },
         );
       },
     );
   }
-}
 
-// ✅ GLASSY FIELD WIDGET
-class GlassyField extends StatelessWidget {
-  final IconData icon;
-  final String hint;
-  final Color? iconColor;
-
-  const GlassyField({
-    required this.icon,
-    required this.hint,
-    this.iconColor,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.15)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 14),
-          Icon(
-            icon,
-            color: iconColor ?? Colors.white.withOpacity(0.7),
-            size: 22,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: TextField(
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                fontSize: 15,
-              ),
-              decoration: InputDecoration(
-                hintText: hint,
-                border: InputBorder.none,
-                hintStyle: GoogleFonts.poppins(
-                  color: Colors.white.withOpacity(0.6),
-                  fontSize: 15,
-                ),
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ✅ GLASS SECTION WIDGET
-class GlassSection extends StatelessWidget {
-  final Widget child;
-  final double opacity;
-  final double radius;
-  final EdgeInsetsGeometry padding;
-
-  const GlassSection({
-    required this.child,
-    this.opacity = 0.13,
-    this.radius = 15,
-    this.padding = const EdgeInsets.all(0),
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(opacity),
-          borderRadius: BorderRadius.circular(radius),
-          border: Border.all(color: Colors.white.withOpacity(0.15)),
-        ),
-        child: child,
-      ),
+  void _openProfileBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return ProfileBottomSheet(scrollController: scrollController);
+          },
+        );
+      },
     );
   }
 }

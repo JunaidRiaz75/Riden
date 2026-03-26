@@ -1,16 +1,19 @@
+// chat_bottom_sheet.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import '../theme/app_colors.dart'; // Make sure to import the color and painter!
-import 'package:riden/bookings/booking_ride_detail.dart' hide RidenDarkBackground, RidenColors; // contains RidenDarkBackground
+import '../theme/app_colors.dart';
 
-class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+class ChatBottomSheet extends StatefulWidget {
+  final ScrollController scrollController;
+
+  const ChatBottomSheet({required this.scrollController, super.key});
+
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<ChatBottomSheet> createState() => _ChatBottomSheetState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatBottomSheetState extends State<ChatBottomSheet> {
   final List<Map<String, dynamic>> messages = [
     {
       'type': 'received',
@@ -21,23 +24,23 @@ class _ChatScreenState extends State<ChatScreen> {
     {
       'type': 'received',
       'avatar': 'assets/images/avatar.png',
-      'text': 'Welcome to Car2go Customer Service',
+      'text': 'Welcome to Riden Customer Service',
       'time': '8:29 pm',
     },
     {
       'type': 'sent',
-      'text': 'Welcome to Car2go Customer Service',
+      'text': 'Hello, I need help with my booking',
       'time': '8:29 pm',
     },
     {
       'type': 'received',
       'avatar': 'assets/images/avatar.png',
-      'text': 'Welcome to Car2go Customer Service',
+      'text': 'Sure! How can I help you?',
       'time': '8:28 pm',
     },
     {
       'type': 'sent',
-      'text': 'Welcome to Car2go Customer Service',
+      'text': 'My driver is taking too long',
       'time': 'Just now',
     },
   ];
@@ -58,111 +61,156 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            RidenColors.backgroundBase.withOpacity(0.98),
+            RidenColors.backgroundBase.withOpacity(0.95),
+            RidenColors.backgroundBase.withOpacity(0.92),
+          ],
+          stops: const [0.0, 0.6, 1.0],
+        ),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 25,
+            offset: const Offset(0, -5),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Column(
         children: [
-          // Use the painter-based gradient matching BookingDetailsScreen!
-          const RidenDarkBackground(),
-          SafeArea(
-            child: Column(
+          // Drag Handle
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Center(
+              child: Container(
+                width: 45,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+            ),
+          ),
+          // Chat Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
               children: [
-                // Top bar
-                Padding(
-                  padding: const EdgeInsets.only(
-                      left: 8, right: 8, top: 8, bottom: 6),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios,
-                            color: Colors.white, size: 20),
-                        onPressed: () => Get.back(),
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        "Chat",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 21,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 2),
-                // Chat messages
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0, vertical: 4),
-                    itemCount: messages.length,
-                    reverse: false,
-                    itemBuilder: (context, index) {
-                      final msg = messages[index];
-                      final isSent = msg['type'] == 'sent';
-                      return Column(
-                        crossAxisAlignment: isSent
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                        children: [
-                          if (!isSent)
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Avatar for received message
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 2),
-                                  child: CircleAvatar(
-                                    radius: 17,
-                                    backgroundImage: AssetImage(msg['avatar']),
-                                  ),
-                                ),
-                                const SizedBox(width: 7),
-                                Flexible(
-                                  child: GlassMessageBubble(
-                                    text: msg['text'],
-                                    isSent: false,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          if (isSent)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 38, top: 2, right: 2),
-                              child: GlassMessageBubble(
-                                text: msg['text'],
-                                isSent: true,
-                              ),
-                            ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 46,
-                              right: 12,
-                              top: 2,
-                              bottom: 10,
-                            ),
-                            child: Text(
-                              msg['time'],
-                              style: GoogleFonts.poppins(
-                                color: Colors.white60,
-                                fontSize: 12,
-                              ),
-                            ),
-                          )
-                        ],
-                      );
-                    },
+                const SizedBox(width: 12),
+                Text(
+                  "Chat Support",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1,
                   ),
-                ),
-                GlassInputArea(
-                  controller: _controller,
-                  onSend: _sendMessage,
                 ),
               ],
             ),
           ),
+          const Divider(color: Colors.white24, height: 1),
+          // Chat messages
+          Expanded(
+            child: ListView.builder(
+              controller: widget.scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              itemCount: messages.length,
+              reverse: false,
+              itemBuilder: (context, index) {
+                final msg = messages[index];
+                final isSent = msg['type'] == 'sent';
+                return Column(
+                  crossAxisAlignment: isSent
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    if (!isSent)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Avatar for received message
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: CircleAvatar(
+                              radius: 17,
+                              backgroundColor: Colors.red.withOpacity(0.2),
+                              child: const Icon(
+                                Icons.support_agent,
+                                color: Colors.red,
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 7),
+                          Flexible(
+                            child: GlassMessageBubble(
+                              text: msg['text'],
+                              isSent: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                    if (isSent)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 38, top: 2, right: 2),
+                        child: GlassMessageBubble(
+                          text: msg['text'],
+                          isSent: true,
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 46,
+                        right: 12,
+                        top: 2,
+                        bottom: 10,
+                      ),
+                      child: Text(
+                        msg['time'],
+                        style: GoogleFonts.poppins(
+                          color: Colors.white60,
+                          fontSize: 12,
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              },
+            ),
+          ),
+          // Input Area
+          GlassInputArea(
+            controller: _controller,
+            onSend: _sendMessage,
+          ),
+          const SizedBox(height: 12),
         ],
       ),
     );
@@ -181,8 +229,9 @@ class GlassMessageBubble extends StatelessWidget {
     return Align(
       alignment: isSent ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin:
-            isSent ? const EdgeInsets.only(left: 20) : const EdgeInsets.only(right: 20),
+        margin: isSent
+            ? const EdgeInsets.only(left: 20)
+            : const EdgeInsets.only(right: 20),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -226,40 +275,42 @@ class GlassInputArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin:
-          const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.13),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(color: Colors.white.withOpacity(0.18), width: 1.2),
       ),
       child: Row(
         children: [
-          const Icon(Icons.emoji_emotions_outlined,
-              color: Colors.white70, size: 21),
-          const SizedBox(width: 6),
+          const Icon(
+            Icons.emoji_emotions_outlined,
+            color: Colors.white70,
+            size: 24,
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: TextField(
               controller: controller,
               style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 15.5,
+                fontSize: 15,
               ),
               decoration: InputDecoration(
-                hintText: "Type your message",
+                hintText: "Type your message...",
                 hintStyle: GoogleFonts.poppins(
                   color: Colors.white60,
-                  fontSize: 14.7,
+                  fontSize: 14,
                 ),
                 border: InputBorder.none,
                 isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
               onSubmitted: (_) => onSend(),
             ),
           ),
-          const SizedBox(width: 8),
-          // Send
+          // Send Button
           GestureDetector(
             onTap: onSend,
             child: Container(
@@ -275,19 +326,26 @@ class GlassInputArea extends StatelessWidget {
                 ],
               ),
               padding: const EdgeInsets.all(10),
-              child: const Icon(Icons.send_rounded,
-                  color: Colors.white, size: 22),
+              child: const Icon(
+                Icons.send_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
           const SizedBox(width: 8),
-          // Voice
+          // Voice Button
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.redAccent,
               shape: BoxShape.circle,
             ),
             padding: const EdgeInsets.all(10),
-            child: const Icon(Icons.mic, color: Colors.white, size: 21),
+            child: const Icon(
+              Icons.mic,
+              color: Colors.white,
+              size: 20,
+            ),
           ),
         ],
       ),

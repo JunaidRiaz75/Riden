@@ -1,21 +1,21 @@
+// contact_support_bottom_sheet.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/theme/app_colors.dart';
-// Update these imports as necessary for your screens
-import 'package:riden/my_profile/complaint_ticket/complaint_tickets_screen.dart';
-import 'package:riden/my_profile/contact_support/submit_complaint_ticket_screen.dart';
 import 'package:riden/my_profile/contact_support/instant_support_screen.dart';
-import 'package:riden/my_profile/complaint_ticket/complaint_view_screen.dart';
+import 'package:riden/my_profile/contact_support/submit_complaint_ticket_screen.dart';
+import 'package:riden/theme/app_colors.dart';
 
-class ContactSupportScreen extends StatefulWidget {
-  const ContactSupportScreen({Key? key}) : super(key: key);
+class ContactSupportBottomSheet extends StatefulWidget {
+  final ScrollController scrollController;
+
+  const ContactSupportBottomSheet({required this.scrollController, super.key});
 
   @override
-  State<ContactSupportScreen> createState() => _ContactSupportScreenState();
+  State<ContactSupportBottomSheet> createState() =>
+      _ContactSupportBottomSheetState();
 }
 
-class _ContactSupportScreenState extends State<ContactSupportScreen> {
-  // 0: 911 Call, 1: Complaint, 2: Instant
+class _ContactSupportBottomSheetState extends State<ContactSupportBottomSheet> {
   int selected = 0;
 
   void _onSelect(int idx, BuildContext context) {
@@ -23,29 +23,29 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
       selected = idx;
     });
 
-    // Navigation for Complaint and Instant support
     if (idx == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => SubmitComplaintTicketScreen()),
-      );
+      _openSubmitComplaintBottomSheet(context);
     }
     if (idx == 2) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => InstantSupportScreen()),
-      );
+      _openInstantSupportBottomSheet(context);
     }
     if (idx == 0) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text("Emergency Call"),
-          content: const Text("This would call 911."),
+          backgroundColor: RidenColors.backgroundBase,
+          title: const Text(
+            "Emergency Call",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: const Text(
+            "This would call 911.",
+            style: TextStyle(color: Colors.white70),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text("OK"),
+              child: const Text("OK", style: TextStyle(color: Colors.red)),
             ),
           ],
         ),
@@ -53,25 +53,123 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
     }
   }
 
+  void _openSubmitComplaintBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return SubmitComplaintTicketBottomSheet(
+              scrollController: scrollController,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _openInstantSupportBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return InstantSupportBottomSheet(
+              scrollController: scrollController,
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SizedBox.expand(
-        child: Stack(
-          children: [
-            const RidenDarkBackground(),
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            RidenColors.backgroundBase.withOpacity(0.98),
+            RidenColors.backgroundBase.withOpacity(0.95),
+            RidenColors.backgroundBase.withOpacity(0.92),
+          ],
+          stops: const [0.0, 0.6, 1.0],
+        ),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 25,
+            offset: const Offset(0, -5),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Drag Handle
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Center(
+              child: Container(
+                width: 45,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+            ),
+          ),
+          // Content
+          Expanded(
+            child: SingleChildScrollView(
+              controller: widget.scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Back arrow and centered title
+                    // Header with Back Button
                     Row(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 22),
-                          onPressed: () => Navigator.pop(context),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
                         ),
                         const Spacer(),
                         Text(
@@ -84,12 +182,12 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                           ),
                         ),
                         const Spacer(),
-                        const SizedBox(width: 32), // Just to balance the back arrow side
+                        const SizedBox(width: 32),
                       ],
                     ),
                     const SizedBox(height: 34),
 
-                    // 911 Call - highlighted by default, highlights on click, and so do others
+                    // 911 Call Button
                     GlassyContactButton(
                       icon: Icons.call,
                       label: "911 Call",
@@ -98,6 +196,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                     ),
                     const SizedBox(height: 22),
 
+                    // Submit Complaint Ticket Button
                     GlassyContactButton(
                       icon: Icons.confirmation_number_rounded,
                       label: "Submit Complaint Ticket",
@@ -106,18 +205,20 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                     ),
                     const SizedBox(height: 22),
 
+                    // Instant Support Button
                     GlassyContactButton(
                       icon: Icons.help_outline_rounded,
                       label: "Instant Support",
                       highlight: selected == 2,
                       onTap: () => _onSelect(2, context),
                     ),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -134,52 +235,52 @@ class GlassyContactButton extends StatelessWidget {
     required this.label,
     required this.highlight,
     required this.onTap,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final Color iconColor = highlight ? Colors.red : Colors.black54;
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(17),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(17),
-        onTap: onTap,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 26),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.11),
-            borderRadius: BorderRadius.circular(17),
-            border: Border.all(color: highlight ? Colors.red : Colors.transparent, width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.07),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(highlight ? 0.15 : 0.08),
+          borderRadius: BorderRadius.circular(17),
+          border: Border.all(
+            color: highlight ? Colors.red : Colors.white.withOpacity(0.2),
+            width: highlight ? 2 : 1,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                backgroundColor: Colors.red.withOpacity(0.13),
-                radius: 24,
-                child: Icon(icon, color: iconColor, size: 29),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 55,
+              height: 55,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.red.withOpacity(0.2),
               ),
-              const SizedBox(height: 13),
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                  color: Colors.black87,
+              child: Center(
+                child: Icon(
+                  icon,
+                  color: highlight ? Colors.red : Colors.white70,
+                  size: 28,
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                color: highlight ? Colors.red : Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );

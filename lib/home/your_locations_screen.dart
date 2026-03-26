@@ -9,7 +9,7 @@ import 'package:riden/widgets/glass_button.dart';
 import '../widgets/glass.dart';
 
 class YourLocationsScreen extends StatelessWidget {
-  const YourLocationsScreen({super.key});
+  const YourLocationsScreen({super.key, required ScrollController scrollController});
 
   @override
   Widget build(BuildContext context) {

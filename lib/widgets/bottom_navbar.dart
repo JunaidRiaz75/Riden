@@ -40,16 +40,16 @@ class GlassyBottomNavBar extends StatelessWidget {
             ),
             items: const [
               BottomNavigationBarItem(
+                icon: Icon(Icons.directions_car_rounded, size: 22),
+                label: 'Ride',
+              ),
+              BottomNavigationBarItem(
                 icon: Icon(Icons.calendar_month_rounded, size: 22),
                 label: 'My Bookings',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.support_agent_rounded, size: 22),
                 label: 'Support',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.notifications_rounded, size: 22),
-                label: 'Notifications',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_rounded, size: 22),
