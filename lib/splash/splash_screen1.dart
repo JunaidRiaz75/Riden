@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/Booking/bookingdetail.dart';
-import 'package:riden/onbording/on1.dart'; // ← import your On1 screen
+import 'package:riden/bookings/bookingride_loading.dart';
+import 'package:riden/onboarding/onboarding_screen.dart'; // ← import your On1 screen
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -58,7 +58,11 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, _, _) => const On1(),
+        pageBuilder: (_, _, _) => const RidenOnboardingScreen(
+          title: '',
+          subtitle: '',
+          centerImage: '',
+        ),
         transitionsBuilder: (_, animation, _, child) =>
             FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 500),
@@ -90,7 +94,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                     style: GoogleFonts.audiowide(
                       fontSize: 44,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color.fromARGB(255, 141, 145, 148),
                       letterSpacing: 7,
                       shadows: const [
                         Shadow(color: Color(0x33FFFFFF), blurRadius: 20),

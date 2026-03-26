@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/theme/app_colors.dart';
-import 'package:riden/widgets/glass_bottom_nav.dart';
-import 'my_bookings_detail_screen.dart';
 
+import 'my_bookings_detail_screen.dart';
 
 class MyBookingsScreen extends StatelessWidget {
   const MyBookingsScreen({super.key});
@@ -12,84 +11,93 @@ class MyBookingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(children: [
-        const RidenDarkBackground(),
-        SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 15),
-              // Page Title
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "My Bookings",
-                    style: GoogleFonts.audiowide(
-                      fontSize: 24,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
+      body: Stack(
+        children: [
+          const RidenDarkBackground(),
+          SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 15),
+                // Page Title
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "My Bookings",
+                      style: GoogleFonts.audiowide(
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 18),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                  child: Column(
-                    children: [
-                      _BookingSection(
-                        onTap: () {
-                          Get.to(() => MyBookingsDetailScreen());
-                        },
-                        title: "Ongoing Bookings",
-                        isOngoing: true,
-                        bookings: [
-                          BookingInfo(
-                            date: "25 May, 2025",
-                            price: "\$45.00",
-                            pickLabel: "Office",
-                            pickAddress: "2972 Westheimer Rd. Santa Ana, Illinois 85486",
-                            pickTime: "04:30pm",
-                            dropLabel: "Coffee shop",
-                            dropAddress: "1901 Thornridge Cir. Shiloh, Hawaii 81063",
-                            dropTime: "08:30pm",
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 22),
-                      _BookingSection(
-                        onTap: () {
-                          Get.to(() => MyBookingsDetailScreen());
-                        },
-                        title: "Past Bookings",
-                        isOngoing: false,
-                        bookings: [
-                          BookingInfo(
-                            date: "25 May, 2025",
-                            price: "\$45.00",
-                            pickLabel: "Office",
-                            pickAddress: "2972 Westheimer Rd. Santa Ana, Illinois 85486",
-                            pickTime: "04:30pm",
-                            dropLabel: "Coffee shop",
-                            dropAddress: "1901 Thornridge Cir. Shiloh, Hawaii 81063",
-                            dropTime: "08:30pm",
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 90), // Room for nav bar
-                    ],
+                const SizedBox(height: 18),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 7,
+                    ),
+                    child: Column(
+                      children: [
+                        _BookingSection(
+                          onTap: () {
+                            Get.to(() => MyBookingsDetailScreen());
+                          },
+                          title: "Ongoing Bookings",
+                          isOngoing: true,
+                          bookings: [
+                            BookingInfo(
+                              date: "25 May, 2025",
+                              price: "\$45.00",
+                              pickLabel: "Office",
+                              pickAddress:
+                                  "2972 Westheimer Rd. Santa Ana, Illinois 85486",
+                              pickTime: "04:30pm",
+                              dropLabel: "Coffee shop",
+                              dropAddress:
+                                  "1901 Thornridge Cir. Shiloh, Hawaii 81063",
+                              dropTime: "08:30pm",
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 22),
+                        _BookingSection(
+                          onTap: () {
+                            Get.to(() => MyBookingsDetailScreen());
+                          },
+                          title: "Past Bookings",
+                          isOngoing: false,
+                          bookings: [
+                            BookingInfo(
+                              date: "25 May, 2025",
+                              price: "\$45.00",
+                              pickLabel: "Office",
+                              pickAddress:
+                                  "2972 Westheimer Rd. Santa Ana, Illinois 85486",
+                              pickTime: "04:30pm",
+                              dropLabel: "Coffee shop",
+                              dropAddress:
+                                  "1901 Thornridge Cir. Shiloh, Hawaii 81063",
+                              dropTime: "08:30pm",
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 90), // Room for nav bar
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              // Glassy bottom nav bar
-              GlassBottomNav(selectedIndex: 0),
-            ],
+
+                // Glassy bottom nav bar
+              ],
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }
@@ -104,8 +112,8 @@ class _BookingSection extends StatelessWidget {
     required this.isOngoing,
     required this.bookings,
     this.onTap,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -121,11 +129,13 @@ class _BookingSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        ...bookings.map((booking) => _GlassBookingCard(
-              info: booking,
-              isOngoing: isOngoing,
-              onTap: onTap,
-            )),
+        ...bookings.map(
+          (booking) => _GlassBookingCard(
+            info: booking,
+            isOngoing: isOngoing,
+            onTap: onTap,
+          ),
+        ),
       ],
     );
   }
@@ -139,8 +149,8 @@ class _GlassBookingCard extends StatelessWidget {
     required this.info,
     required this.isOngoing,
     this.onTap,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -250,8 +260,8 @@ class _BookingPointRow extends StatelessWidget {
     required this.address,
     required this.time,
     required this.isOffice,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -268,23 +278,16 @@ class _BookingPointRow extends StatelessWidget {
         Expanded(
           child: Text(
             address,
-            style: GoogleFonts.poppins(
-              color: Colors.white70,
-              fontSize: 12,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
             overflow: TextOverflow.ellipsis,
           ),
         ),
         if (isOffice)
           Icon(Icons.chevron_right, color: Colors.white54, size: 20),
-        if (!isOffice)
-          const SizedBox(width: 12),
+        if (!isOffice) const SizedBox(width: 12),
         Text(
           time,
-          style: GoogleFonts.poppins(
-            color: Colors.white60,
-            fontSize: 12.5,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white60, fontSize: 12.5),
         ),
       ],
     );
@@ -293,7 +296,14 @@ class _BookingPointRow extends StatelessWidget {
 
 // Booking data model
 class BookingInfo {
-  final String date, price, pickLabel, pickAddress, pickTime, dropLabel, dropAddress, dropTime;
+  final String date,
+      price,
+      pickLabel,
+      pickAddress,
+      pickTime,
+      dropLabel,
+      dropAddress,
+      dropTime;
   BookingInfo({
     required this.date,
     required this.price,
@@ -305,4 +315,3 @@ class BookingInfo {
     required this.dropTime,
   });
 }
-

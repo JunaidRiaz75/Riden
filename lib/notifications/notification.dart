@@ -1,14 +1,28 @@
+// notifications_screen.dart
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:riden/bookings/my_bookings_screen.dart';
+import 'package:riden/call_and_chat/chat_screen.dart';
+import 'package:riden/my_profile/profile_management.dart';
 import 'package:riden/theme/app_colors.dart';
+import 'package:riden/widgets/glass_bottom_nav.dart';
 
 // 🔔 NOTIFICATIONS SCREEN - DARK GLASSY THEME
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
+
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  int _selectedNavIndex = 2; // Notifications tab selected
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: RidenColors.backgroundBase,
+      extendBody: true,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -21,7 +35,10 @@ class NotificationsScreen extends StatelessWidget {
               SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   child: Row(
                     children: [
                       GestureDetector(
@@ -33,7 +50,7 @@ class NotificationsScreen extends StatelessWidget {
                               color: RidenColors.textPrimary,
                               size: 20,
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
                               'Back',
                               style: TextStyle(
@@ -45,12 +62,12 @@ class NotificationsScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       GestureDetector(
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('All marked as read'),
+                            const SnackBar(
+                              content: Text('All notifications marked as read'),
                               backgroundColor: RidenColors.brandRed,
                               duration: Duration(milliseconds: 800),
                             ),
@@ -72,7 +89,7 @@ class NotificationsScreen extends StatelessWidget {
 
               // ✅ Title
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -86,93 +103,100 @@ class NotificationsScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
 
               // ✅ Notifications List
               Expanded(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // 📅 TODAY SECTION
                         _buildSectionHeader('Today'),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildNotificationItem(
-                          icon: Icons.wallet,
+                          icon: Icons.wallet_rounded,
                           title: 'Payment Successfully!',
                           description:
-                              'Lorem ipsum dolor sit amet consectetur. Ultricies tincidunt eifend vitae',
+                              'Your payment of \$45.00 has been processed successfully for your ride.',
                           time: '8:29 pm',
+                          isRead: false,
                           context: context,
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildNotificationItem(
-                          icon: Icons.local_offer,
+                          icon: Icons.local_offer_rounded,
                           title: '30% Special Discount!',
                           description:
-                              'Lorem ipsum dolor sit amet consectetur. Ultricies tincidunt eifend vitae',
+                              'Enjoy 30% off on your next ride. Limited time offer!',
                           time: '8:29 pm',
+                          isRead: false,
                           context: context,
                         ),
 
-                        SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
                         // 📅 YESTERDAY SECTION
                         _buildSectionHeader('Yesterday'),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildNotificationItem(
-                          icon: Icons.wallet,
+                          icon: Icons.wallet_rounded,
                           title: 'Payment Successfully!',
                           description:
-                              'Lorem ipsum dolor sit amet consectetur. Ultricies tincidunt eifend vitae',
+                              'Your payment of \$35.00 has been processed successfully for your ride.',
                           time: '8:29 pm',
+                          isRead: true,
                           context: context,
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildNotificationItem(
-                          icon: Icons.credit_card,
+                          icon: Icons.credit_card_rounded,
                           title: 'Credit Card added!',
                           description:
-                              'Lorem ipsum dolor sit amet consectetur. Ultricies tincidunt eifend vitae',
+                              'Your credit card ending in 1234 has been successfully added.',
                           time: '8:29 pm',
+                          isRead: true,
                           context: context,
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildNotificationItem(
-                          icon: Icons.account_balance_wallet,
+                          icon: Icons.account_balance_wallet_rounded,
                           title: 'Added Money wallet Successfully!',
                           description:
-                              'Lorem ipsum dolor sit amet consectetur. Ultricies tincidunt eifend vitae',
+                              '\$50.00 has been added to your wallet successfully.',
                           time: '8:29 pm',
+                          isRead: true,
                           context: context,
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildNotificationItem(
-                          icon: Icons.local_offer,
+                          icon: Icons.local_offer_rounded,
                           title: '5% Special Discount!',
                           description:
-                              'Lorem ipsum dolor sit amet consectetur. Ultricies tincidunt eifend vitae',
+                              'Get 5% cashback on your next ride. Limited time offer!',
                           time: '8:29 pm',
+                          isRead: true,
                           context: context,
                         ),
 
-                        SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
                         // 📅 DATE SECTION
                         _buildSectionHeader('May, 27 2023'),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         _buildNotificationItem(
-                          icon: Icons.wallet,
+                          icon: Icons.wallet_rounded,
                           title: 'Payment Successfully!',
                           description:
-                              'Lorem ipsum dolor sit amet consectetur. Ultricies tincidunt eifend vitae',
+                              'Your payment of \$25.00 has been processed successfully for your ride.',
                           time: '8:29 pm',
+                          isRead: true,
                           context: context,
                         ),
 
-                        SizedBox(height: 80), // Space for bottom nav
+                        const SizedBox(height: 100), // Space for bottom nav
                       ],
                     ),
                   ),
@@ -183,8 +207,28 @@ class NotificationsScreen extends StatelessWidget {
         ],
       ),
 
-      // ✅ BOTTOM NAVIGATION BAR - SAMPLE (DARK GLASSY THEME)
-      bottomNavigationBar: _buildBottomNavigationBar(context),
+      // ✅ BOTTOM NAVIGATION BAR
+      bottomNavigationBar: GlassBottomNav(
+        selectedIndex: _selectedNavIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedNavIndex = index;
+          });
+
+          // Handle navigation
+          if (index == 0) {
+            Get.offAllNamed('/home');
+          } else if (index == 1) {
+            Get.to(() => const MyBookingsScreen());
+          } else if (index == 2) {
+            // Already on notifications
+          } else if (index == 3) {
+            Get.to(() => const ChatScreen());
+          } else if (index == 4) {
+            Get.to(() => ProfileSidebar());
+          }
+        },
+      ),
     );
   }
 
@@ -207,209 +251,125 @@ class NotificationsScreen extends StatelessWidget {
     required String title,
     required String description,
     required String time,
+    required bool isRead,
     required BuildContext context,
   }) {
     return GestureDetector(
       onTap: () {
+        // Mark as read when tapped
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(title),
             backgroundColor: RidenColors.brandRed,
-            duration: Duration(milliseconds: 800),
+            duration: const Duration(milliseconds: 800),
           ),
         );
       },
       child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.08),
+          color: isRead
+              ? Colors.white.withOpacity(0.05)
+              : Colors.white.withOpacity(0.08),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white.withOpacity(0.12), width: 1.5),
+          border: Border.all(
+            color: isRead
+                ? Colors.white.withOpacity(0.08)
+                : RidenColors.brandRed.withOpacity(0.3),
+            width: isRead ? 1 : 1.5,
+          ),
         ),
-        padding: EdgeInsets.all(14),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ✅ Icon Container
-            Container(
-              width: 45,
-              height: 45,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: RidenColors.brandRed.withOpacity(0.15),
-              ),
-              child: Center(
-                child: Icon(icon, color: RidenColors.brandRed, size: 22),
-              ),
-            ),
-
-            SizedBox(width: 12),
-
-            // ✅ Content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ✅ Icon Container with unread indicator
+              Stack(
                 children: [
-                  // Title
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: RidenColors.textPrimary,
+                  Container(
+                    width: 45,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: RidenColors.brandRed.withOpacity(0.15),
+                    ),
+                    child: Center(
+                      child: Icon(icon, color: RidenColors.brandRed, size: 22),
                     ),
                   ),
-
-                  SizedBox(height: 4),
-
-                  // Description
-                  Text(
-                    description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: RidenColors.textSecondary,
-                      height: 1.4,
+                  if (!isRead)
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: RidenColors.brandRed,
+                          border: Border.all(
+                            color: RidenColors.backgroundBase,
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
                 ],
               ),
-            ),
 
-            SizedBox(width: 8),
+              const SizedBox(width: 12),
 
-            // ✅ Time
-            Text(
-              time,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: RidenColors.textHint,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ✅ BOTTOM NAVIGATION BAR - SAMPLE
-  Widget _buildBottomNavigationBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
-        border: Border(
-          top: BorderSide(color: Colors.white.withOpacity(0.1), width: 1.5),
-        ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              // Bookings
-              _buildNavItem(
-                icon: Icons.calendar_today,
-                label: 'Bookings',
-                isActive: false,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Bookings'),
-                      backgroundColor: RidenColors.brandRed,
-                      duration: Duration(milliseconds: 800),
+              // ✅ Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: isRead ? FontWeight.w600 : FontWeight.w700,
+                        color: RidenColors.textPrimary,
+                      ),
                     ),
-                  );
-                },
-              ),
 
-              // Support
-              _buildNavItem(
-                icon: Icons.support_agent,
-                label: 'Support',
-                isActive: false,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Support'),
-                      backgroundColor: RidenColors.brandRed,
-                      duration: Duration(milliseconds: 800),
+                    const SizedBox(height: 4),
+
+                    // Description
+                    Text(
+                      description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isRead
+                            ? RidenColors.textSecondary.withOpacity(0.8)
+                            : RidenColors.textSecondary,
+                        height: 1.4,
+                      ),
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
 
-              // Notifications (Active)
-              _buildNavItem(
-                icon: Icons.notifications,
-                label: 'Notifications',
-                isActive: true,
-                onTap: () {},
-              ),
+              const SizedBox(width: 8),
 
-              // Account
-              _buildNavItem(
-                icon: Icons.account_circle,
-                label: 'Account',
-                isActive: false,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Account'),
-                      backgroundColor: RidenColors.brandRed,
-                      duration: Duration(milliseconds: 800),
-                    ),
-                  );
-                },
+              // ✅ Time
+              Text(
+                time,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: isRead
+                      ? RidenColors.textHint.withOpacity(0.7)
+                      : RidenColors.textHint,
+                ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  // ✅ Navigation Item Widget
-  Widget _buildNavItem({
-    required IconData icon,
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isActive
-                  ? RidenColors.brandRed.withOpacity(0.2)
-                  : Colors.transparent,
-            ),
-            child: Icon(
-              icon,
-              color: isActive
-                  ? RidenColors.brandRed
-                  : RidenColors.textSecondary,
-              size: 24,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: isActive
-                  ? RidenColors.brandRed
-                  : RidenColors.textSecondary,
-            ),
-          ),
-        ],
       ),
     );
   }

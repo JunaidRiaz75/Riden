@@ -1,13 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:get/get.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/auth/sign_in_screen.dart';
 import 'package:flutter/gestures.dart';
-import 'package:riden/widgets/glass_field.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:riden/auth/sign_in_screen.dart';
+import 'package:riden/theme/app_colors.dart';
 import 'package:riden/widgets/glass_button.dart';
+import 'package:riden/widgets/glass_field.dart';
 // Import your Splash gradient widget, assuming this exists:
 
 class SignUpScreen extends StatefulWidget {
@@ -74,7 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     GlassField(
                       child: TextFormField(
                         decoration: InputDecoration(
-                          hintText: "Jimmi",
+                          hintText: "Enter your name",
                           border: InputBorder.none,
                           hintStyle: GoogleFonts.poppins(
                             color: Colors.white54,
@@ -100,7 +100,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     GlassField(
                       child: TextFormField(
                         decoration: InputDecoration(
-                          hintText: "example@gmail.com",
+                          hintText: "Enter your email",
                           border: InputBorder.none,
                           hintStyle: GoogleFonts.poppins(
                             color: Colors.white54,
@@ -228,7 +228,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: TextFormField(
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
-                          hintText: "123456789",
+                          hintText: "Enter your password",
                           border: InputBorder.none,
                           hintStyle: GoogleFonts.poppins(
                             color: Colors.white54,
@@ -266,7 +266,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: TextFormField(
                         obscureText: _obscureConfirm,
                         decoration: InputDecoration(
-                          hintText: "123456789",
+                          hintText: "Enter your confirm password",
                           border: InputBorder.none,
                           hintStyle: GoogleFonts.poppins(
                             color: Colors.white54,

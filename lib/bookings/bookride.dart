@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:riden/bookings/ridecomplete.dart'
+    hide RidenColors, RidenDarkBackground;
 import 'package:riden/theme/app_colors.dart';
-import 'package:riden/bookings/my_bookings_detail_screen.dart';
-import 'package:riden/bookings/ridecomplete.dart' hide RidenColors, RidenDarkBackground;
-import 'package:riden/config/mapbox_config.dart'; // Import config
+import 'package:riden/widgets/glass_bottom_nav.dart'; // Import config
 
 class BookARideScreen extends StatefulWidget {
   const BookARideScreen({super.key});
@@ -250,39 +250,15 @@ class _BookARideScreenState extends State<BookARideScreen> {
         ],
       ),
 
-      // Bottom Navigation Bar
-      bottomNavigationBar: Container(
-        margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 20,
-              offset: Offset(0, 10),
-            ),
-          ],
-        ),
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildNavItem(
-              icon: Icons.calendar_today,
-              label: 'Bookings',
-              index: 0,
-            ),
-            _buildNavItem(icon: Icons.people, label: 'Support', index: 1),
-            _buildNavItem(
-              icon: Icons.notifications,
-              label: 'Notifications',
-              index: 2,
-            ),
-            _buildNavItem(icon: Icons.person, label: 'Account', index: 3),
-          ],
-        ),
+      // ✅ BOTTOM NAVIGATION BAR - USING GlassBottomNav FROM BOOKING SCREEN
+      // ✅ BOTTOM NAVIGATION BAR
+      bottomNavigationBar: GlassBottomNav(
+        selectedIndex: _selectedNavIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedNavIndex = index;
+          });
+        },
       ),
     );
   }

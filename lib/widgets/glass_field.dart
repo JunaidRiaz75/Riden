@@ -31,7 +31,7 @@ class GlassField extends StatelessWidget {
           ),
         ],
       ),
-      child: child,
+      child: Center(child: child), // Centers the child perfectly
     );
   }
 }

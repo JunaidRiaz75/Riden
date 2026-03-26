@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/auth/signup_choice_screen.dart';
 import 'package:riden/theme/app_colors.dart';
 // import 'package:riden/on.dart'; // ← import your On1 screen
@@ -22,7 +22,6 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    
 
     // Make status bar transparent with light icons
     SystemChrome.setSystemUIOverlayStyle(
@@ -90,7 +89,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                     style: GoogleFonts.audiowide(
                       fontSize: 44,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color.fromARGB(255, 141, 145, 148),
                       letterSpacing: 7,
                       shadows: const [
                         Shadow(color: Color(0x33FFFFFF), blurRadius: 20),

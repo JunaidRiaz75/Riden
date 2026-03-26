@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 enum GlassButtonType { primary, secondary }
@@ -15,7 +16,7 @@ class GlassButton extends StatelessWidget {
   final double? height;
   final BorderRadius? borderRadius;
   final GlassButtonType type;
-  final Color? iconColor; // <-- add this
+  final Color? iconColor;
 
   const GlassButton({
     this.icon,
@@ -27,7 +28,7 @@ class GlassButton extends StatelessWidget {
     this.height,
     this.borderRadius,
     this.type = GlassButtonType.primary,
-    this.iconColor, // <-- add this
+    this.iconColor,
     super.key,
   });
 
@@ -63,49 +64,62 @@ class GlassButton extends StatelessWidget {
       ),
     ];
 
-    final Widget buttonContent = Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Icon(
-                icon,
-                size: 22,
-                color:
-                    iconColor ?? // <-- use color if provided, else fallback
-                    (type == GlassButtonType.primary
-                        ? Colors.white
-                        : Colors.white.withOpacity(0.90)),
-              ),
+    // Updated buttonContent with perfect icon centering
+    final Widget buttonContent = text.isEmpty
+        ? Center(
+            child: Icon(
+              icon!,
+              size: 24, // Perfect size for 60x60 buttons
+              color:
+                  iconColor ??
+                  (type == GlassButtonType.primary
+                      ? Colors.white
+                      : Colors.white.withOpacity(0.90)),
             ),
-          if (asset != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Image.asset(asset!, height: 24, width: 24),
-            ),
-          Flexible(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style:
-                  textStyle ??
-                  TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 17,
-                    color: Colors.white.withOpacity(
-                      type == GlassButtonType.primary ? 1.0 : 0.96,
+          )
+        : Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Icon(
+                      icon,
+                      size: 22,
+                      color:
+                          iconColor ??
+                          (type == GlassButtonType.primary
+                              ? Colors.white
+                              : Colors.white.withOpacity(0.90)),
                     ),
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.1,
                   ),
+                if (asset != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Image.asset(asset!, height: 24, width: 24),
+                  ),
+                Flexible(
+                  child: Text(
+                    text,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style:
+                        textStyle ??
+                        TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 17,
+                          color: Colors.white.withOpacity(
+                            type == GlassButtonType.primary ? 1.0 : 0.96,
+                          ),
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.1,
+                        ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
 
     final Widget glassyButton = Container(
       width: buttonWidth,
@@ -113,8 +127,8 @@ class GlassButton extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.center,
+          end: Alignment.center,
           colors: type == GlassButtonType.primary
               ? primaryGradient
               : secondaryGradient,

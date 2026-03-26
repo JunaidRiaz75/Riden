@@ -1,13 +1,13 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/auth/forgot_password_screen.dart';
+import 'package:riden/auth/sign_up_screen.dart';
 import 'package:riden/home/home_screen.dart';
 import 'package:riden/theme/app_colors.dart';
-import 'package:riden/widgets/glass_field.dart';
 import 'package:riden/widgets/glass_button.dart';
-import 'package:riden/auth/sign_up_screen.dart';
-import 'package:flutter/gestures.dart';
+import 'package:riden/widgets/glass_field.dart';
 // If you use a splash-style background widget:
 
 class SignInScreen extends StatefulWidget {
@@ -66,7 +66,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: TextFormField(
                           controller: _emailOrPhoneController,
                           decoration: InputDecoration(
-                            hintText: "Enter",
+                            hintText: "Enter your phone number",
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(
                               vertical: 18,
@@ -100,7 +100,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           controller: _passwordController,
                           obscureText: _obscurePassword,
                           decoration: InputDecoration(
-                            hintText: "123456789",
+                            hintText: "Enter your password",
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(
                               vertical: 18,

@@ -1,13 +1,17 @@
+// ride_booking_screen.dart
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-// imports...
-import '../widgets/glass_bottom_nav.dart';
-import '../theme/app_colors.dart';
-import 'booking_ride_detail.dart' hide RidenDarkBackground, RidenColors;
-import '../widgets/glass_input_field.dart';
-import '../widgets/glass_dropdown.dart';
-import '../widgets/glass_button.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:riden/bookings/my_bookings_detail_screen.dart';
+import 'package:riden/bookings/my_bookings_screen.dart';
+import 'package:riden/call_and_chat/chat_screen.dart';
+import 'package:riden/my_profile/profile_management.dart';
+import 'package:riden/notifications/notification.dart';
+import 'package:riden/theme/app_colors.dart';
+import 'package:riden/widgets/glass_bottom_nav.dart';
+import 'package:riden/widgets/glass_button.dart';
+import 'package:riden/widgets/glass_dropdown.dart';
+import 'package:riden/widgets/glass_input_field.dart';
 
 class RideBookingScreen extends StatefulWidget {
   const RideBookingScreen({super.key});
@@ -17,6 +21,8 @@ class RideBookingScreen extends StatefulWidget {
 }
 
 class _RideBookingScreenState extends State<RideBookingScreen> {
+  int _selectedNavIndex = 0; // Home tab selected
+
   String selectedCarType = 'Standard';
   final carTypes = [
     {'name': 'Standard', 'asset': 'assets/images/standard_car.png'},
@@ -26,7 +32,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
     {
       'name': 'Wheelchair Accessible',
       'asset': 'assets/images/wheelchair_car.png',
-      'forceWrap': true, // We'll check this below!
+      'forceWrap': true,
     },
   ];
 
@@ -37,7 +43,6 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      bottomNavigationBar: GlassBottomNav(),
       body: Stack(
         children: [
           const RidenDarkBackground(),
@@ -46,13 +51,44 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 18),
-                Text(
-                  "RIDEN",
-                  style: GoogleFonts.audiowide(
-                    fontSize: 26,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 4,
+                // Header with Back Button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.arrow_back_ios,
+                              color: RidenColors.textPrimary,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Back',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: RidenColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        "RIDEN",
+                        style: GoogleFonts.audiowide(
+                          fontSize: 26,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 4,
+                        ),
+                      ),
+                      const SizedBox(width: 50), // Balance for symmetry
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -62,41 +98,52 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                     child: Column(
                       children: [
                         // Location and Destination - vertical connect UI
-                        _PickupDropFields(),
+                        const _PickupDropFields(),
                         const SizedBox(height: 18),
-                        // --- Car selector (width: 85, height: 86, corner radius: 15) ---
+
+                        // --- Car selector ---
                         SizedBox(
-                          height: 86, // to fit icon and text comfortably, prevents overflow!
+                          height: 86,
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: carTypes.length,
-                            separatorBuilder: (context, idx) => const SizedBox(width: 12),
+                            separatorBuilder: (context, idx) =>
+                                const SizedBox(width: 12),
                             itemBuilder: (context, idx) {
                               final type = carTypes[idx];
                               final selected = type['name'] == selectedCarType;
 
-                              // Special split for "Wheelchair Accessible"
-                              final isWheelchair = (type['forceWrap'] == true || type['name'] == 'Wheelchair Accessible');
+                              final isWheelchair =
+                                  (type['forceWrap'] == true ||
+                                  type['name'] == 'Wheelchair Accessible');
                               final lines = isWheelchair
                                   ? ['Wheelchair', 'Accessible']
                                   : [type['name'] as String];
 
                               return GestureDetector(
                                 onTap: () {
-                                  setState(() => selectedCarType = type['name'] as String);
+                                  setState(
+                                    () => selectedCarType =
+                                        type['name'] as String,
+                                  );
                                 },
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 170),
                                   width: 85,
                                   height: 86,
-                                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                    horizontal: 6,
+                                  ),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15),
                                     color: selected
                                         ? Colors.white.withOpacity(0.13)
                                         : Colors.white.withOpacity(0.07),
                                     border: Border.all(
-                                      color: selected ? Colors.red : Colors.white.withOpacity(0.17),
+                                      color: selected
+                                          ? Colors.red
+                                          : Colors.white.withOpacity(0.17),
                                       width: selected ? 2 : 1,
                                     ),
                                   ),
@@ -110,7 +157,6 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                                         fit: BoxFit.contain,
                                       ),
                                       const SizedBox(height: 6),
-                                      // Text section
                                       isWheelchair
                                           ? Column(
                                               children: [
@@ -156,10 +202,15 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                           ),
                         ),
                         const SizedBox(height: 18),
+
                         // Price, Distance & Time
                         Row(
                           children: [
-                            Icon(Icons.attach_money, color: Colors.red, size: 19),
+                            Icon(
+                              Icons.attach_money,
+                              color: Colors.red,
+                              size: 19,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               "EST Price : \$40.00",
@@ -169,7 +220,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                               ),
                             ),
                             const SizedBox(width: 16),
-                            Icon(Icons.location_pin, color: Colors.red, size: 19),
+                            Icon(
+                              Icons.location_pin,
+                              color: Colors.red,
+                              size: 19,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               "EST distance : 12km",
@@ -183,7 +238,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(Icons.timer_rounded, color: Colors.red, size: 19),
+                            Icon(
+                              Icons.timer_rounded,
+                              color: Colors.red,
+                              size: 19,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               "EST Time : 34 - 50 mins",
@@ -195,17 +254,20 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                           ],
                         ),
                         const SizedBox(height: 10),
+
                         GlassInputField(
                           hint: "Apply Coupon Code (optional)",
                           icon: Icons.card_giftcard,
                         ),
                         const SizedBox(height: 10),
+
                         GlassDropdown(
                           value: paymentMethod,
                           items: paymentOptions,
                           onChanged: (v) => setState(() => paymentMethod = v!),
                         ),
                         const SizedBox(height: 18),
+
                         GlassButton(
                           text: "Book Ride",
                           type: GlassButtonType.primary,
@@ -215,10 +277,11 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
                             fontWeight: FontWeight.w700,
                           ),
                           onTap: () {
-                            Get.to(() => const BookingDetailsScreen());
+                            Get.to(() => const MyBookingsDetailScreen());
                           },
                         ),
                         const SizedBox(height: 16),
+
                         // Map image
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
@@ -240,20 +303,43 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
           ),
         ],
       ),
+
+      // ✅ BOTTOM NAVIGATION BAR
+      bottomNavigationBar: GlassBottomNav(
+        selectedIndex: _selectedNavIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedNavIndex = index;
+          });
+
+          // Handle navigation
+          if (index == 0) {
+            Get.offAllNamed('/home');
+          } else if (index == 1) {
+            Get.to(() => const MyBookingsScreen());
+          } else if (index == 2) {
+            Get.to(() => const NotificationsScreen());
+          } else if (index == 3) {
+            Get.to(() => const ChatScreen());
+          } else if (index == 4) {
+            Get.to(() => ProfileSidebar());
+          }
+        },
+      ),
     );
   }
 }
 
 /// DYNAMIC VERTICAL DOTS + ARROW MATCHING FIELD HEIGHT
 class _PickupDropFields extends StatelessWidget {
-  const _PickupDropFields({Key? key}) : super(key: key);
+  const _PickupDropFields({super.key});
 
   @override
   Widget build(BuildContext context) {
     const fieldHeight = 46.0;
     const spacing = 11.0;
     final totalHeight = fieldHeight * 2 + spacing;
-    final accentRed = Color(0xFFFF2B2B);
+    const accentRed = Color(0xFFFF2B2B);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,11 +354,9 @@ class _PickupDropFields extends StatelessWidget {
         Expanded(
           child: Column(
             children: [
-              GlassInputField(
-                  hint: "Your Location", icon: Icons.location_on),
+              GlassInputField(hint: "Your Location", icon: Icons.location_on),
               const SizedBox(height: spacing),
-              GlassInputField(
-                  hint: "Enter Your Destination", icon: Icons.flag),
+              GlassInputField(hint: "Enter Your Destination", icon: Icons.flag),
             ],
           ),
         ),
@@ -293,8 +377,8 @@ class VerticalDotsArrow extends StatelessWidget {
     this.dotColor = Colors.black,
     this.dashColor = Colors.grey,
     this.arrowColor = Colors.red,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -308,10 +392,7 @@ class VerticalDotsArrow extends StatelessWidget {
           Container(
             width: dotSize,
             height: dotSize,
-            decoration: BoxDecoration(
-              color: dotColor,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
           ),
           Expanded(
             child: DottedLine(
@@ -339,29 +420,31 @@ class DottedLine extends StatelessWidget {
     this.width = 2,
     this.dashHeight = 6,
     this.dashSpacing = 5,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final totalHeight = constraints.maxHeight;
-      final nDashes =
-          ((totalHeight + dashSpacing) / (dashHeight + dashSpacing)).floor();
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(nDashes, (_) {
-          return Container(
-            width: width,
-            height: dashHeight,
-            margin: EdgeInsets.only(bottom: dashSpacing),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(width / 2),
-            ),
-          );
-        }),
-      );
-    });
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final totalHeight = constraints.maxHeight;
+        final nDashes =
+            ((totalHeight + dashSpacing) / (dashHeight + dashSpacing)).floor();
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(nDashes, (_) {
+            return Container(
+              width: width,
+              height: dashHeight,
+              margin: EdgeInsets.only(bottom: dashSpacing),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(width / 2),
+              ),
+            );
+          }),
+        );
+      },
+    );
   }
 }
