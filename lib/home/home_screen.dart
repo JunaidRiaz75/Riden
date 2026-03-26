@@ -483,7 +483,7 @@ class YourLocationsContent extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: RidenColors.backgroundBase,
       builder: (context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.12,
@@ -494,16 +494,7 @@ class YourLocationsContent extends StatelessWidget {
           builder: (context, scrollController) {
             return Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    RidenColors.backgroundBase.withOpacity(0.98),
-                    RidenColors.backgroundBase.withOpacity(0.95),
-                    RidenColors.backgroundBase.withOpacity(0.92),
-                  ],
-                  stops: const [0.0, 0.6, 1.0],
-                ),
+                color: RidenColors.backgroundBase,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(28),
                   topRight: Radius.circular(28),
