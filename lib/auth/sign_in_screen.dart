@@ -189,29 +189,55 @@ class _SignInScreenState extends State<SignInScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(
-                            width: 60,
-                            height: 60,
-                            child: GlassButton(
-                              borderRadius: BorderRadius.circular(8),
-                              icon: Icons.email,
-                              iconColor: Colors.white,
-                              text: "",
-                              type: GlassButtonType.secondary,
-                              onTap: () {},
+                          // Google button
+                          GestureDetector(
+                            onTap: () {
+                              // Google sign‑in logic
+                            },
+                            child: Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.11),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.white12,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Center(
+                                child: Image.asset(
+                                  'assets/icons/google.png',
+                                  width: 30,
+                                  height: 30,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 18),
-                          SizedBox(
-                            width: 60,
-                            height: 60,
-                            child: GlassButton(
-                              borderRadius: BorderRadius.circular(8),
-                              icon: Icons.phone,
-                              iconColor: Colors.white,
-                              text: "",
-                              type: GlassButtonType.secondary,
-                              onTap: () {},
+                          // Facebook button
+                          GestureDetector(
+                            onTap: () {
+                              // Facebook sign‑in logic
+                            },
+                            child: Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.11),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.white12,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Center(
+                                child: Image.asset(
+                                  'assets/icons/facebook.png',
+                                  width: 30,
+                                  height: 30,
+                                ),
+                              ),
                             ),
                           ),
                         ],

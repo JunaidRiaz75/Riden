@@ -95,6 +95,8 @@ flutter:
     - assets/images/riden_light_logo.png
     - assets/images/riden_dark_logo.png
     - assets/logo.png
+    - assets/icons/google.png
+    - assets/icons/facebook.png
 
 
   #   - images/a_dot_ham.jpeg

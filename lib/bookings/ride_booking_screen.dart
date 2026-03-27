@@ -5,13 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/bookings/my_bookings_detail_screen.dart';
 import 'package:riden/bookings/my_bookings_screen.dart'; // Import the chat bottom sheet
 import 'package:riden/call_and_chat/chat_screen.dart';
+import 'package:riden/my_profile/profile_management.dart';
 import 'package:riden/notifications/notification.dart';
 import 'package:riden/theme/app_colors.dart';
 import 'package:riden/widgets/glass_bottom_nav.dart';
 import 'package:riden/widgets/glass_button.dart';
 import 'package:riden/widgets/glass_dropdown.dart';
 import 'package:riden/widgets/glass_input_field.dart';
-import 'package:riden/profile/profile_sidebar.dart';
 
 class RideBookingScreen extends StatefulWidget {
   const RideBookingScreen({super.key});

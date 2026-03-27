@@ -8,10 +8,10 @@ import 'package:riden/auth/sign_in_screen.dart';
 import 'package:riden/theme/app_colors.dart';
 import 'package:riden/widgets/glass_button.dart';
 import 'package:riden/widgets/glass_field.dart';
-// Import your Splash gradient widget, assuming this exists:
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
@@ -24,26 +24,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _selectedGender = 'Male';
   final List<String> _genders = ['Male', 'Female', 'Other'];
 
+  // Country code dropdown data
+  final List<Map<String, String>> _countryList = [
+    {'code': '+1', 'flag': '🇨🇦', 'name': 'Canada'},
+    {'code': '+91', 'flag': '🇮🇳', 'name': 'India'},
+    {'code': '+44', 'flag': '🇬🇧', 'name': 'UK'},
+    {'code': '+61', 'flag': '🇦🇺', 'name': 'Australia'},
+    {'code': '+92', 'flag': '🇵🇰', 'name': 'Pakistan'},
+  ];
+  String _selectedCountryCode = '+1';
+  String _selectedCountryFlag = '🇨🇦';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // --- Use your splash dark gradient background ---
           const RidenDarkBackground(),
-          // Optionally a vignette or dark overlay for extra depth. Uncomment if needed.
-          // Positioned.fill(
-          //   child: DecoratedBox(
-          //     decoration: BoxDecoration(
-          //       gradient: RadialGradient(
-          //         center: const Alignment(0.0, -0.15),
-          //         radius: 1.1,
-          //         colors: const [Color(0x0011172B), Color(0xB30A1024)],
-          //         stops: const [0.55, 1.0],
-          //       ),
-          //     ),
-          //   ),
-          // ),
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
@@ -62,6 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
+
                     // Name
                     Text(
                       'Name*',
@@ -73,12 +71,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const SizedBox(height: 6),
                     GlassField(
                       child: TextFormField(
+                        textAlign: TextAlign.start,
                         decoration: InputDecoration(
                           hintText: "Enter your name",
                           border: InputBorder.none,
                           hintStyle: GoogleFonts.poppins(
                             color: Colors.white54,
                             fontSize: 15,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 12,
                           ),
                         ),
                         style: GoogleFonts.poppins(
@@ -88,6 +91,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     const SizedBox(height: 18),
+
                     // Email
                     Text(
                       'Email*',
@@ -99,12 +103,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const SizedBox(height: 6),
                     GlassField(
                       child: TextFormField(
+                        textAlign: TextAlign.start,
                         decoration: InputDecoration(
                           hintText: "Enter your email",
                           border: InputBorder.none,
                           hintStyle: GoogleFonts.poppins(
                             color: Colors.white54,
                             fontSize: 15,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 12,
                           ),
                         ),
                         keyboardType: TextInputType.emailAddress,
@@ -115,7 +124,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     const SizedBox(height: 18),
-                    // Phone Number with flag
+
+                    // Phone Number with country code dropdown
                     Text(
                       'Phone Number*',
                       style: GoogleFonts.poppins(
@@ -127,40 +137,72 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     GlassField(
                       child: Row(
                         children: [
+                          // Country Code Dropdown
                           Container(
-                            width: 40,
-                            height: 40,
                             margin: const EdgeInsets.only(left: 8),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Image.asset(
-                              "assets/images/canada_flag.png",
-                              width: 28,
-                              height: 28,
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: DropdownButton<String>(
+                              value: _selectedCountryCode,
+                              dropdownColor: const Color(0xFF2a2a3a),
+                              underline: const SizedBox(),
+                              icon: const Icon(
+                                Icons.arrow_drop_down,
+                                color: Colors.white,
+                              ),
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              items: _countryList.map((country) {
+                                return DropdownMenuItem<String>(
+                                  value: country['code'],
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        country['flag']!,
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(country['code']!),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (newCode) {
+                                if (newCode != null) {
+                                  setState(() {
+                                    _selectedCountryCode = newCode;
+                                    final selected = _countryList.firstWhere(
+                                      (c) => c['code'] == newCode,
+                                    );
+                                    _selectedCountryFlag = selected['flag']!;
+                                  });
+                                }
+                              },
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            "+1",
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
+                          // Divider
+                          Container(
+                            width: 1,
+                            height: 28,
+                            color: Colors.white24,
                           ),
                           const SizedBox(width: 8),
+                          // Phone number input
                           Expanded(
                             child: TextFormField(
+                              textAlign: TextAlign.start,
                               decoration: InputDecoration(
-                                hintText: "00000000",
+                                hintText: "Phone number",
                                 border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
                                 hintStyle: GoogleFonts.poppins(
                                   color: Colors.white54,
                                   fontSize: 15,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                  horizontal: 8,
                                 ),
                               ),
                               keyboardType: TextInputType.phone,
@@ -175,6 +217,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     const SizedBox(height: 18),
+
                     // Gender dropdown
                     Text(
                       'Gender*',
@@ -188,7 +231,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: _selectedGender,
-                          dropdownColor: const Color(0xFF23232F), // dark menu
+                          dropdownColor: const Color(0xFF2a2a3a),
                           items: _genders
                               .map(
                                 (g) => DropdownMenuItem(
@@ -196,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   child: Text(
                                     g,
                                     style: GoogleFonts.poppins(
-                                      fontSize: 17,
+                                      fontSize: 15,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -208,13 +251,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           icon: const Icon(
                             Icons.arrow_drop_down,
                             color: Colors.white,
-                            size: 28,
                           ),
                           isExpanded: true,
                         ),
                       ),
                     ),
                     const SizedBox(height: 18),
+
                     // Password
                     Text(
                       'Password*',
@@ -227,6 +270,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     GlassField(
                       child: TextFormField(
                         obscureText: _obscurePassword,
+                        textAlign: TextAlign.start,
                         decoration: InputDecoration(
                           hintText: "Enter your password",
                           border: InputBorder.none,
@@ -245,6 +289,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               () => _obscurePassword = !_obscurePassword,
                             ),
                           ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 12,
+                          ),
                         ),
                         style: GoogleFonts.poppins(
                           fontSize: 15,
@@ -253,6 +301,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     const SizedBox(height: 18),
+
                     // Confirm Password
                     Text(
                       'Confirm Password*',
@@ -265,6 +314,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     GlassField(
                       child: TextFormField(
                         obscureText: _obscureConfirm,
+                        textAlign: TextAlign.start,
                         decoration: InputDecoration(
                           hintText: "Enter your confirm password",
                           border: InputBorder.none,
@@ -283,6 +333,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               () => _obscureConfirm = !_obscureConfirm,
                             ),
                           ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 12,
+                          ),
                         ),
                         style: GoogleFonts.poppins(
                           fontSize: 15,
@@ -291,6 +345,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
+
                     // Keep me logged in
                     Row(
                       children: [
@@ -311,6 +366,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
+
                     // Terms
                     Padding(
                       padding: const EdgeInsets.only(left: 4),
@@ -350,7 +406,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     const SizedBox(height: 22),
-                    // Sign in button glassy - RED
+
+                    // Sign up button
                     GlassButton(
                       text: "Sign up",
                       onTap: () {
@@ -367,6 +424,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       type: GlassButtonType.primary,
                     ),
                     const SizedBox(height: 18),
+
                     // Or divider
                     Row(
                       children: [
@@ -382,38 +440,66 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    // Social & phone glassy buttons
+
+                    // Google & Facebook buttons (replacing email & phone)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: GlassButton(
-                            borderRadius: BorderRadius.circular(8),
-                            icon: Icons.email,
-                            text: "",
-                            iconColor: Colors.white,
-                            type: GlassButtonType.secondary,
-                            onTap: () {},
+                        // Google button
+                        GestureDetector(
+                          onTap: () {
+                            // Google sign‑in logic
+                          },
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.11),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Colors.white12,
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                'assets/icons/google.png',
+                                width: 30,
+                                height: 30,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 18),
-                        SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: GlassButton(
-                            borderRadius: BorderRadius.circular(8),
-                            icon: Icons.phone,
-                            text: "",
-                            iconColor: Colors.white,
-                            type: GlassButtonType.secondary,
-                            onTap: () {},
+                        // Facebook button
+                        GestureDetector(
+                          onTap: () {
+                            // Facebook sign‑in logic
+                          },
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.11),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Colors.white12,
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                'assets/icons/facebook.png',
+                                width: 30,
+                                height: 30,
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 22),
+
                     // Already have account
                     Center(
                       child: RichText(
