@@ -1,4 +1,6 @@
-// about_us_bottom_sheet.dart - COMPLETE FIXED VERSION
+// about_us_bottom_sheet.dart
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/theme/app_colors.dart';
@@ -45,153 +47,130 @@ class AboutUsBottomSheet extends StatelessWidget {
       },
     ];
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            RidenColors.backgroundBase.withOpacity(0.98),
-            RidenColors.backgroundBase.withOpacity(0.95),
-            RidenColors.backgroundBase.withOpacity(0.92),
-          ],
-          stops: const [0.0, 0.6, 1.0],
-        ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 25,
-            offset: const Offset(0, -5),
-            spreadRadius: 0,
-          ),
-        ],
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(28),
+        topRight: Radius.circular(28),
       ),
-      child: Column(
+      child: Stack(
         children: [
-          // Drag Handle
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Center(
-              child: Container(
-                width: 45,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(2.5),
+          // ── Same dark gradient as Splash ──────────────────
+          const Positioned.fill(child: RidenDarkBackground()),
+
+          // ── Sheet content ─────────────────────────────────
+          Column(
+            children: [
+              // Drag Handle
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Center(
+                  child: Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2.5),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          // Content - FIXED STRUCTURE
-          Expanded(
-            child: SingleChildScrollView(
-              controller: scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 16,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title
-                    const Text(
-                      "About us",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
                     ),
-                    const SizedBox(height: 24),
-                    // Menu Items
-                    ...menuItems.map(
-                      (item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: GlassyAboutRow(
-                          icon: item['icon'] as IconData,
-                          label: item['label'] as String,
-                          onTap: item['onTap'] as VoidCallback,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Text(
+                              'About Us',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                        const SizedBox(height: 24),
+                        // Menu Items
+                        ...menuItems.map(
+                          (item) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: GlassyAboutRow(
+                              icon: item['icon'] as IconData,
+                              label: item['label'] as String,
+                              onTap: item['onTap'] as VoidCallback,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                      ],
                     ),
-                    const SizedBox(height: 30),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  void _openFAQBottomSheet(BuildContext context) {
+  void _openSheet(
+    BuildContext context,
+    Widget Function(ScrollController) builder,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          snap: true,
-          snapSizes: const [0.5, 0.85, 0.95],
-          builder: (context, scrollController) {
-            return FAQsBottomSheet(scrollController: scrollController);
-          },
-        );
-      },
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        snap: true,
+        snapSizes: const [0.5, 0.85, 0.95],
+        builder: (context, sc) => builder(sc),
+      ),
     );
   }
 
-  void _openLegalBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          snap: true,
-          snapSizes: const [0.5, 0.85, 0.95],
-          builder: (context, scrollController) {
-            return LegalBottomSheet(scrollController: scrollController);
-          },
-        );
-      },
-    );
-  }
+  void _openFAQBottomSheet(BuildContext context) =>
+      _openSheet(context, (sc) => FAQsBottomSheet(scrollController: sc));
 
-  void _openTermsBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          snap: true,
-          snapSizes: const [0.5, 0.85, 0.95],
-          builder: (context, scrollController) {
-            return TermsConditionsBottomSheet(
-              scrollController: scrollController,
-            );
-          },
-        );
-      },
-    );
-  }
+  void _openLegalBottomSheet(BuildContext context) =>
+      _openSheet(context, (sc) => LegalBottomSheet(scrollController: sc));
+
+  void _openTermsBottomSheet(BuildContext context) => _openSheet(
+    context,
+    (sc) => TermsConditionsBottomSheet(scrollController: sc),
+  );
 }
 
 class GlassyAboutRow extends StatelessWidget {

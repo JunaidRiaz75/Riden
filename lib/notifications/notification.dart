@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:riden/bookings/my_bookings_screen.dart'; // Import the chat bottom sheet
 import 'package:riden/call_and_chat/chat_screen.dart';
-import 'package:riden/my_profile/profile_management.dart';
+import 'package:riden/my_profile/profile_setting/profile_settings_bottom_sheet.dart';
 import 'package:riden/theme/app_colors.dart';
 import 'package:riden/widgets/glass_bottom_nav.dart';
 
@@ -226,7 +226,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             // Open Chat as Bottom Sheet instead of using Get.to()
             _openChatBottomSheet(context);
           } else if (index == 4) {
-            Get.to(() => ProfileSidebar());
+            Get.to(
+              () => ProfileSettingsBottomSheet(
+                scrollController: ScrollController(),
+              ),
+            );
           }
         },
       ),

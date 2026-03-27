@@ -1,177 +1,156 @@
+// complaint_view_bottom_sheet.dart
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/theme/app_colors.dart';
 
-class ComplaintViewScreen extends StatelessWidget {
+class ComplaintViewBottomSheet extends StatelessWidget {
+  final ScrollController scrollController;
   final Map<String, dynamic> ticketData;
-  const ComplaintViewScreen({required this.ticketData, Key? key}) : super(key: key);
+
+  const ComplaintViewBottomSheet({
+    required this.scrollController,
+    required this.ticketData,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Extracting data from ticketData or providing defaults
     final String type = ticketData['type'] ?? "Complaint Type";
     final String bookingId = ticketData['bookingId'] ?? "N/A";
     final String date = ticketData['date'] ?? "25 May, 2025";
     final String time = ticketData['time'] ?? "09:00pm";
     final String description = ticketData['desc'] ?? "No description provided.";
-    final List<String> complaintImages = List<String>.from(ticketData['images'] ?? []);
-    
+    final List<String> complaintImages = List<String>.from(
+      ticketData['images'] ?? [],
+    );
     final String? adminReply = ticketData['adminReply'];
     final String? adminReplyDate = ticketData['adminReplyDate'];
     final String? adminReplyTime = ticketData['adminReplyTime'];
-    final List<String> adminReplyImages = List<String>.from(ticketData['adminReplyImages'] ?? []);
+    final List<String> adminReplyImages = List<String>.from(
+      ticketData['adminReplyImages'] ?? [],
+    );
 
-    return Scaffold(
-      body: SizedBox.expand(
-        child: Stack(
-          children: [
-            const RidenDarkBackground(),
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 22),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        const SizedBox(width: 7),
-                          Text(
-                            type,
-                            style: GoogleFonts.audiowide(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18,
-                              letterSpacing: 0.8,
-                            ),
-                          ),
-                      ],
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(28),
+        topRight: Radius.circular(28),
+      ),
+      child: Stack(
+        children: [
+          // ── Dark gradient background ──────────────────────
+          const Positioned.fill(child: RidenDarkBackground()),
+
+          // ── Sheet content ─────────────────────────────────
+          Column(
+            children: [
+              // Drag Handle
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Center(
+                  child: Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2.5),
                     ),
-                    const SizedBox(height: 22),
-                    
-                    // Complaint Info Section
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.21),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            "Booking ID : $bookingId",
-                            style: GoogleFonts.poppins(
-                              color: Colors.black87,
-                              fontSize: 11.8,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          date,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white70,
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          time,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white70,
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      description,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 13.7,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    if (complaintImages.isNotEmpty)
+                  ),
+                ),
+              ),
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 16,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header
                       Row(
                         children: [
-                          ...complaintImages.map((path) =>
-                            Padding(
-                              padding: const EdgeInsets.only(right: 7),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.asset(
-                                  path,
-                                  width: 77,
-                                  height: 53,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Container(
-                                    width: 77,
-                                    height: 53,
-                                    color: Colors.white10,
-                                    child: const Icon(Icons.broken_image, color: Colors.white30, size: 20),
-                                  ),
-                                ),
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              type,
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 17,
+                                letterSpacing: 0.5,
                               ),
                             ),
                           ),
                         ],
                       ),
+                      const SizedBox(height: 22),
 
-                    if (adminReply != null) ...[
-                      const SizedBox(height: 23),
-                      // Divider
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        width: double.infinity,
-                        height: 1,
-                        color: Colors.white30,
-                      ),
-                      
-                      // Replies Section
+                      // Booking ID + date/time row
                       Row(
                         children: [
-                          Text(
-                            "Replies from support",
-                            style: GoogleFonts.poppins(
-                              color: Colors.red,
-                              fontSize: 15.1,
-                              fontWeight: FontWeight.w600,
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 4,
+                              horizontal: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.21),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              "Booking ID : $bookingId",
+                              style: GoogleFonts.poppins(
+                                color: Colors.black87,
+                                fontSize: 11.8,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                           const Spacer(),
-                          if (adminReplyDate != null)
-                            Text(
-                              adminReplyDate,
-                              style: GoogleFonts.poppins(
-                                color: Colors.white70,
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          Text(
+                            date,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white70,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w500,
                             ),
+                          ),
                           const SizedBox(width: 8),
-                          if (adminReplyTime != null)
-                            Text(
-                              adminReplyTime,
-                              style: GoogleFonts.poppins(
-                                color: Colors.white70,
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          Text(
+                            time,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white70,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w500,
                             ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 14),
+
+                      // Description
                       Text(
-                        adminReply,
+                        description,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 13.7,
@@ -179,54 +158,143 @@ class ComplaintViewScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      if (adminReplyImages.isNotEmpty)
+
+                      // Complaint images
+                      if (complaintImages.isNotEmpty)
                         Row(
-                          children: [
-                            ...adminReplyImages.map((path) =>
-                              Padding(
-                                padding: const EdgeInsets.only(right: 7),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.asset(
-                                    path,
-                                    width: 77,
-                                    height: 53,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => Container(
+                          children: complaintImages
+                              .map(
+                                (path) => Padding(
+                                  padding: const EdgeInsets.only(right: 7),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.asset(
+                                      path,
                                       width: 77,
                                       height: 53,
-                                      color: Colors.white10,
-                                      child: const Icon(Icons.broken_image, color: Colors.white30, size: 20),
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        width: 77,
+                                        height: 53,
+                                        color: Colors.white10,
+                                        child: const Icon(
+                                          Icons.broken_image,
+                                          color: Colors.white30,
+                                          size: 20,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
+                              )
+                              .toList(),
+                        ),
+
+                      // Admin reply section
+                      if (adminReply != null) ...[
+                        const SizedBox(height: 23),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          width: double.infinity,
+                          height: 1,
+                          color: Colors.white30,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "Replies from support",
+                              style: GoogleFonts.poppins(
+                                color: Colors.red,
+                                fontSize: 15.1,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
+                            const Spacer(),
+                            if (adminReplyDate != null)
+                              Text(
+                                adminReplyDate,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white70,
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            const SizedBox(width: 8),
+                            if (adminReplyTime != null)
+                              Text(
+                                adminReplyTime,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white70,
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                           ],
                         ),
-                    ],
+                        const SizedBox(height: 14),
+                        Text(
+                          adminReply,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 13.7,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (adminReplyImages.isNotEmpty)
+                          Row(
+                            children: adminReplyImages
+                                .map(
+                                  (path) => Padding(
+                                    padding: const EdgeInsets.only(right: 7),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.asset(
+                                        path,
+                                        width: 77,
+                                        height: 53,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Container(
+                                          width: 77,
+                                          height: 53,
+                                          color: Colors.white10,
+                                          child: const Icon(
+                                            Icons.broken_image,
+                                            color: Colors.white30,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                      ],
 
-                    const SizedBox(height: 28),
-                    // Reply button
-                    GlassyReplyButton(
-                      onTap: () {
-                        // Reply action here
-                      },
-                    ),
-                  ],
+                      const SizedBox(height: 28),
+
+                      // Reply button
+                      GlassyReplyButton(onTap: () {}),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
+// ── GlassyReplyButton ───────────────────────────────────────────────
+
 class GlassyReplyButton extends StatelessWidget {
   final VoidCallback onTap;
-  const GlassyReplyButton({required this.onTap, Key? key}) : super(key: key);
+
+  const GlassyReplyButton({required this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +313,7 @@ class GlassyReplyButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.reply, color: Colors.white, size: 18),
+              const Icon(Icons.reply, color: Colors.white, size: 18),
               const SizedBox(width: 7),
               Text(
                 "Reply",

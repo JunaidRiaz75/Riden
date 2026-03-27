@@ -1,9 +1,14 @@
+// in_app_wallet_bottom_sheet.dart
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/theme/app_colors.dart';
 
-class InAppWalletScreen extends StatelessWidget {
-  const InAppWalletScreen({super.key});
+class InAppWalletBottomSheet extends StatelessWidget {
+  final ScrollController scrollController;
+
+  const InAppWalletBottomSheet({required this.scrollController, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,133 +39,184 @@ class InAppWalletScreen extends StatelessWidget {
       },
     ];
 
-    return Scaffold(
-      body: SizedBox.expand(
-        child: Stack(
-          children: [
-            const RidenDarkBackground(),
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Back arrow + title
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 22),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              "In App Wallet",
-                              style: GoogleFonts.audiowide(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 22,
-                                letterSpacing: 1.1,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 36), // Fills space for symmetry
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(28),
+        topRight: Radius.circular(28),
+      ),
+      child: Stack(
+        children: [
+          // ── Dark gradient background ──────────────────────
+          const Positioned.fill(child: RidenDarkBackground()),
 
-                    // Wallet Card
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 18),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(18),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.red.withOpacity(0.13),
-                            blurRadius: 15,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+          // ── Sheet content ─────────────────────────────────
+          Column(
+            children: [
+              // Drag Handle
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Center(
+                  child: Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2.5),
+                    ),
+                  ),
+                ),
+              ),
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 18,
+                    horizontal: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header
+                      Row(
                         children: [
-                          Text("Available Balance",
-                              style: GoogleFonts.poppins(
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_ios_new_rounded,
                                 color: Colors.white,
-                                fontSize: 15.7,
-                                fontWeight: FontWeight.w500,
-                              )),
-                          const SizedBox(height: 6),
-                          Text(
-                            "\$45,900.00",
-                            style: GoogleFonts.audiowide(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 24.5,
+                                size: 20,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            height: 30,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                elevation: 0,
-                              ),
-                              onPressed: () {
-                                // Add funds logic
-                              },
+                          Expanded(
+                            child: Center(
                               child: Text(
-                                "Add Funds",
+                                "In App Wallet",
                                 style: GoogleFonts.poppins(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14.5,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 20,
+                                  letterSpacing: 0.8,
                                 ),
                               ),
                             ),
                           ),
+                          const SizedBox(width: 36),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 30),
+                      const SizedBox(height: 20),
 
-                    // Transaction history header
-                    Text(
-                      "Transaction History",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 17,
-                        letterSpacing: 0.5,
+                      // Wallet Card
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 26,
+                          horizontal: 18,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.red.withOpacity(0.3),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Available Balance",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 15.7,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              "\$45,900.00",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 24.5,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            SizedBox(
+                              height: 32,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.red,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                onPressed: () {},
+                                child: Text(
+                                  "Add Funds",
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14.5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 15),
+                      const SizedBox(height: 28),
 
-                    // Transactions
-                    ...transactions.map((tx) => WalletTransactionTile(
-                      date: tx['date'],
-                      bookingId: tx['bookingId'],
-                      logo: tx['logo'],
-                      card: tx['card'],
-                      number: tx['number'],
-                      amount: tx['amount'],
-                    )),
-                  ],
+                      // Transaction history header
+                      Text(
+                        "Transaction History",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 17,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+
+                      // Transactions
+                      ...transactions.map(
+                        (tx) => WalletTransactionTile(
+                          date: tx['date'],
+                          bookingId: tx['bookingId'],
+                          logo: tx['logo'],
+                          card: tx['card'],
+                          number: tx['number'],
+                          amount: tx['amount'],
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
+
+// ── WalletTransactionTile ───────────────────────────────────────────
 
 class WalletTransactionTile extends StatelessWidget {
   final String date;
@@ -177,8 +233,8 @@ class WalletTransactionTile extends StatelessWidget {
     required this.card,
     required this.number,
     required this.amount,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -192,14 +248,16 @@ class WalletTransactionTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Date
           Row(
             children: [
-              Text(date,
-                  style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13.4)),
+              Text(
+                date,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13.4,
+                ),
+              ),
               const Spacer(),
               Text(
                 "\$${amount.toStringAsFixed(2)}",
@@ -208,7 +266,7 @@ class WalletTransactionTile extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   fontSize: 16.3,
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 4),
@@ -225,18 +283,22 @@ class WalletTransactionTile extends StatelessWidget {
             children: [
               Image.asset(logo, width: 28, height: 28),
               const SizedBox(width: 6),
-              Text(card,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13.2,
-                  )),
+              Text(
+                card,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13.2,
+                ),
+              ),
               const SizedBox(width: 6),
-              Text(number,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: 12.1,
-                  )),
+              Text(
+                number,
+                style: GoogleFonts.poppins(
+                  color: Colors.white70,
+                  fontSize: 12.1,
+                ),
+              ),
             ],
           ),
         ],

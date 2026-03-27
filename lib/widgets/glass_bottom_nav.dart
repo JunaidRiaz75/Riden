@@ -1,10 +1,12 @@
 // widgets/glass_bottom_nav.dart
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/bookings/my_bookings_screen.dart'; // Import the chat bottom sheet
 import 'package:riden/call_and_chat/chat_screen.dart';
-import 'package:riden/my_profile/profile_management.dart';
+import 'package:riden/my_profile/profilesheet.dart';
 
 class GlassBottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -90,7 +92,10 @@ class GlassBottomNav extends StatelessWidget {
             onTap: () {
               onTap(4);
               if (selectedIndex != 4) {
-                Get.to(() => ProfileSidebar());
+                Get.to(
+                  () =>
+                      ProfileBottomSheet(scrollController: ScrollController()),
+                );
               }
             },
           ),
@@ -111,7 +116,6 @@ class _NavIcon extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.selected = false,
-    super.key,
   });
 
   @override

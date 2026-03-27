@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element_parameter
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,11 +27,11 @@ class MyBookingsScreen extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "My Bookings",
-                      style: GoogleFonts.audiowide(
-                        fontSize: 24,
+                      style: GoogleFonts.poppins(
+                        fontSize: 22,
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
                       ),
                     ),
                   ),
@@ -45,7 +47,7 @@ class MyBookingsScreen extends StatelessWidget {
                       children: [
                         _BookingSection(
                           onTap: () {
-                            Get.to(() => MyBookingsDetailScreen());
+                            Get.to(() => MyBookingsDetailScreen(booking: {}));
                           },
                           title: "Ongoing Bookings",
                           isOngoing: true,
@@ -67,7 +69,7 @@ class MyBookingsScreen extends StatelessWidget {
                         const SizedBox(height: 22),
                         _BookingSection(
                           onTap: () {
-                            Get.to(() => MyBookingsDetailScreen());
+                            Get.to(() => MyBookingsDetailScreen(booking: {}));
                           },
                           title: "Past Bookings",
                           isOngoing: false,

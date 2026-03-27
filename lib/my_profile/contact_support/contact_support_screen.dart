@@ -1,4 +1,6 @@
 // contact_support_bottom_sheet.dart
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/my_profile/contact_support/instant_support_screen.dart';
@@ -18,211 +20,178 @@ class ContactSupportBottomSheet extends StatefulWidget {
 class _ContactSupportBottomSheetState extends State<ContactSupportBottomSheet> {
   int selected = 0;
 
-  void _onSelect(int idx, BuildContext context) {
-    setState(() {
-      selected = idx;
-    });
+  void _openSheet(
+    BuildContext context,
+    Widget Function(ScrollController) builder,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        snap: true,
+        snapSizes: const [0.5, 0.85, 0.95],
+        builder: (context, sc) => builder(sc),
+      ),
+    );
+  }
 
-    if (idx == 1) {
-      _openSubmitComplaintBottomSheet(context);
-    }
-    if (idx == 2) {
-      _openInstantSupportBottomSheet(context);
-    }
+  void _onSelect(int idx, BuildContext context) {
+    setState(() => selected = idx);
+
     if (idx == 0) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
           backgroundColor: RidenColors.backgroundBase,
-          title: const Text(
+          title: Text(
             "Emergency Call",
-            style: TextStyle(color: Colors.white),
+            style: GoogleFonts.poppins(color: Colors.white),
           ),
-          content: const Text(
+          content: Text(
             "This would call 911.",
-            style: TextStyle(color: Colors.white70),
+            style: GoogleFonts.poppins(color: Colors.white70),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text("OK", style: TextStyle(color: Colors.red)),
+              child: Text("OK", style: GoogleFonts.poppins(color: Colors.red)),
             ),
           ],
         ),
       );
+    } else if (idx == 1) {
+      _openSheet(
+        context,
+        (sc) => SubmitComplaintTicketBottomSheet(scrollController: sc),
+      );
+    } else if (idx == 2) {
+      _openSheet(
+        context,
+        (sc) => InstantSupportBottomSheet(scrollController: sc),
+      );
     }
-  }
-
-  void _openSubmitComplaintBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          snap: true,
-          snapSizes: const [0.5, 0.85, 0.95],
-          builder: (context, scrollController) {
-            return SubmitComplaintTicketBottomSheet(
-              scrollController: scrollController,
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _openInstantSupportBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          snap: true,
-          snapSizes: const [0.5, 0.85, 0.95],
-          builder: (context, scrollController) {
-            return InstantSupportBottomSheet(
-              scrollController: scrollController,
-            );
-          },
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            RidenColors.backgroundBase.withOpacity(0.98),
-            RidenColors.backgroundBase.withOpacity(0.95),
-            RidenColors.backgroundBase.withOpacity(0.92),
-          ],
-          stops: const [0.0, 0.6, 1.0],
-        ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 25,
-            offset: const Offset(0, -5),
-            spreadRadius: 0,
-          ),
-        ],
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(28),
+        topRight: Radius.circular(28),
       ),
-      child: Column(
+      child: Stack(
         children: [
-          // Drag Handle
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Center(
-              child: Container(
-                width: 45,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(2.5),
+          // ── Dark gradient background ──────────────────────
+          const Positioned.fill(child: RidenDarkBackground()),
+
+          // ── Sheet content ─────────────────────────────────
+          Column(
+            children: [
+              // Drag Handle
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Center(
+                  child: Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2.5),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          // Content
-          Expanded(
-            child: SingleChildScrollView(
-              controller: widget.scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 16,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Header with Back Button
-                    Row(
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: widget.scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              shape: BoxShape.circle,
+                        // Header
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color: Colors.white,
-                              size: 20,
+                            const Spacer(),
+                            Text(
+                              "Contact Support",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 19,
+                                letterSpacing: 0.6,
+                              ),
                             ),
-                          ),
+                            const Spacer(),
+                            const SizedBox(width: 36),
+                          ],
                         ),
-                        const Spacer(),
-                        Text(
-                          "Contact Support",
-                          style: GoogleFonts.audiowide(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 19,
-                            letterSpacing: 0.6,
-                          ),
+                        const SizedBox(height: 34),
+
+                        // 911 Call
+                        GlassyContactButton(
+                          icon: Icons.call,
+                          label: "911 Call",
+                          highlight: selected == 0,
+                          onTap: () => _onSelect(0, context),
                         ),
-                        const Spacer(),
-                        const SizedBox(width: 32),
+                        const SizedBox(height: 22),
+
+                        // Submit Complaint Ticket
+                        GlassyContactButton(
+                          icon: Icons.confirmation_number_rounded,
+                          label: "Submit Complaint Ticket",
+                          highlight: selected == 1,
+                          onTap: () => _onSelect(1, context),
+                        ),
+                        const SizedBox(height: 22),
+
+                        // Instant Support
+                        GlassyContactButton(
+                          icon: Icons.help_outline_rounded,
+                          label: "Instant Support",
+                          highlight: selected == 2,
+                          onTap: () => _onSelect(2, context),
+                        ),
+                        const SizedBox(height: 30),
                       ],
                     ),
-                    const SizedBox(height: 34),
-
-                    // 911 Call Button
-                    GlassyContactButton(
-                      icon: Icons.call,
-                      label: "911 Call",
-                      highlight: selected == 0,
-                      onTap: () => _onSelect(0, context),
-                    ),
-                    const SizedBox(height: 22),
-
-                    // Submit Complaint Ticket Button
-                    GlassyContactButton(
-                      icon: Icons.confirmation_number_rounded,
-                      label: "Submit Complaint Ticket",
-                      highlight: selected == 1,
-                      onTap: () => _onSelect(1, context),
-                    ),
-                    const SizedBox(height: 22),
-
-                    // Instant Support Button
-                    GlassyContactButton(
-                      icon: Icons.help_outline_rounded,
-                      label: "Instant Support",
-                      highlight: selected == 2,
-                      onTap: () => _onSelect(2, context),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ],
       ),
     );
   }
 }
+
+// ── GlassyContactButton ─────────────────────────────────────────────
 
 class GlassyContactButton extends StatelessWidget {
   final IconData icon;

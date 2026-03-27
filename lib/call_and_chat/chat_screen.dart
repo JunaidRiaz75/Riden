@@ -1,4 +1,6 @@
 // chat_bottom_sheet.dart
+// ignore_for_file: use_super_parameters, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
@@ -61,168 +63,170 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            RidenColors.backgroundBase.withOpacity(0.98),
-            RidenColors.backgroundBase.withOpacity(0.95),
-            RidenColors.backgroundBase.withOpacity(0.92),
-          ],
-          stops: const [0.0, 0.6, 1.0],
-        ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 25,
-            offset: const Offset(0, -5),
-            spreadRadius: 0,
-          ),
-        ],
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(28),
+        topRight: Radius.circular(28),
       ),
-      child: Column(
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          // Drag Handle
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Center(
-              child: Container(
-                width: 45,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(2.5),
+          // ── Dark gradient background (same as Splash) ──
+          const RidenDarkBackground(),
+
+          // ── Sheet content on top ──
+          Column(
+            children: [
+              // Drag Handle
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Center(
+                  child: Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2.5),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          // Chat Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
+
+              // Chat Header
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  "Chat Support",
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Divider(color: Colors.white24, height: 1),
-          // Chat messages
-          Expanded(
-            child: ListView.builder(
-              controller: widget.scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              itemCount: messages.length,
-              reverse: false,
-              itemBuilder: (context, index) {
-                final msg = messages[index];
-                final isSent = msg['type'] == 'sent';
-                return Column(
-                  crossAxisAlignment: isSent
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    if (!isSent)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Avatar for received message
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: CircleAvatar(
-                              radius: 17,
-                              backgroundColor: Colors.red.withOpacity(0.2),
-                              child: const Icon(
-                                Icons.support_agent,
-                                color: Colors.red,
-                                size: 18,
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      "Chat Support",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const Divider(color: Colors.white24, height: 1),
+
+              // Chat messages
+              Expanded(
+                child: ListView.builder(
+                  controller: widget.scrollController,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  itemCount: messages.length,
+                  reverse: false,
+                  itemBuilder: (context, index) {
+                    final msg = messages[index];
+                    final isSent = msg['type'] == 'sent';
+                    return Column(
+                      crossAxisAlignment: isSent
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        if (!isSent)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: CircleAvatar(
+                                  radius: 17,
+                                  backgroundColor: Colors.red.withOpacity(0.2),
+                                  child: const Icon(
+                                    Icons.support_agent,
+                                    color: Colors.red,
+                                    size: 18,
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 7),
+                              Flexible(
+                                child: GlassMessageBubble(
+                                  text: msg['text'],
+                                  isSent: false,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 7),
-                          Flexible(
+                        if (isSent)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 38,
+                              top: 2,
+                              right: 2,
+                            ),
                             child: GlassMessageBubble(
                               text: msg['text'],
-                              isSent: false,
+                              isSent: true,
                             ),
                           ),
-                        ],
-                      ),
-                    if (isSent)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 38, top: 2, right: 2),
-                        child: GlassMessageBubble(
-                          text: msg['text'],
-                          isSent: true,
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 46,
+                            right: 12,
+                            top: 2,
+                            bottom: 10,
+                          ),
+                          child: Text(
+                            msg['time'],
+                            style: GoogleFonts.poppins(
+                              color: Colors.white60,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 46,
-                        right: 12,
-                        top: 2,
-                        bottom: 10,
-                      ),
-                      child: Text(
-                        msg['time'],
-                        style: GoogleFonts.poppins(
-                          color: Colors.white60,
-                          fontSize: 12,
-                        ),
-                      ),
-                    )
-                  ],
-                );
-              },
-            ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+
+              // Input Area
+              GlassInputArea(controller: _controller, onSend: _sendMessage),
+              const SizedBox(height: 12),
+            ],
           ),
-          // Input Area
-          GlassInputArea(
-            controller: _controller,
-            onSend: _sendMessage,
-          ),
-          const SizedBox(height: 12),
         ],
       ),
     );
   }
 }
 
+// ─────────────────────────────────────────────
+// MESSAGE BUBBLE
+// ─────────────────────────────────────────────
 class GlassMessageBubble extends StatelessWidget {
   final String text;
   final bool isSent;
 
   const GlassMessageBubble({required this.text, required this.isSent, Key? key})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -235,9 +239,7 @@ class GlassMessageBubble extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: isSent
-              ? Colors.transparent
-              : Colors.white.withOpacity(0.09),
+          color: isSent ? Colors.transparent : Colors.white.withOpacity(0.09),
           border: isSent
               ? Border.all(color: Colors.redAccent, width: 1.5)
               : null,
@@ -252,16 +254,16 @@ class GlassMessageBubble extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: GoogleFonts.poppins(
-            color: isSent ? Colors.white : Colors.white,
-            fontSize: 15,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
         ),
       ),
     );
   }
 }
 
+// ─────────────────────────────────────────────
+// INPUT AREA
+// ─────────────────────────────────────────────
 class GlassInputArea extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
@@ -293,10 +295,7 @@ class GlassInputArea extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 15,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
               decoration: InputDecoration(
                 hintText: "Type your message...",
                 hintStyle: GoogleFonts.poppins(
@@ -341,11 +340,7 @@ class GlassInputArea extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             padding: const EdgeInsets.all(10),
-            child: const Icon(
-              Icons.mic,
-              color: Colors.white,
-              size: 20,
-            ),
+            child: const Icon(Icons.mic, color: Colors.white, size: 20),
           ),
         ],
       ),

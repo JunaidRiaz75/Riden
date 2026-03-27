@@ -1,7 +1,7 @@
-// book_ride_bottom_sheet.dart
 import 'package:flutter/material.dart';
-import 'package:riden/bookings/ridecomplete.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/theme/app_colors.dart';
+import 'my_bookings_detail_screen.dart'; // <-- Import the bottom sheet
 
 class BookRideBottomSheet extends StatelessWidget {
   final ScrollController scrollController;
@@ -10,52 +10,36 @@ class BookRideBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            RidenColors.backgroundBase.withOpacity(0.98),
-            RidenColors.backgroundBase.withOpacity(0.95),
-            RidenColors.backgroundBase.withOpacity(0.92),
-          ],
-          stops: const [0.0, 0.6, 1.0],
-        ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 25,
-            offset: const Offset(0, -5),
-            spreadRadius: 0,
-          ),
-        ],
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(28),
+        topRight: Radius.circular(28),
       ),
-      child: Column(
+      child: Stack(
         children: [
-          // Drag Handle
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Center(
-              child: Container(
-                width: 45,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(2.5),
+          // Use the same splash/about/dark background gradient everywhere
+          const Positioned.fill(child: RidenDarkBackground()),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Center(
+                  child: Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2.5),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          // Content
-          Expanded(
-            child: BookRideBottomSheetContent(
-              scrollController: scrollController,
-            ),
+              Expanded(
+                child: BookRideBottomSheetContent(
+                  scrollController: scrollController,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -78,6 +62,14 @@ class BookRideBottomSheetContent extends StatelessWidget {
     );
   }
 
+  void _openBookingDetailSheet(BuildContext context) {
+    showBookingDetailSheet(
+      context,
+      date: "Sun, 23 May 2025",
+      bookingId: "2345",
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -88,7 +80,6 @@ class BookRideBottomSheetContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with Back Button
             Row(
               children: [
                 GestureDetector(
@@ -107,12 +98,13 @@ class BookRideBottomSheetContent extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text(
+                Text(
                   "Your Ride",
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1,
                   ),
                 ),
               ],
@@ -156,7 +148,7 @@ class BookRideBottomSheetContent extends StatelessWidget {
                       children: [
                         Text(
                           'Sergio',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                             color: RidenColors.textPrimary,
@@ -165,7 +157,7 @@ class BookRideBottomSheetContent extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           '43 Rides (31 reviews)',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 13,
                             color: RidenColors.textSecondary,
                           ),
@@ -173,10 +165,8 @@ class BookRideBottomSheetContent extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Action Buttons
                   Row(
                     children: [
-                      // Call Button
                       GestureDetector(
                         onTap: () =>
                             _showSnackBar(context, 'Calling driver...'),
@@ -198,7 +188,6 @@ class BookRideBottomSheetContent extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 15),
-                      // Message Button
                       GestureDetector(
                         onTap: () =>
                             _showSnackBar(context, 'Opening messages...'),
@@ -227,82 +216,79 @@ class BookRideBottomSheetContent extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Stats Card
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.5,
+            // Stats Card - tap anywhere to open details sheet
+            InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => _openBookingDetailSheet(context),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                    width: 1.5,
+                  ),
                 ),
-              ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatItem('DISTANCE', '0.2 km'),
-                      Container(
-                        width: 1,
-                        height: 40,
-                        color: Colors.white.withOpacity(0.1),
-                      ),
-                      _buildStatItem('TIME', '2 min'),
-                      Container(
-                        width: 1,
-                        height: 40,
-                        color: Colors.white.withOpacity(0.1),
-                      ),
-                      _buildStatItem('FARE', '\$25.00'),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Divider(color: Colors.white.withOpacity(0.1), height: 1),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildStatItem('DISTANCE', '0.2 km'),
+                        Container(
+                          width: 1,
+                          height: 40,
+                          color: Colors.white.withOpacity(0.1),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Black Suzuki Alto, (BKG-220)',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: RidenColors.textPrimary,
+                        _buildStatItem('TIME', '2 min'),
+                        Container(
+                          width: 1,
+                          height: 40,
+                          color: Colors.white.withOpacity(0.1),
+                        ),
+                        _buildStatItem('FARE', '\$25.00'),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Divider(color: Colors.white.withOpacity(0.1), height: 1),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
                           ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RideCompletedScreen(),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Black Suzuki Alto, (BKG-220)',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: RidenColors.textPrimary,
                             ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          child: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: RidenColors.textSecondary,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        GestureDetector(
+                          onTap: () => _openBookingDetailSheet(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            child: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: RidenColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -318,7 +304,7 @@ class BookRideBottomSheetContent extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 11,
             fontWeight: FontWeight.w600,
             color: RidenColors.textSecondary,
@@ -328,9 +314,9 @@ class BookRideBottomSheetContent extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           value,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             color: RidenColors.textPrimary,
           ),
         ),

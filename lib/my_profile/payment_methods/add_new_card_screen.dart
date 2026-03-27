@@ -1,117 +1,183 @@
+// add_new_card_bottom_sheet.dart
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import 'package:riden/theme/app_colors.dart'; // For RidenDarkBackground
+import 'package:riden/theme/app_colors.dart';
 import 'package:riden/widgets/glassmorphic_button.dart';
 import 'package:riden/widgets/glass_button.dart';
 
-class AddNewCardScreen extends StatefulWidget {
-  const AddNewCardScreen({super.key});
+class AddNewCardBottomSheet extends StatefulWidget {
+  final ScrollController scrollController;
+
+  const AddNewCardBottomSheet({required this.scrollController, super.key});
 
   @override
-  State<AddNewCardScreen> createState() => _AddNewCardScreenState();
+  State<AddNewCardBottomSheet> createState() => _AddNewCardBottomSheetState();
 }
 
-class _AddNewCardScreenState extends State<AddNewCardScreen> {
+class _AddNewCardBottomSheetState extends State<AddNewCardBottomSheet> {
   final TextEditingController cardNumberController = TextEditingController();
   final TextEditingController cardHolderController = TextEditingController();
   final TextEditingController cvvController = TextEditingController();
   final TextEditingController expiryController = TextEditingController();
 
   @override
+  void dispose() {
+    cardNumberController.dispose();
+    cardHolderController.dispose();
+    cvvController.dispose();
+    expiryController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(28),
+        topRight: Radius.circular(28),
+      ),
+      child: Stack(
         children: [
-          // Painter-based gradient background
-          const RidenDarkBackground(),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 23),
-                  // Title
-                  Center(
-                    child: Text(
-                      "Add Payment",
-                      style: GoogleFonts.audiowide(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 37),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Enter Details of Card",
-                      style: GoogleFonts.poppins(
-                        fontSize: 15.5,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 13),
+          // ── Dark gradient background ──────────────────────
+          const Positioned.fill(child: RidenDarkBackground()),
 
-                  // Card fields
-                  GlassyField(
-                    controller: cardNumberController,
-                    label: "Card Number",
-                    hint: "Enter Card Number",
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 14),
-                  GlassyField(
-                    controller: cardHolderController,
-                    label: "Card Holder Name",
-                    hint: "Enter Card Holder Name",
-                    keyboardType: TextInputType.text,
-                  ),
-                  const SizedBox(height: 14),
-                  GlassyField(
-                    controller: cvvController,
-                    label: "CVV",
-                    hint: "Enter CVV",
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 14),
-                  // Expiry date input with calendar icon
-                  GlassyField(
-                    controller: expiryController,
-                    label: "Expiry Date",
-                    hint: "00/00/00",
-                    keyboardType: TextInputType.number,
-                    suffix: Icon(Icons.calendar_today, color: Colors.redAccent, size: 22),
-                  ),
-                  const SizedBox(height: 28),
-
-                  // Submit button: glassy, full width, red
-                  GlassmorphicButton(
-                    text: "Submit",
-                    textStyle: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17,
+          // ── Sheet content ─────────────────────────────────
+          Column(
+            children: [
+              // Drag Handle
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Center(
+                  child: Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2.5),
                     ),
-                    glassColor: Colors.redAccent,
-                    type: GlassButtonType.primary,
-                    onTap: () {
-                      // Submit logic here
-                      Get.back();
-                      Get.snackbar("Success", "Card added successfully",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.green,
-                          colorText: Colors.white);
-                    },
                   ),
-                ],
+                ),
               ),
-            ),
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: widget.scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            "Add Payment",
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                          const Spacer(),
+                          const SizedBox(width: 36),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+
+                      Text(
+                        "Enter Details of Card",
+                        style: GoogleFonts.poppins(
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 13),
+
+                      // Card fields
+                      GlassyField(
+                        controller: cardNumberController,
+                        label: "Card Number",
+                        hint: "Enter Card Number",
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 14),
+                      GlassyField(
+                        controller: cardHolderController,
+                        label: "Card Holder Name",
+                        hint: "Enter Card Holder Name",
+                      ),
+                      const SizedBox(height: 14),
+                      GlassyField(
+                        controller: cvvController,
+                        label: "CVV",
+                        hint: "Enter CVV",
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 14),
+                      GlassyField(
+                        controller: expiryController,
+                        label: "Expiry Date",
+                        hint: "00/00/00",
+                        keyboardType: TextInputType.number,
+                        suffix: const Icon(
+                          Icons.calendar_today,
+                          color: Colors.redAccent,
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+
+                      // Submit button
+                      GlassmorphicButton(
+                        text: "Submit",
+                        textStyle: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 17,
+                        ),
+                        glassColor: Colors.redAccent,
+                        type: GlassButtonType.primary,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Get.snackbar(
+                            "Success",
+                            "Card added successfully",
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -119,8 +185,8 @@ class _AddNewCardScreenState extends State<AddNewCardScreen> {
   }
 }
 
+// ── GlassyField widget ──────────────────────────────────────────────
 
-// --- GlassyField widget ---
 class GlassyField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -134,15 +200,14 @@ class GlassyField extends StatelessWidget {
     required this.hint,
     this.keyboardType = TextInputType.text,
     this.suffix,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Label
         Text(
           label,
           style: GoogleFonts.poppins(
@@ -152,7 +217,6 @@ class GlassyField extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        // Glassy input
         Container(
           height: 44,
           decoration: BoxDecoration(
@@ -182,20 +246,22 @@ class GlassyField extends StatelessWidget {
                     hintText: hint,
                     border: InputBorder.none,
                     hintStyle: GoogleFonts.poppins(
-                      color: Colors.white.withOpacity(0.82),
+                      color: Colors.white.withOpacity(0.6),
                       fontSize: 14.8,
                     ),
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                   ),
                 ),
               ),
-              if (suffix != null) ...[
+              if (suffix != null)
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: suffix!,
                 ),
-              ],
             ],
           ),
         ),
