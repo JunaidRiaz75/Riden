@@ -11,7 +11,6 @@ import 'package:riden/widgets/glass_bottom_nav.dart';
 import 'package:riden/widgets/glass_button.dart';
 import 'package:riden/widgets/glass_dropdown.dart';
 import 'package:riden/widgets/glass_input_field.dart';
-import 'package:riden/profile/profile_sidebar.dart';
 
 class RideBookingScreen extends StatefulWidget {
   const RideBookingScreen({super.key});
@@ -345,7 +344,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
             // Open Chat as Bottom Sheet instead of using Get.to()
             _openChatBottomSheet(context);
           } else if (index == 4) {
-            Get.to(() => ProfileSidebar());
+            // Get.to(() => ProfileSidebar());
           }
         },
       ),
