@@ -1,12 +1,13 @@
-// home_screen.dart - Updated with Chat Bottom Sheet
+// home_screen.dart - Updated with Ride Bottom Sheet
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:riden/bookings/bookingride_loading.dart';
+import 'package:riden/bookings/bookride.dart';
 import 'package:riden/call_and_chat/chat_screen.dart';
-import 'package:riden/home/your_locations_screen.dart';
+import 'package:riden/home/your_locations_screen.dart'; // Add this import
 import 'package:riden/my_profile/profilesheet.dart';
 import 'package:riden/widgets/bottom_navbar.dart';
 
-import '../theme/app_colors.dart'; // Add this import
+import '../theme/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -190,19 +191,62 @@ class _HomeScreenState extends State<HomeScreen> {
             });
 
             // Handle navigation based on selected tab
-            if (value == 1) {
-              // Navigate to bookings
-              Get.toNamed('/my-bookings');
+            if (value == 0) {
+              // Ride tab - Open Ride Bottom Sheet
+              _openRideBottomSheet(context);
+            } else if (value == 1) {
+              // Bookings tab - Open Bookings Bottom Sheet
+              _openBookingBottomSheet(context);
             } else if (value == 2) {
-              // Open Chat as Bottom Sheet
+              // Support tab - Open Chat Bottom Sheet
               _openChatBottomSheet(context);
             } else if (value == 3) {
-              // Open Profile as Bottom Sheet
+              // Account tab - Open Profile Bottom Sheet
               _openProfileBottomSheet(context);
             }
           },
         ),
       ),
+    );
+  }
+
+  void _openRideBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return BookRideBottomSheet(scrollController: scrollController);
+          },
+        );
+      },
+    );
+  }
+
+  void _openBookingBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          snap: true,
+          snapSizes: const [0.5, 0.85, 0.95],
+          builder: (context, scrollController) {
+            return BookingBottomSheet(scrollController: scrollController);
+          },
+        );
+      },
     );
   }
 
