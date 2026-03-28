@@ -37,13 +37,22 @@ dependencies:
   google_fonts: ^8.0.2
   glassmorphism: ^3.0.0
   get: ^4.7.3
-  google_maps_flutter: ^2.15.0
   image_picker: ^1.1.2
+  google_maps_flutter: ^2.16.0
+  location: ^8.0.1
+  geolocator: ^14.0.2
+  http: ^1.6.0
+  google_polyline_algorithm: ^3.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
+<<<<<<< HEAD
   flutter_launcher_icons: ^0.14.4
 
+=======
+  flutter_launcher_icons: ^0.13.1
+  
+>>>>>>> origin/my-version
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -95,8 +104,12 @@ flutter:
     - assets/images/riden_light_logo.png
     - assets/images/riden_dark_logo.png
     - assets/logo.png
+<<<<<<< HEAD
     - assets/icons/google.png
     - assets/icons/facebook.png
+=======
+    - assets/map_style_dark.json
+>>>>>>> origin/my-version
 
 
   #   - images/a_dot_ham.jpeg

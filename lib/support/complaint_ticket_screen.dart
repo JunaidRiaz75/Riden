@@ -3,7 +3,7 @@ import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 class ComplaintTicketScreen extends StatelessWidget {
-  const ComplaintTicketScreen({Key? key}) : super(key: key);
+  const ComplaintTicketScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,8 @@ class ComplaintTicketScreen extends StatelessWidget {
           {
             "type": "Complaint Type",
             "bookingId": "2345",
-            "desc": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
+            "desc":
+                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
           },
         ],
       },
@@ -25,7 +26,8 @@ class ComplaintTicketScreen extends StatelessWidget {
           {
             "type": "Complaint Type",
             "bookingId": "2346",
-            "desc": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
+            "desc":
+                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
           },
         ],
       },
@@ -35,12 +37,14 @@ class ComplaintTicketScreen extends StatelessWidget {
           {
             "type": "Complaint Type",
             "bookingId": "2348",
-            "desc": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
+            "desc":
+                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
           },
           {
             "type": "Complaint Type",
             "bookingId": "2349",
-            "desc": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
+            "desc":
+                "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.",
           },
         ],
       },
@@ -53,15 +57,21 @@ class ComplaintTicketScreen extends StatelessWidget {
             RidenDarkBackground(),
             SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 19),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 19,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new,
-                              color: Colors.white, size: 22),
+                          icon: const Icon(
+                            Icons.arrow_back_ios_new,
+                            color: Colors.white,
+                            size: 22,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const SizedBox(width: 7),
@@ -78,35 +88,38 @@ class ComplaintTicketScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 19),
                     // Sections
-                    ...complaints.map((section) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          section['section'] as String,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15.1,
+                    ...complaints.map(
+                      (section) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            section['section'] as String,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15.1,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        ...(section['tickets'] as List).map((ticket) {
-                          return ComplaintTicketRow(
-                            type: ticket['type'],
-                            bookingId: ticket['bookingId'],
-                            desc: ticket['desc'],
-                            onTap: () {
-                              Navigator.push(context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ComplaintViewScreen(),
-                                ),
-                              );
-                            },
-                          );
-                        }).toList(),
-                        const SizedBox(height: 16),
-                      ],
-                    )),
+                          const SizedBox(height: 8),
+                          ...(section['tickets'] as List).map((ticket) {
+                            return ComplaintTicketRow(
+                              type: ticket['type'],
+                              bookingId: ticket['bookingId'],
+                              desc: ticket['desc'],
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const ComplaintViewScreen(),
+                                  ),
+                                );
+                              },
+                            );
+                          }),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -129,8 +142,8 @@ class ComplaintTicketRow extends StatelessWidget {
     required this.bookingId,
     required this.desc,
     required this.onTap,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +169,8 @@ class ComplaintTicketRow extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(type,
+                        Text(
+                          type,
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -166,7 +180,9 @@ class ComplaintTicketRow extends StatelessWidget {
                         const Spacer(),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 4, horizontal: 10),
+                            vertical: 4,
+                            horizontal: 10,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.21),
                             borderRadius: BorderRadius.circular(8),
@@ -181,13 +197,16 @@ class ComplaintTicketRow extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 7),
-                        Icon(Icons.arrow_forward_ios_rounded,
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
                           color: Colors.white70,
-                          size: 15),
+                          size: 15,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 7),
-                    Text(desc,
+                    Text(
+                      desc,
                       style: GoogleFonts.poppins(
                         color: Colors.white70,
                         fontSize: 13.7,

@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import 'package:Riden/theme/app_colors.dart';
+=======
+// ignore_for_file: deprecated_member_use
+
+>>>>>>> origin/my-version
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

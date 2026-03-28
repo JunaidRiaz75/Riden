@@ -1,7 +1,12 @@
 import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+<<<<<<< HEAD
 import 'package:google_fonts/google_fonts.dart';
+=======
+// import your booking screen
+import 'package:riden/theme/app_colors.dart'; // for RidenDarkBackground
+>>>>>>> origin/my-version
 
 class CallScreen extends StatelessWidget {
   const CallScreen({super.key});
@@ -92,7 +97,10 @@ class _CircleGlassIcon extends StatelessWidget {
     this.filled = false,
     this.color,
     this.onTap,
+<<<<<<< HEAD
     super.key,
+=======
+>>>>>>> origin/my-version
   });
 
   @override

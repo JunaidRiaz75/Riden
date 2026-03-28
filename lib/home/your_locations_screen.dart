@@ -1,122 +1,227 @@
-// your_locations_screen.dart
+// bookings_bottom_sheet.dart
 // ignore_for_file: deprecated_member_use
+//
+// Place at: lib/bookings/bookings_bottom_sheet.dart
 
+<<<<<<< HEAD
 import 'package:Riden/theme/app_colors.dart';
 import 'package:Riden/widgets/glass_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+=======
+import 'dart:ui';
+import 'package:flutter/material.dart';
+>>>>>>> origin/my-version
 
-import '../widgets/glass.dart';
+class BookingsBottomSheet extends StatelessWidget {
+  final ScrollController scrollController;
 
+<<<<<<< HEAD
 class YourLocationsScreen extends StatelessWidget {
   const YourLocationsScreen({
     super.key,
     required ScrollController scrollController,
   });
+=======
+  const BookingsBottomSheet({super.key, required this.scrollController});
+
+  static const List<Map<String, String>> _locations = [
+    {
+      'title': 'Office',
+      'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+    },
+    {
+      'title': 'Coffee shop',
+      'address': '1901 Thornridge Cir, Shiloh, Hawaii 81063',
+    },
+    {
+      'title': 'Shopping center',
+      'address': '4140 Parker Rd, Allentown, New Mexico 31134',
+    },
+    {
+      'title': 'Office',
+      'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+    },
+    {
+      'title': 'Coffee shop',
+      'address': '1901 Thornridge Cir, Shiloh, Hawaii 81063',
+    },
+    {
+      'title': 'Shopping center',
+      'address': '4140 Parker Rd, Allentown, New Mexico 31134',
+    },
+  ];
+>>>>>>> origin/my-version
 
   @override
   Widget build(BuildContext context) {
-    final Color accentRed = const Color(0xFFFF2B2B);
-    final locations = [
-      {
-        "title": "Office",
-        "address": "2972 Westheimer Rd, Santa Ana, Illinois 85486",
-        "lat": 30.2839,
-        "lng": -97.7393,
-      },
-      {
-        "title": "Coffee shop",
-        "address": "1901 Thorndige Cir, Shiloh, Hawaii 81063",
-        "lat": 21.348,
-        "lng": -157.955,
-      },
-    ];
-
-    return Scaffold(
-      body: Stack(
-        children: [
-          const RidenDarkBackground(),
-          SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                      onPressed: () => Get.back(),
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      "Your Locations",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: GlassSection(
-                    blur: 16,
-                    opacity: 0.13,
-                    radius: 15,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 7,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.my_location, color: accentRed, size: 22),
-                        const SizedBox(width: 9),
-                        Text(
-                          "Use My Current Location",
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.89),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15.5,
-                          ),
-                        ),
-                      ],
-                    ),
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(28),
+        topRight: Radius.circular(28),
+      ),
+      child: BackdropFilter(
+        // ── Key: heavy blur so the map bleeds through dark glass ──────────
+        filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+        child: Container(
+          decoration: BoxDecoration(
+            // Dark semi-transparent — matches the screenshot exactly
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                const Color(0xFF1C2035).withOpacity(0.93),
+                const Color(0xFF151826).withOpacity(0.96),
+              ],
+            ),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
+            border: Border.all(color: Colors.white.withOpacity(0.10), width: 1),
+          ),
+          child: Column(
+            children: [
+              // ── Drag handle ────────────────────────────────────────────
+              const SizedBox(height: 10),
+              Center(
+                child: Container(
+                  width: 38,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.28),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(17),
-                        child: SizedBox(
-                          height: 110,
-                          width: double.infinity,
-                          child: Image.asset(
-                            'assets/images/map1.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+              ),
+              const SizedBox(height: 16),
+
+              // ── Pickup + Destination white card ────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        blurRadius: 18,
+                        offset: const Offset(0, 4),
                       ),
-                      Positioned(
-                        left: 10,
-                        bottom: 6,
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // ── Pickup row ─────────────────────────────────────
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
                         child: Row(
                           children: [
-                            Icon(Icons.location_on, color: accentRed, size: 21),
-                            const SizedBox(width: 5),
-                            Text(
-                              "Vancouver, British Columbia, Canada",
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.97),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14.7,
+                            // Walk icon box — light grey
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF2F2F4),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.directions_walk_rounded,
+                                size: 20,
+                                color: Color(0xFF3A3A4A),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Pickup',
+                                    style: TextStyle(
+                                      color: Colors.black.withOpacity(0.40),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  const Text(
+                                    '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+                                    style: TextStyle(
+                                      color: Color(0xFF141420),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // ── Thin divider ───────────────────────────────────
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(62, 10, 14, 10),
+                        child: Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey.withOpacity(0.15),
+                        ),
+                      ),
+
+                      // ── Destination row ────────────────────────────────
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                        child: Row(
+                          children: [
+                            // Red location icon box
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFEBEB),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.location_on_rounded,
+                                size: 20,
+                                color: Color(0xFFE53935),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Text(
+                                'Where to go?',
+                                style: TextStyle(
+                                  color: Color(0xFFB0B0BA),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            // MAP button — dark pill
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 9,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF252535),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Text(
+                                'MAP',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12.5,
+                                  letterSpacing: 0.6,
+                                ),
                               ),
                             ),
                           ],
@@ -125,491 +230,74 @@ class YourLocationsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    itemCount: locations.length,
-                    itemBuilder: (ctx, i) {
-                      final loc = locations[i];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 11),
-                        child: GlassSection(
-                          blur: 16,
-                          opacity: 0.15,
-                          radius: 15,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 9,
+              ),
+
+              const SizedBox(height: 8),
+
+              // ── Saved locations list — white text on dark glass ────────
+              Expanded(
+                child: ListView.separated(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
+                  itemCount: _locations.length,
+                  separatorBuilder: (_, __) => Padding(
+                    padding: const EdgeInsets.only(left: 28),
+                    child: Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: Colors.white.withOpacity(0.08),
+                    ),
+                  ),
+                  itemBuilder: (ctx, i) {
+                    final loc = _locations[i];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Red circle dot
+                          Container(
+                            width: 11,
+                            height: 11,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFE53935),
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(Icons.place, color: accentRed, size: 22),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      loc["title"]?.toString() ?? "",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 3),
-                                    Text(
-                                      loc["address"]?.toString() ?? "",
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.76),
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  loc['title']!,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14.5,
+                                  ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.edit_location_alt_rounded,
-                                  color: Colors.white54,
-                                  size: 23,
+                                const SizedBox(height: 2),
+                                Text(
+                                  loc['address']!,
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.50),
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
-                                onPressed: () {},
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                // Add New Address Button - This will open the persistent bottom sheet
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    14,
-                    0,
-                    14,
-                    18 + MediaQuery.of(context).padding.bottom,
-                  ),
-                  child: GlassButton(
-                    text: "Add New Address",
-                    icon: Icons.add_location_alt_rounded,
-                    iconColor: Colors.white,
-                    onTap: () {
-                      // Open Add Place as persistent bottom sheet
-                      _openAddPlacePersistentSheet(context);
-                    },
-                    width: double.infinity,
-                    height: 46,
-                    borderRadius: BorderRadius.circular(22),
-                    textStyle: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      fontSize: 16,
-                      letterSpacing: 0.1,
-                    ),
-                    type: GlassButtonType.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _openAddPlacePersistentSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: RidenColors.backgroundBase,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.12, // Start small (just drag handle)
-          minChildSize: 0.12, // Minimum size
-          maxChildSize: 0.85, // Maximum size
-          snap: true,
-          snapSizes: const [0.12, 0.45, 0.85], // Snap points
-          builder: (context, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                color: RidenColors.backgroundBase,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
-                    blurRadius: 25,
-                    offset: const Offset(0, -5),
-                    spreadRadius: 0,
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Drag Handle
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: Center(
-                      child: Container(
-                        width: 45,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(2.5),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Add Place Content
-                  Expanded(
-                    child: AddPlaceContent(scrollController: scrollController),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-// Add Place Content Widget (to be used inside the persistent bottom sheet)
-class AddPlaceContent extends StatefulWidget {
-  final ScrollController scrollController;
-
-  const AddPlaceContent({required this.scrollController, super.key});
-
-  @override
-  State<AddPlaceContent> createState() => _AddPlaceContentState();
-}
-
-class _AddPlaceContentState extends State<AddPlaceContent> {
-  final TextEditingController _addressController = TextEditingController(
-    text: "1234 Westheimer Rd, Santa Monica, TX",
-  );
-  final TextEditingController _placeNameController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    const accentRed = Color(0xFFFF2B2B);
-
-    return SingleChildScrollView(
-      controller: widget.scrollController,
-      physics: const ClampingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-            child: Text(
-              "Add a place",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-              ),
-            ),
-          ),
-
-          // Description
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-            child: Text(
-              "Find your place by searching the address or simply drop a pin on the map to mark the exact pickup spot.",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Colors.white.withOpacity(0.72),
-              ),
-            ),
-          ),
-
-          // Place Name Field
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: GlassyField(
-              icon: Icons.title,
-              hint: "Place name (e.g., Home, Office)",
-              controller: _placeNameController,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Address Search Field
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: GlassyField(
-              icon: Icons.search_rounded,
-              hint: "Enter place address",
-              controller: _addressController,
-              iconColor: accentRed,
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Map preview with pin overlay
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    height: 200,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/map1.png'),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 80,
-                  left: 0,
-                  right: 0,
-                  child: Center(child: _Pin(accentRed: accentRed)),
-                ),
-                Positioned(
-                  bottom: 10,
-                  left: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: accentRed,
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: accentRed.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      _addressController.text.length > 25
-                          ? "${_addressController.text.substring(0, 25)}..."
-                          : _addressController.text,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Action Buttons
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              20,
-              0,
-              20,
-              24 + MediaQuery.of(context).padding.bottom,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      // Confirm location logic here
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Location added successfully!"),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFF2B2B), Color(0xFFFF4B4B)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFFF2B2B).withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                      child: const Center(
-                        child: Text(
-                          "Confirm Location",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
-                        ),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Cancel",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Pin extends StatelessWidget {
-  final Color accentRed;
-  const _Pin({required this.accentRed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 14,
-          height: 14,
-          decoration: BoxDecoration(
-            color: accentRed,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: accentRed.withOpacity(0.35),
-                blurRadius: 14,
-                spreadRadius: 1,
               ),
             ],
           ),
         ),
-        const SizedBox(height: 4),
-        Container(
-          width: 3,
-          height: 20,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.25),
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// GlassyField Widget (Reused)
-class GlassyField extends StatelessWidget {
-  final IconData icon;
-  final String hint;
-  final TextEditingController? controller;
-  final Color? iconColor;
-
-  const GlassyField({
-    required this.icon,
-    required this.hint,
-    this.controller,
-    this.iconColor,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.17),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.18)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 15),
-          Icon(
-            icon,
-            color: iconColor ?? Colors.white.withOpacity(0.76),
-            size: 22,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                fontSize: 15,
-              ),
-              decoration: InputDecoration(
-                hintText: hint,
-                border: InputBorder.none,
-                hintStyle: TextStyle(
-                  color: Colors.white.withOpacity(0.82),
-                  fontSize: 15,
-                ),
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

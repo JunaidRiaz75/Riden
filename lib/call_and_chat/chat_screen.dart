@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:get/get.dart';
 import '../theme/app_colors.dart';
 
 class ChatBottomSheet extends StatefulWidget {
