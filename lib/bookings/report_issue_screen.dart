@@ -30,7 +30,10 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
             const RidenDarkBackground(),
             SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 24,
+                  horizontal: 18,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -38,7 +41,11 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 21),
+                          icon: const Icon(
+                            Icons.arrow_back_ios_new,
+                            color: Colors.white,
+                            size: 21,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const SizedBox(width: 8),
@@ -49,7 +56,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                             fontSize: 17.5,
                             fontWeight: FontWeight.w700,
                           ),
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 18),
@@ -65,15 +72,22 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 7),
                             child: Row(
                               children: [
-                                CustomRadioCircle(selected: isSelected, red: true),
+                                CustomRadioCircle(
+                                  selected: isSelected,
+                                  red: true,
+                                ),
                                 const SizedBox(width: 13),
                                 Expanded(
                                   child: Text(
                                     issueTypes[i],
                                     style: GoogleFonts.poppins(
-                                      color: isSelected ? Colors.red : Colors.white,
+                                      color: isSelected
+                                          ? Colors.red
+                                          : Colors.white,
                                       fontSize: 14.3,
-                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w400,
                                     ),
                                   ),
                                 ),
@@ -89,9 +103,10 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                     Text(
                       "Explain Issue",
                       style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 14.3,
-                          fontWeight: FontWeight.w500),
+                        color: Colors.white,
+                        fontSize: 14.3,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: 5),
                     Container(
@@ -99,7 +114,10 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                         color: Colors.white.withOpacity(0.11),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       child: TextField(
                         controller: _issueController,
                         maxLines: 5,
@@ -150,7 +168,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
 class CustomRadioCircle extends StatelessWidget {
   final bool selected;
   final bool red;
-  const CustomRadioCircle({required this.selected, this.red = true, Key? key}) : super(key: key);
+  const CustomRadioCircle({required this.selected, this.red = true, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -166,17 +184,17 @@ class CustomRadioCircle extends StatelessWidget {
         color: Colors.transparent,
       ),
       child: selected
-        ? Center(
-            child: Container(
-              width: 8.7,
-              height: 8.7,
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
+          ? Center(
+              child: Container(
+                width: 8.7,
+                height: 8.7,
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
               ),
-            ),
-          )
-        : null,
+            )
+          : null,
     );
   }
 }
@@ -194,8 +212,8 @@ class GlassyActionButton extends StatelessWidget {
     required this.glassColor,
     required this.textColor,
     required this.onTap,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -217,11 +235,14 @@ class GlassyActionButton extends StatelessWidget {
             children: [
               Icon(icon, color: textColor, size: 18),
               const SizedBox(width: 7),
-              Text(label, style: GoogleFonts.poppins(
-                color: textColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 14.3,
-              )),
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  color: textColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.3,
+                ),
+              ),
             ],
           ),
         ),

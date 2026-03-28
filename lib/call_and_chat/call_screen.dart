@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import 'package:riden/bookings/booking_ride_detail.dart' hide RidenDarkBackground, RidenColors; // import your booking screen
+// import your booking screen
 import 'package:riden/theme/app_colors.dart'; // for RidenDarkBackground
 
 class CallScreen extends StatelessWidget {
@@ -10,72 +10,74 @@ class CallScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(children: [
-        // Use the painter-based gradient (identical to rest of app)
-        const RidenDarkBackground(),
-        SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 56),
-              // Avatar
-              CircleAvatar(
-                radius: 52,
-                backgroundColor: Colors.white.withOpacity(0.07),
-                child: CircleAvatar(
-                  radius: 49,
-                  backgroundImage: AssetImage('assets/images/avatar.png'),
-                  backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          // Use the painter-based gradient (identical to rest of app)
+          const RidenDarkBackground(),
+          SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 56),
+                // Avatar
+                CircleAvatar(
+                  radius: 52,
+                  backgroundColor: Colors.white.withOpacity(0.07),
+                  child: CircleAvatar(
+                    radius: 49,
+                    backgroundImage: AssetImage('assets/images/avatar.png'),
+                    backgroundColor: Colors.transparent,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              // Name
-              Text(
-                "Sergio",
-                style: GoogleFonts.poppins(
-                  fontSize: 27,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: 20),
+                // Name
+                Text(
+                  "Sergio",
+                  style: GoogleFonts.poppins(
+                    fontSize: 27,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 3),
-              // Status
-              Text(
-                "Calling...",
-                style: GoogleFonts.poppins(
-                  fontSize: 17,
-                  color: Colors.white70,
-                  fontWeight: FontWeight.w400,
+                const SizedBox(height: 3),
+                // Status
+                Text(
+                  "Calling...",
+                  style: GoogleFonts.poppins(
+                    fontSize: 17,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              // Glassy controls
-              Padding(
-                padding: const EdgeInsets.only(bottom: 30, left: 9, right: 9),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _CircleGlassIcon(icon: Icons.videocam),
-                    _CircleGlassIcon(icon: Icons.mic_off),
-                    _CircleGlassIcon(
-                      icon: Icons.call_end_rounded,
-                      filled: true,
-                      color: Colors.redAccent,
-                      onTap: () {
-                        // Option 1: Go back to previous screen
-                        Get.back();
-                        // Option 2: Go directly to Booking Ride Detail screen
-                        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const BookingDetailsScreen()));
-                      },
-                    ),
-                    _CircleGlassIcon(icon: Icons.folder_open),
-                    _CircleGlassIcon(icon: Icons.more_horiz),
-                  ],
+                const Spacer(),
+                // Glassy controls
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 30, left: 9, right: 9),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _CircleGlassIcon(icon: Icons.videocam),
+                      _CircleGlassIcon(icon: Icons.mic_off),
+                      _CircleGlassIcon(
+                        icon: Icons.call_end_rounded,
+                        filled: true,
+                        color: Colors.redAccent,
+                        onTap: () {
+                          // Option 1: Go back to previous screen
+                          Get.back();
+                          // Option 2: Go directly to Booking Ride Detail screen
+                          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const BookingDetailsScreen()));
+                        },
+                      ),
+                      _CircleGlassIcon(icon: Icons.folder_open),
+                      _CircleGlassIcon(icon: Icons.more_horiz),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }
@@ -91,8 +93,7 @@ class _CircleGlassIcon extends StatelessWidget {
     this.filled = false,
     this.color,
     this.onTap,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +113,9 @@ class _CircleGlassIcon extends StatelessWidget {
             ? (color ?? Colors.redAccent)
             : Colors.white.withOpacity(0.14),
         border: Border.all(
-            color: Colors.white.withOpacity(filled ? 0.0 : 0.20), width: 1.6),
+          color: Colors.white.withOpacity(filled ? 0.0 : 0.20),
+          width: 1.6,
+        ),
         boxShadow: filled
             ? [
                 BoxShadow(
@@ -127,10 +130,7 @@ class _CircleGlassIcon extends StatelessWidget {
     );
 
     return onTap != null
-        ? GestureDetector(
-            onTap: onTap,
-            child: content,
-          )
+        ? GestureDetector(onTap: onTap, child: content)
         : content;
   }
 }

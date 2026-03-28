@@ -354,7 +354,7 @@ class _RideBookingScreenState extends State<RideBookingScreen> {
 
 /// DYNAMIC VERTICAL DOTS + ARROW MATCHING FIELD HEIGHT
 class _PickupDropFields extends StatelessWidget {
-  const _PickupDropFields({super.key});
+  const _PickupDropFields();
 
   @override
   Widget build(BuildContext context) {

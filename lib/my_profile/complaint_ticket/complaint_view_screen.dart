@@ -173,7 +173,7 @@ class ComplaintViewBottomSheet extends StatelessWidget {
                                       width: 77,
                                       height: 53,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
+                                      errorBuilder: (_, _, _) => Container(
                                         width: 77,
                                         height: 53,
                                         color: Colors.white10,
@@ -254,7 +254,7 @@ class ComplaintViewBottomSheet extends StatelessWidget {
                                         width: 77,
                                         height: 53,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) => Container(
+                                        errorBuilder: (_, _, _) => Container(
                                           width: 77,
                                           height: 53,
                                           color: Colors.white10,

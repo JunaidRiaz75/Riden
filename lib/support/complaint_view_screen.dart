@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:riden/theme/app_colors.dart';
 
 class ComplaintViewScreen extends StatelessWidget {
-  const ComplaintViewScreen({Key? key}) : super(key: key);
+  const ComplaintViewScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +20,22 @@ class ComplaintViewScreen extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new,
-                            color: Colors.white, size: 21),
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.white,
+                          size: 21,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(width: 4),
-                      Text("Complaint Details",
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          )),
+                      Text(
+                        "Complaint Details",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
