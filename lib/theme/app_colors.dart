@@ -65,10 +65,24 @@ abstract class RidenColors {
   static const Color divider = Color(0x22FFFFFF);
   static const Color homeIndicator = Color(0x55FFFFFF);
   static const Color shadowDark = Color(0x40000000);
+
+  // ── 30% opaque gradient for bottom sheet backgrounds ────────────────────
+  static const List<Color> customGradientColors = [
+    Color(0x4D12C5ED), // 30% opacity cyan
+    Color(0x4DC2B324), // 30% opacity gold
+    Color(0x4DFF4004), // 30% opacity orange-red
+    Color(0x4DFFFFFF), // 30% opacity white
+  ];
+  static const List<double> customGradientStops = [0.0, 0.35, 0.70, 1.0];
+  static const LinearGradient customGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: customGradientColors,
+    stops: customGradientStops,
+  );
 }
 
 // ─────────────── RIDEN DARK BACKGROUND WIDGET ────────────────
-
 class RidenDarkBackground extends StatelessWidget {
   const RidenDarkBackground({super.key});
 
@@ -171,7 +185,6 @@ class _DarkGradientPainter extends CustomPainter {
     );
   }
 
-  /// Draws one elliptical radial-gradient blob.
   void _blob(
     Canvas canvas, {
     required Offset center,
@@ -193,7 +206,6 @@ class _DarkGradientPainter extends CustomPainter {
         Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
       );
 
-    // Scale vertically to create an ellipse from a circle
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.scale(1.0, ry / rx);

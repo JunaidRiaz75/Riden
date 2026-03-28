@@ -4,11 +4,8 @@
 // Place at: lib/widgets/bottom_navbar.dart
 // Used consistently across all screens/bottom sheets.
 
-<<<<<<< HEAD
-import 'package:Riden/home/add_place_screen.dart';
-=======
 import 'dart:ui';
->>>>>>> origin/my-version
+
 import 'package:flutter/material.dart';
 
 class GlassyBottomNavBar extends StatelessWidget {
@@ -23,7 +20,6 @@ class GlassyBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     return SafeArea(
       top: false,
       child: Padding(
@@ -35,79 +31,37 @@ class GlassyBottomNavBar extends StatelessWidget {
           blur: 18,
           opacity: 0.21,
           borderColor: Colors.white.withOpacity(0.13),
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            currentIndex: currentIndex,
-            onTap: onChanged,
-            selectedItemColor: const Color(0xFFF80F0F),
-            unselectedItemColor: Colors.white.withOpacity(0.91),
-            selectedLabelStyle: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-=======
-    return Container(
-      // Floating margin — same as home screen nav
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 14),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: BackdropFilter(
-          // White frosted blur — matches screenshots
-          filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
-          child: Container(
-            decoration: BoxDecoration(
-              // Bright white-ish glass — key difference from dark map glass
-              color: Colors.white.withOpacity(0.82),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.60),
-                width: 1,
+          child: Row(
+            children: [
+              _NavItem(
+                index: 0,
+                icon: Icons.receipt_long_rounded,
+                label: 'Bookings',
+                currentIndex: currentIndex,
+                onTap: onChanged,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.18),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
-                ),
-              ],
->>>>>>> origin/my-version
-            ),
-            child: SafeArea(
-              top: false,
-              child: Row(
-                children: [
-                  _NavItem(
-                    index: 0,
-                    icon: Icons.receipt_long_rounded,
-                    label: 'Bookings',
-                    currentIndex: currentIndex,
-                    onTap: onChanged,
-                  ),
-                  _NavItem(
-                    index: 1,
-                    icon: Icons.support_agent_rounded,
-                    label: 'Support',
-                    currentIndex: currentIndex,
-                    onTap: onChanged,
-                  ),
-                  _NavItem(
-                    index: 2,
-                    icon: Icons.notifications_outlined,
-                    label: 'Notifications',
-                    currentIndex: currentIndex,
-                    onTap: onChanged,
-                  ),
-                  _NavItem(
-                    index: 3,
-                    icon: Icons.person_outline_rounded,
-                    label: 'Account',
-                    currentIndex: currentIndex,
-                    onTap: onChanged,
-                  ),
-                ],
+              _NavItem(
+                index: 1,
+                icon: Icons.support_agent_rounded,
+                label: 'Support',
+                currentIndex: currentIndex,
+                onTap: onChanged,
               ),
-            ),
+              _NavItem(
+                index: 2,
+                icon: Icons.notifications_outlined,
+                label: 'Notifications',
+                currentIndex: currentIndex,
+                onTap: onChanged,
+              ),
+              _NavItem(
+                index: 3,
+                icon: Icons.person_outline_rounded,
+                label: 'Account',
+                currentIndex: currentIndex,
+                onTap: onChanged,
+              ),
+            ],
           ),
         ),
       ),
@@ -133,7 +87,6 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool active = currentIndex == index;
-    // Active = red accent, inactive = dark grey (readable on white glass)
     final Color iconColor = active
         ? const Color(0xFFE53935)
         : const Color(0xFF5A5A6E);
@@ -164,6 +117,49 @@ class _NavItem extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// Placeholder for GlassSection – you likely have this defined elsewhere.
+// If not, define it or adjust the import.
+class GlassSection extends StatelessWidget {
+  final double width;
+  final double height;
+  final double radius;
+  final double blur;
+  final double opacity;
+  final Color borderColor;
+  final Widget child;
+
+  const GlassSection({
+    required this.width,
+    required this.height,
+    required this.radius,
+    required this.blur,
+    required this.opacity,
+    required this.borderColor,
+    required this.child,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+        child: Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(opacity),
+            borderRadius: BorderRadius.circular(radius),
+            border: Border.all(color: borderColor, width: 1),
+          ),
+          child: child,
         ),
       ),
     );

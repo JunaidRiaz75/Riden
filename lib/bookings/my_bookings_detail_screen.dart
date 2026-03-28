@@ -1,4 +1,5 @@
 // my_bookings_detail_screen.dart
+import 'package:Riden/bookings/booking_ride_detail.dart';
 import 'package:Riden/bookings/report_issue_screen.dart';
 import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +7,13 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ─────────────────────────────────────────────────────────────
-// ✅ Call this to open as a bottom sheet — used by booking_bottom_sheet.dart
+// ✅ Call this to open as a bottom sheet — used by driver selection
 // ─────────────────────────────────────────────────────────────
 void showBookingDetailSheet(
   BuildContext context, {
   String date = "Sun, 23 May 2025",
   String bookingId = "2345",
+  Driver? driver,
 }) {
   showModalBottomSheet(
     context: context,
@@ -27,6 +29,7 @@ void showBookingDetailSheet(
         scrollController: scrollController,
         date: date,
         bookingId: bookingId,
+        driver: driver,
       ),
     ),
   );
@@ -38,12 +41,14 @@ void showBookingDetailSheet(
 class MyBookingsDetailScreen extends StatelessWidget {
   final String date;
   final String bookingId;
+  final Driver? driver;
 
   const MyBookingsDetailScreen({
     super.key,
     this.date = "Sun, 23 May 2025",
     this.bookingId = "2345",
     required Map<dynamic, dynamic> booking,
+    this.driver,
   });
 
   @override
@@ -97,6 +102,7 @@ class MyBookingsDetailScreen extends StatelessWidget {
                     scrollController: ScrollController(),
                     date: date,
                     bookingId: bookingId,
+                    driver: driver,
                   ),
                 ),
               ],
@@ -115,11 +121,13 @@ class _MyBookingsDetailSheet extends StatelessWidget {
   final ScrollController scrollController;
   final String date;
   final String bookingId;
+  final Driver? driver;
 
   const _MyBookingsDetailSheet({
     required this.scrollController,
     required this.date,
     required this.bookingId,
+    this.driver,
   });
 
   @override
@@ -132,9 +140,7 @@ class _MyBookingsDetailSheet extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // ── Same dark gradient as Splash ──
           const RidenDarkBackground(),
-
           Column(
             children: [
               // Drag handle
@@ -151,7 +157,6 @@ class _MyBookingsDetailSheet extends StatelessWidget {
                   ),
                 ),
               ),
-
               // Header
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
@@ -184,13 +189,13 @@ class _MyBookingsDetailSheet extends StatelessWidget {
                   ],
                 ),
               ),
-
               // Scrollable body
               Expanded(
                 child: _DetailContent(
                   scrollController: scrollController,
                   date: date,
                   bookingId: bookingId,
+                  driver: driver,
                 ),
               ),
             ],
@@ -202,21 +207,29 @@ class _MyBookingsDetailSheet extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
-// ✅ Shared scrollable content
+// ✅ Shared scrollable content (now with driver data)
 // ─────────────────────────────────────────────────────────────
 class _DetailContent extends StatelessWidget {
   final ScrollController scrollController;
   final String date;
   final String bookingId;
+  final Driver? driver;
 
   const _DetailContent({
     required this.scrollController,
     required this.date,
     required this.bookingId,
+    this.driver,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Use driver data if provided, else fallback to hardcoded values
+    final driverName = driver?.name ?? 'Sergio';
+    final driverCar = driver != null
+        ? '${driver!.carModel}, (${driver!.plate})'
+        : 'Black Suzuki Alto, (BKG-220)';
+
     return SingleChildScrollView(
       controller: scrollController,
       physics: const ClampingScrollPhysics(),
@@ -303,7 +316,7 @@ class _DetailContent extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  'https://i.pravatar.cc/150?img=33',
+                  driver?.avatarUrl ?? 'https://i.pravatar.cc/150?img=33',
                   width: 70,
                   height: 70,
                   fit: BoxFit.cover,
@@ -327,7 +340,7 @@ class _DetailContent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Sergio",
+                    driverName,
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -335,7 +348,7 @@ class _DetailContent extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Black Suzuki Alto, (BKG-220)",
+                    driverCar,
                     style: GoogleFonts.poppins(
                       color: Colors.white70,
                       fontWeight: FontWeight.w400,
@@ -408,7 +421,7 @@ class _DetailContent extends StatelessWidget {
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: "You gave Sergio ",
+                  text: "You gave $driverName ",
                   style: GoogleFonts.poppins(
                     color: Colors.white70,
                     fontSize: 13.2,
@@ -463,7 +476,7 @@ class _DetailContent extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
-// ✅ Reusable widgets
+// ✅ Reusable widgets (unchanged)
 // ─────────────────────────────────────────────────────────────
 class GlassyBookingStop extends StatelessWidget {
   final IconData icon;

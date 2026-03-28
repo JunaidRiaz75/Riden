@@ -1,485 +1,620 @@
-// ride_booking_screen.dart
-import 'package:Riden/bookings/my_bookings_detail_screen.dart';
-import 'package:Riden/bookings/my_bookings_screen.dart';
-import 'package:Riden/call_and_chat/chat_screen.dart';
-import 'package:Riden/my_profile/profile_management.dart';
-import 'package:Riden/notifications/notification.dart';
-import 'package:Riden/theme/app_colors.dart';
-import 'package:Riden/widgets/glass_bottom_nav.dart';
-import 'package:Riden/widgets/glass_button.dart';
-import 'package:Riden/widgets/glass_dropdown.dart';
-import 'package:Riden/widgets/glass_input_field.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-<<<<<<< HEAD
-=======
-import 'package:riden/bookings/my_bookings_detail_screen.dart';
-import 'package:riden/bookings/my_bookings_screen.dart'; // Import the chat bottom sheet
-import 'package:riden/call_and_chat/chat_screen.dart';
-import 'package:riden/notifications/notification.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/widgets/glass_bottom_nav.dart';
-import 'package:riden/widgets/glass_button.dart';
-import 'package:riden/widgets/glass_dropdown.dart';
-import 'package:riden/widgets/glass_input_field.dart';
->>>>>>> origin/my-version
+import 'dart:ui';
 
-class RideBookingScreen extends StatefulWidget {
-  const RideBookingScreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'rideconfirm.dart'; // adjust path
+
+class CarSelectionScreen extends StatefulWidget {
+  final ScrollController scrollController;
+  final bool showDragHandle;
+
+  const CarSelectionScreen({
+    super.key,
+    required this.scrollController,
+    this.showDragHandle = true,
+  });
 
   @override
-  State<RideBookingScreen> createState() => _RideBookingScreenState();
+  State<CarSelectionScreen> createState() => _CarSelectionScreenState();
 }
 
-class _RideBookingScreenState extends State<RideBookingScreen> {
-  int _selectedNavIndex = 0; // Home tab selected
+class _CarSelectionScreenState extends State<CarSelectionScreen> {
+  int _selectedIndex = 0;
+  String selectedCar = '';
 
-  String selectedCarType = 'Standard';
-  final carTypes = [
-    {'name': 'Standard', 'asset': 'assets/images/standard_car.png'},
-    {'name': 'SUV', 'asset': 'assets/images/suv_car.png'},
-    {'name': 'Van', 'asset': 'assets/images/van_car.png'},
-    {'name': 'Premium', 'asset': 'assets/images/premium_car.png'},
-    {
-      'name': 'Wheelchair Accessible',
-      'asset': 'assets/images/wheelchair_car.png',
-      'forceWrap': true,
-    },
-  ];
+  Map<String, String> carPrices = {
+    'Standard': r'C$ 70.00',
+    'SUV': r'C$ 85.00',
+    'Van': r'C$ 95.00',
+    'Premium': r'C$ 110.00',
+    'SUV Premium': r'C$ 125.00',
+    'Wheelchair': r'C$ 80.00',
+  };
 
-  String paymentMethod = 'Payment via Wallet';
-  final paymentOptions = ['Payment via Wallet', 'Debit/Credit Card'];
-
-  void _openChatBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          snap: true,
-          snapSizes: const [0.5, 0.85, 0.95],
-          builder: (context, scrollController) {
-            return ChatBottomSheet(scrollController: scrollController);
-          },
-        );
-      },
+  void _onRequest() {
+    if (selectedCar.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a car')));
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RideconfirmScreen(selectedCar: selectedCar),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       body: Stack(
         children: [
           const RidenDarkBackground(),
           SafeArea(
-            bottom: false,
             child: Column(
               children: [
-                const SizedBox(height: 18),
-                // Header with Back Button
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.arrow_back_ios,
-                              color: RidenColors.textPrimary,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Back',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: RidenColors.textPrimary,
-                              ),
-                            ),
-                          ],
+                // Drag handle (only if requested)
+                if (widget.showDragHandle)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Center(
+                      child: Container(
+                        width: 45,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(2.5),
                         ),
                       ),
-                      const Spacer(),
-                      Text(
-                        "RIDEN",
-                        style: GoogleFonts.audiowide(
-                          fontSize: 26,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 4,
-                        ),
-                      ),
-                      const SizedBox(width: 50), // Balance for symmetry
-                    ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                    child: Column(
-                      children: [
-                        // Location and Destination - vertical connect UI
-                        const _PickupDropFields(),
-                        const SizedBox(height: 18),
-
-                        // --- Car selector ---
-                        SizedBox(
-                          height: 86,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: carTypes.length,
-                            separatorBuilder: (context, idx) =>
-                                const SizedBox(width: 12),
-                            itemBuilder: (context, idx) {
-                              final type = carTypes[idx];
-                              final selected = type['name'] == selectedCarType;
-
-                              final isWheelchair =
-                                  (type['forceWrap'] == true ||
-                                  type['name'] == 'Wheelchair Accessible');
-                              final lines = isWheelchair
-                                  ? ['Wheelchair', 'Accessible']
-                                  : [type['name'] as String];
-
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(
-                                    () => selectedCarType =
-                                        type['name'] as String,
-                                  );
-                                },
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 170),
-                                  width: 85,
-                                  height: 86,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: selected
-                                        ? Colors.white.withOpacity(0.13)
-                                        : Colors.white.withOpacity(0.07),
-                                    border: Border.all(
-                                      color: selected
-                                          ? Colors.red
-                                          : Colors.white.withOpacity(0.17),
-                                      width: selected ? 2 : 1,
-                                    ),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        type['asset'] as String,
-                                        width: 32,
-                                        height: 28,
-                                        fit: BoxFit.contain,
-                                      ),
-                                      const SizedBox(height: 6),
-                                      isWheelchair
-                                          ? Column(
-                                              children: [
-                                                Text(
-                                                  lines[0],
-                                                  textAlign: TextAlign.center,
-                                                  style: GoogleFonts.poppins(
-                                                    color: Colors.white,
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w700,
-                                                    height: 1.09,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  lines[1],
-                                                  textAlign: TextAlign.center,
-                                                  style: GoogleFonts.poppins(
-                                                    color: Colors.white,
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w700,
-                                                    height: 1.09,
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : Text(
-                                              lines[0],
-                                              textAlign: TextAlign.center,
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white,
-                                                fontSize: 12.5,
-                                                fontWeight: FontWeight.w600,
-                                                height: 1.14,
-                                              ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.visible,
-                                            ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                    controller: widget.scrollController,
+                    physics: const ClampingScrollPhysics(),
+                    padding: const EdgeInsets.only(bottom: 80),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildRouteCard(),
+                          const SizedBox(height: 20),
+                          _buildCategoryHeader(
+                            'Standard Cars',
+                            Icons.directions_car,
                           ),
-                        ),
-                        const SizedBox(height: 18),
-
-                        // Price, Distance & Time
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.attach_money,
-                              color: Colors.red,
-                              size: 19,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              "EST Price : \$40.00",
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 13,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Icon(
-                              Icons.location_pin,
-                              color: Colors.red,
-                              size: 19,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              "EST distance : 12km",
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.timer_rounded,
-                              color: Colors.red,
-                              size: 19,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              "EST Time : 34 - 50 mins",
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-
-                        GlassInputField(
-                          hint: "Apply Coupon Code (optional)",
-                          icon: Icons.card_giftcard,
-                        ),
-                        const SizedBox(height: 10),
-
-                        GlassDropdown(
-                          value: paymentMethod,
-                          items: paymentOptions,
-                          onChanged: (v) => setState(() => paymentMethod = v!),
-                        ),
-                        const SizedBox(height: 18),
-
-                        GlassButton(
-                          text: "Book Ride",
-                          type: GlassButtonType.primary,
-                          textStyle: GoogleFonts.poppins(
-                            fontSize: 17,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
+                          const SizedBox(height: 12),
+                          _buildCarCard(
+                            'Standard',
+                            '3-4 min',
+                            r'C$ 70.00',
+                            'Sedan with AC',
+                            onSelect: () =>
+                                setState(() => selectedCar = 'Standard'),
+                            isSelected: selectedCar == 'Standard',
                           ),
-                          onTap: () {
-                            Get.to(
-                              () => const MyBookingsDetailScreen(booking: {}),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Map image
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.asset(
-                            "assets/images/map1.png",
-                            fit: BoxFit.cover,
-                            height: 180,
-                            width: double.infinity,
+                          const SizedBox(height: 10),
+                          _buildCarCard(
+                            'SUV',
+                            '3-4 min',
+                            r'C$ 85.00',
+                            'SUV with AC',
+                            onSelect: () => setState(() => selectedCar = 'SUV'),
+                            isSelected: selectedCar == 'SUV',
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                      ],
+                          const SizedBox(height: 10),
+                          _buildCarCard(
+                            'Van',
+                            '3-4 min',
+                            r'C$ 95.00',
+                            'Van with AC',
+                            onSelect: () => setState(() => selectedCar = 'Van'),
+                            isSelected: selectedCar == 'Van',
+                          ),
+                          const SizedBox(height: 20),
+                          _buildPremiumSection(),
+                          const SizedBox(height: 20),
+                          _buildCategoryHeader(
+                            'Handicap Cars',
+                            Icons.accessible,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildCarCard(
+                            'Wheelchair',
+                            '3-4 min',
+                            r'C$ 80.00',
+                            'Wheelchair accessible',
+                            onSelect: () =>
+                                setState(() => selectedCar = 'Wheelchair'),
+                            isSelected: selectedCar == 'Wheelchair',
+                          ),
+                          const SizedBox(height: 24),
+                          _buildRequestButton(),
+                          const SizedBox(height: 30),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                // Bottom Navigation Bar
+                _HomeBottomNav(
+                  selectedIndex: _selectedIndex,
+                  onChanged: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
 
-      // ✅ BOTTOM NAVIGATION BAR
-      bottomNavigationBar: GlassBottomNav(
-        selectedIndex: _selectedNavIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedNavIndex = index;
-          });
-
-          // Handle navigation
-          if (index == 0) {
-            Get.offAllNamed('/home');
-          } else if (index == 1) {
-            Get.to(() => const MyBookingsScreen());
-          } else if (index == 2) {
-            Get.to(() => const NotificationsScreen());
-          } else if (index == 3) {
-            // Open Chat as Bottom Sheet instead of using Get.to()
-            _openChatBottomSheet(context);
-          } else if (index == 4) {
-            // Get.to(() => ProfileSidebar());
-          }
-        },
+  // ---------- UI Components (dark glass style, matching chat) ----------
+  Widget _buildRouteCard() {
+    const accentRed = Color(0xFFFF2B2B);
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.58),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
+      ),
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.2),
+                ),
+                child: const Center(
+                  child: Icon(Icons.person, color: Colors.white70, size: 18),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Pickup',
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '2972 Westheimer Rd. Santa Ana, Illinois 85486',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Divider(color: Colors.white.withOpacity(0.2), height: 1),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: accentRed,
+                ),
+                child: const Center(
+                  child: Icon(Icons.location_on, color: Colors.white, size: 16),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Destination',
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '1901 Thorndige Cir. Shiloh, Hawai 81603',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.45),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'Stops',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
-}
 
-/// DYNAMIC VERTICAL DOTS + ARROW MATCHING FIELD HEIGHT
-class _PickupDropFields extends StatelessWidget {
-  const _PickupDropFields();
-
-  @override
-  Widget build(BuildContext context) {
-    const fieldHeight = 46.0;
-    const spacing = 11.0;
-    final totalHeight = fieldHeight * 2 + spacing;
+  Widget _buildCategoryHeader(String title, IconData icon) {
     const accentRed = Color(0xFFFF2B2B);
-
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        VerticalDotsArrow(
-          totalDotSpace: totalHeight,
-          dotColor: Colors.black,
-          dashColor: Colors.white38,
-          arrowColor: accentRed,
+        Container(
+          width: 36,
+          height: 36,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: accentRed,
+          ),
+          child: Center(child: Icon(icon, color: Colors.white, size: 20)),
         ),
-        const SizedBox(width: 2),
-        Expanded(
-          child: Column(
-            children: [
-              GlassInputField(hint: "Your Location", icon: Icons.location_on),
-              const SizedBox(height: spacing),
-              GlassInputField(hint: "Enter Your Destination", icon: Icons.flag),
-            ],
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
           ),
         ),
       ],
     );
   }
-}
 
-/// Vertical indicator with dynamic dots ---
-class VerticalDotsArrow extends StatelessWidget {
-  final double totalDotSpace;
-  final Color dotColor;
-  final Color dashColor;
-  final Color arrowColor;
-
-  const VerticalDotsArrow({
-    required this.totalDotSpace,
-    this.dotColor = Colors.black,
-    this.dashColor = Colors.grey,
-    this.arrowColor = Colors.red,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    const dotSize = 9.0;
-    const arrowSize = 22.0;
-    return SizedBox(
-      width: 22,
-      height: totalDotSpace,
-      child: Column(
-        children: [
-          Container(
-            width: dotSize,
-            height: dotSize,
-            decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+  Widget _buildCarCard(
+    String carName,
+    String time,
+    String price,
+    String description, {
+    required VoidCallback onSelect,
+    required bool isSelected,
+  }) {
+    return GestureDetector(
+      onTap: onSelect,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.58),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected
+                ? Colors.redAccent
+                : Colors.white.withOpacity(0.2),
+            width: isSelected ? 1.5 : 1,
           ),
-          Expanded(
-            child: DottedLine(
-              color: dashColor,
-              width: 3.0,
-              dashHeight: 7.5,
-              dashSpacing: 6.3,
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Container(
+              width: 70,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white.withOpacity(0.2),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.directions_car,
+                  color: Colors.black87,
+                  size: 32,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    carName,
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.schedule, color: Colors.black, size: 14),
+                      const SizedBox(width: 4),
+                      Text(
+                        time,
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              price,
+              style: GoogleFonts.poppins(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPremiumSection() {
+    const accentRed = Color(0xFFFF2B2B);
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: accentRed, width: 2),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCategoryHeader('Premium Cars', Icons.directions_car),
+          const SizedBox(height: 12),
+          _buildCarCard(
+            'Premium',
+            '3-4 min',
+            r'C$ 110.00',
+            'Premium Sedan with AC',
+            onSelect: () => setState(() => selectedCar = 'Premium'),
+            isSelected: selectedCar == 'Premium',
+          ),
+          const SizedBox(height: 10),
+          _buildCarCard(
+            'SUV Premium',
+            '3-4 min',
+            r'C$ 125.00',
+            'Premium SUV with AC',
+            onSelect: () => setState(() => selectedCar = 'SUV Premium'),
+            isSelected: selectedCar == 'SUV Premium',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRequestButton() {
+    const accentRed = Color(0xFFFF2B2B);
+    return GestureDetector(
+      onTap: _onRequest,
+      child: Container(
+        width: double.infinity,
+        height: 50,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFF2B2B), Color(0xFFFF4B4B)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: accentRed.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            'Request',
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              letterSpacing: 0.5,
             ),
           ),
-          Icon(Icons.arrow_downward, color: arrowColor, size: arrowSize),
-        ],
+        ),
       ),
     );
   }
 }
 
-class DottedLine extends StatelessWidget {
-  final Color color;
-  final double width;
-  final double dashHeight;
-  final double dashSpacing;
+// ---------- Bottom Navigation Bar ----------
+class _HomeBottomNav extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onChanged;
 
-  const DottedLine({
-    required this.color,
-    this.width = 2,
-    this.dashHeight = 6,
-    this.dashSpacing = 5,
-    super.key,
-  });
+  const _HomeBottomNav({required this.selectedIndex, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final totalHeight = constraints.maxHeight;
-        final nDashes =
-            ((totalHeight + dashSpacing) / (dashHeight + dashSpacing)).floor();
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(nDashes, (_) {
-            return Container(
-              width: width,
-              height: dashHeight,
-              margin: EdgeInsets.only(bottom: dashSpacing),
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(width / 2),
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 14),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.58),
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.7),
+                width: 1,
               ),
-            );
-          }),
-        );
-      },
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 12,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _NItem(
+                    0,
+                    Icons.directions_car_rounded,
+                    'Ride',
+                    selectedIndex,
+                    onChanged,
+                  ),
+                  _NItem(
+                    1,
+                    Icons.support_agent_rounded,
+                    'Support',
+                    selectedIndex,
+                    onChanged,
+                  ),
+                  _NItem(
+                    2,
+                    Icons.receipt_long_rounded,
+                    'Bookings',
+                    selectedIndex,
+                    onChanged,
+                  ),
+                  _NItem(
+                    3,
+                    Icons.person_outline_rounded,
+                    'Account',
+                    selectedIndex,
+                    onChanged,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NItem extends StatelessWidget {
+  final int index;
+  final IconData icon;
+  final String label;
+  final int selectedIndex;
+  final ValueChanged<int> onChanged;
+
+  const _NItem(
+    this.index,
+    this.icon,
+    this.label,
+    this.selectedIndex,
+    this.onChanged,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final bool active = selectedIndex == index;
+    final Color iconColor = active
+        ? const Color(0xFFE53935)
+        : const Color(0xFF2C3E50);
+    final Color labelColor = active
+        ? const Color(0xFFE53935)
+        : const Color(0xFF2C3E50);
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onChanged(index),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: iconColor, size: 24),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: labelColor,
+                  fontSize: 11,
+                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------- Dark Background ----------
+class RidenDarkBackground extends StatelessWidget {
+  const RidenDarkBackground({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+        ),
+      ),
     );
   }
 }

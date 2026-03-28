@@ -2,36 +2,27 @@
 // ignore_for_file: unused_local_variable, unused_element_parameter, unused_import, curly_braces_in_flow_control_structures, deprecated_member_use
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'dart:ui';
-<<<<<<< HEAD
 
 import 'package:Riden/bookings/bookingride_loading.dart';
 import 'package:Riden/bookings/bookride.dart';
 import 'package:Riden/call_and_chat/chat_screen.dart';
 import 'package:Riden/home/add_place_screen.dart';
+import 'package:Riden/home/your_locations_screen.dart';
 import 'package:Riden/my_profile/profilesheet.dart';
-import 'package:Riden/widgets/bottom_navbar.dart';
+import 'package:Riden/notifications/notification.dart';
 import 'package:flutter/material.dart';
-
-=======
-import 'dart:convert';
-import 'dart:typed_data';
-import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
-import 'package:riden/bookings/bookingride_loading.dart';
-import 'package:riden/bookings/bookride.dart';
-import 'package:riden/call_and_chat/chat_screen.dart';
-import 'package:riden/home/your_locations_screen.dart';
-import 'package:riden/my_profile/profilesheet.dart';
-import 'package:riden/widgets/glass.dart';
->>>>>>> origin/my-version
+import 'package:http/http.dart' as http;
+
 import '../theme/app_colors.dart';
 
-// ─── Dark blue map style ──────────────────────────────────────────────────────
+// ─── Dark blue map style (unchanged) ────────────────────────────────────────
 const String _kDarkMapStyle = '''
 [
   { "elementType": "geometry", "stylers": [{ "color": "#1d2c4d" }] },
@@ -68,7 +59,7 @@ const String _kDarkMapStyle = '''
 ]
 ''';
 
-// ─── Custom red teardrop marker with white inner dot ─────────────────────────
+// ─── Custom red teardrop marker with white inner dot (unchanged) ────────────
 Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
   final ui.PictureRecorder recorder = ui.PictureRecorder();
   final Canvas canvas = Canvas(recorder);
@@ -81,7 +72,6 @@ Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
   final double tipY = w * 0.88;
   final double circleCY = topY + radius;
 
-  // Drop shadow
   canvas.drawOval(
     Rect.fromCenter(
       center: Offset(cx, tipY + 6),
@@ -93,7 +83,6 @@ Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
   );
 
-  // Teardrop path
   final Path path = Path()
     ..addOval(Rect.fromLTWH(cx - radius, topY, pinW, pinW))
     ..moveTo(cx - radius * 0.42, circleCY + radius * 0.52)
@@ -115,7 +104,6 @@ Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
       ..strokeWidth = 1.5,
   );
 
-  // White inner dot
   canvas.drawCircle(
     Offset(cx, circleCY),
     radius * 0.36,
@@ -136,21 +124,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // ── Nav: -1 = nothing selected on launch ─────────────────────────────────
   int _selectedNavIndex = -1;
-
-  // ── Tracks whether the bookings sheet is open (used only for sheet state) ──
   bool _bookingsSheetOpen = false;
 
-  // ── Map ───────────────────────────────────────────────────────────────────
+  // Map
   GoogleMapController? _mapController;
   bool _mapLoading = true;
-
   static const CameraPosition _initialCamera = CameraPosition(
     target: LatLng(20.0, 0.0),
     zoom: 2.0,
   );
-
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
   BitmapDescriptor? _customMarkerIcon;
@@ -371,13 +354,77 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
+  void _handleNavigate() {
+    if (_userLatLng != null) {
+      fetchAndDrawRoute(_userLatLng!, _demoDestination);
+    } else {
+      _showSnack('Getting your location…');
+      _startLiveTracking().then((_) {
+        if (_userLatLng != null)
+          fetchAndDrawRoute(_userLatLng!, _demoDestination);
+      });
+    }
+  }
+
+  void _openSheet(int index) {
+    // ✅ RIDE BOTTOM SHEET - Shows RideBottomSheet
+    if (index == 0) {
+      setState(() => _bookingsSheetOpen = true);
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => DraggableScrollableSheet(
+          initialChildSize: 0.50,
+          minChildSize: 0.36,
+          maxChildSize: 0.92,
+          snap: true,
+          snapSizes: const [0.36, 0.50, 0.92],
+          builder: (ctx, sc) => RideBottomSheet(scrollController: sc),
+        ),
+      ).then((_) {
+        if (mounted)
+          setState(() {
+            _selectedNavIndex = -1;
+            _bookingsSheetOpen = false;
+          });
+      });
+      return;
+    }
+
+    Widget Function(ScrollController) builder;
+    switch (index) {
+      case 1:
+        builder = (sc) => ChatBottomSheet(scrollController: sc);
+        break;
+      case 2:
+        builder = (sc) => BookingLoadingBottomSheet(scrollController: sc);
+        break;
+      default:
+        builder = (sc) => ProfileBottomSheet(scrollController: sc);
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        snap: true,
+        snapSizes: const [0.5, 0.85, 0.95],
+        builder: (ctx, sc) => builder(sc),
+      ),
+    ).then((_) {
+      if (mounted) setState(() => _selectedNavIndex = -1);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final double statusBarH = MediaQuery.of(context).padding.top;
-    final double navBarH = 80.0; // approx height of floating nav bar
-
-    // Pill is always at bottom-right, above the nav bar
+    final double navBarH = 80.0;
     final double pillBottomClosed = navBarH + 16;
     final double pillRightClosed = 16;
 
@@ -388,7 +435,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // ── 1. GOOGLE MAP ─────────────────────────────────────────────
           Positioned.fill(
             child: GoogleMap(
               onMapCreated: _onMapCreated,
@@ -415,8 +461,6 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
-
-          // ── 2. LOADING OVERLAY ────────────────────────────────────────
           if (_mapLoading)
             Positioned.fill(
               child: IgnorePointer(
@@ -428,16 +472,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-
-          // ── 3. SEARCH BAR — always visible ────────────────────────────
+          // ── Search bar at top ─────────────────────────────────────────
           Positioned(
-            top: statusBarH + 10,
+            top: statusBarH + 12,
             left: 16,
             right: 16,
-            child: _TopSearchBar(controller: _searchController),
+            child: _SearchBar(),
           ),
-
-          // ── 4. ROUTE BADGE ────────────────────────────────────────────
+          // Route badges (unchanged)
           if (_fetchingRoute)
             Positioned(
               top: statusBarH + 76,
@@ -457,8 +499,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: _clearRoute,
               ),
             ),
-
-          // ── 5. COMBINED PILL — always at bottom-right ─────────────────
+          // ── Combined pill at bottom‑right (3 icons) ─────────────────────
           Positioned(
             bottom: pillBottomClosed,
             right: pillRightClosed,
@@ -466,12 +507,11 @@ class _HomeScreenState extends State<HomeScreen> {
               locating: _locating,
               onGpsTap: _centerOnUser,
               onNavigateTap: _handleNavigate,
+              onNotificationsTap: () => _openSheet(2), // notifications sheet
             ),
           ),
         ],
       ),
-
-      // ── BOTTOM NAV — white frosted glass, floats ──────────────────────
       bottomNavigationBar: _HomeBottomNav(
         selectedIndex: _selectedNavIndex,
         onChanged: (v) {
@@ -481,190 +521,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  void _handleNavigate() {
-    if (_userLatLng != null) {
-      fetchAndDrawRoute(_userLatLng!, _demoDestination);
-    } else {
-      _showSnack('Getting your location…');
-      _startLiveTracking().then((_) {
-        if (_userLatLng != null)
-          fetchAndDrawRoute(_userLatLng!, _demoDestination);
-      });
-    }
-  }
-
-  // ── Sheet launcher ────────────────────────────────────────────────────────
-  void _openSheet(int index) {
-    if (index == 0) {
-      setState(() => _bookingsSheetOpen = true);
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (_) => DraggableScrollableSheet(
-          initialChildSize: 0.50,
-          minChildSize: 0.36,
-          maxChildSize: 0.92,
-          snap: true,
-          snapSizes: const [0.36, 0.50, 0.92],
-          builder: (ctx, sc) => BookingsBottomSheet(scrollController: sc),
-        ),
-      ).then((_) {
-        if (mounted)
-          setState(() {
-            _selectedNavIndex = -1;
-            _bookingsSheetOpen = false;
-          });
-      });
-      return;
-    }
-
-    Widget Function(ScrollController) builder;
-    switch (index) {
-      case 1:
-        builder = (sc) => BookingBottomSheet(scrollController: sc);
-        break;
-      case 2:
-        builder = (sc) => ChatBottomSheet(scrollController: sc);
-        break;
-      default:
-        builder = (sc) => ProfileBottomSheet(scrollController: sc);
-    }
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => DraggableScrollableSheet(
-        initialChildSize: 0.85,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        snap: true,
-        snapSizes: const [0.5, 0.85, 0.95],
-        builder: (ctx, sc) => builder(sc),
-      ),
-    ).then((_) {
-      if (mounted) setState(() => _selectedNavIndex = -1);
-    });
-  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SEARCH BAR — full-pill frosted glass (dark, for map overlay)
+// SEARCH BAR – glassy, with hint and MAP button
 // ─────────────────────────────────────────────────────────────────────────────
-class _TopSearchBar extends StatelessWidget {
-  final TextEditingController controller;
-  const _TopSearchBar({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return GlassSection(
-      radius: 28, // matches bottom nav radius exactly
-      blur: 18, // matches bottom nav blur exactly
-      opacity: 0.21, // matches bottom nav opacity exactly
-      borderColor: Colors.white.withOpacity(
-        0.13,
-      ), // matches bottom nav border exactly
-      width: 0,
-      height: 0,
-      child: SizedBox(
-        width: 54,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // 🔔 Bell — Notifications
-            _PillIconButton(icon: Icons.notifications_outlined, onTap: () {}),
-            // ⊕ GPS Crosshair — Location
-            _PillIconButton(icon: Icons.gps_fixed, onTap: () {}),
-            // ➤ Near Me — Navigate / Share
-            _PillIconButton(icon: Icons.near_me_outlined, onTap: () {}),
-          ],
-=======
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(50),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 26, sigmaY: 26),
-        child: Container(
-          height: 52,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.16),
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: Colors.white.withOpacity(0.18), width: 1),
-          ),
-          child: Row(
-            children: [
-              const SizedBox(width: 16),
-              Icon(
-                Icons.search_rounded,
-                color: Colors.white.withOpacity(0.55),
-                size: 20,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    height: 1.2,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Where to go...',
-                    hintStyle: TextStyle(
-                      color: Colors.white.withOpacity(0.45),
-                      fontSize: 15,
-                    ),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ),
-              // Car icon circle
-              Container(
-                margin: const EdgeInsets.only(right: 6),
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.13),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.16),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  Icons.directions_car_rounded,
-                  color: Colors.white.withOpacity(0.85),
-                  size: 19,
-                ),
-              ),
-            ],
-          ),
->>>>>>> origin/my-version
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// COMBINED PILL — GPS + Navigate in one frosted-glass pill
-// Always positioned at bottom-right above nav bar
-// ─────────────────────────────────────────────────────────────────────────────
-class _CombinedPill extends StatelessWidget {
-  final bool locating;
-  final VoidCallback onGpsTap;
-  final VoidCallback onNavigateTap;
-
-  const _CombinedPill({
-    required this.locating,
-    required this.onGpsTap,
-    required this.onNavigateTap,
-  });
-
+class _SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -672,64 +534,39 @@ class _CombinedPill extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.18),
+            color: Colors.black.withOpacity(0.10),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withOpacity(0.20), width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.20),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            border: Border.all(color: Colors.white.withOpacity(0.25), width: 1),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Row(
             children: [
-              // GPS button
-              GestureDetector(
-                onTap: onGpsTap,
-                child: SizedBox(
-                  width: 48,
-                  height: 48,
-                  child: Center(
-                    child: locating
-                        ? const SizedBox(
-                            width: 19,
-                            height: 19,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(
-                            Icons.gps_fixed,
-                            color: Colors.white,
-                            size: 22,
-                          ),
+              const Icon(Icons.search, color: Colors.white70, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Where to go...',
+                    hintStyle: const TextStyle(color: Colors.white70),
+                    border: InputBorder.none,
                   ),
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
-              // Divider
               Container(
-                width: 26,
-                height: 1,
-                color: Colors.white.withOpacity(0.20),
-              ),
-              // Navigate button
-              GestureDetector(
-                onTap: onNavigateTap,
-                child: const SizedBox(
-                  width: 48,
-                  height: 48,
-                  child: Center(
-                    child: Icon(
-                      Icons.near_me_rounded,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 11,
+                  vertical: 11,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.directions_car_rounded,
+                  color: Colors.white,
+                  size: 18,
                 ),
               ),
             ],
@@ -741,10 +578,112 @@ class _CombinedPill extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BOTTOM NAV BAR — white frosted glass, floating with margin
+// COMBINED PILL – three icons: notifications, GPS, navigate
+// ─────────────────────────────────────────────────────────────────────────────
+class _CombinedPill extends StatelessWidget {
+  final bool locating;
+  final VoidCallback onGpsTap;
+  final VoidCallback onNavigateTap;
+  final VoidCallback onNotificationsTap;
+
+  const _CombinedPill({
+    required this.locating,
+    required this.onGpsTap,
+    required this.onNavigateTap,
+    required this.onNotificationsTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 40),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.20),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.30),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Notifications
+                Container(
+                  width: 26,
+                  height: 1,
+                  color: Colors.white.withOpacity(0.20),
+                ),
+                // GPS
+                GestureDetector(
+                  onTap: onGpsTap,
+                  child: SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Center(
+                      child: locating
+                          ? const SizedBox(
+                              width: 19,
+                              height: 19,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.gps_fixed,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 26,
+                  height: 1,
+                  color: Colors.white.withOpacity(0.20),
+                ),
+                // Navigate
+                GestureDetector(
+                  onTap: onNavigateTap,
+                  child: const SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Center(
+                      child: Icon(
+                        Icons.near_me_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BOTTOM NAVIGATION BAR – dark icons/text, centered, no overflow
 // ─────────────────────────────────────────────────────────────────────────────
 class _HomeBottomNav extends StatelessWidget {
-  final int selectedIndex; // -1 = nothing selected
+  final int selectedIndex;
   final ValueChanged<int> onChanged;
 
   const _HomeBottomNav({required this.selectedIndex, required this.onChanged});
@@ -752,60 +691,65 @@ class _HomeBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 14),
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 17),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(50),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.82),
+              color: Colors.white.withOpacity(
+                0.58,
+              ), // bright white for dark text
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: Colors.white.withOpacity(0.55),
+                color: Colors.white.withOpacity(0.7),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.16),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 12,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: SafeArea(
               top: false,
-              child: Row(
-                children: [
-                  _NItem(
-                    0,
-                    Icons.receipt_long_rounded,
-                    'Bookings',
-                    selectedIndex,
-                    onChanged,
-                  ),
-                  _NItem(
-                    1,
-                    Icons.support_agent_rounded,
-                    'Support',
-                    selectedIndex,
-                    onChanged,
-                  ),
-                  _NItem(
-                    2,
-                    Icons.notifications_outlined,
-                    'Notifications',
-                    selectedIndex,
-                    onChanged,
-                  ),
-                  _NItem(
-                    3,
-                    Icons.person_outline_rounded,
-                    'Account',
-                    selectedIndex,
-                    onChanged,
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Row(
+                  children: [
+                    _NItem(
+                      0,
+                      Icons.directions_car_rounded,
+                      'Ride',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                    _NItem(
+                      1,
+                      Icons.support_agent_rounded,
+                      'Support',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                    _NItem(
+                      2,
+                      Icons.receipt_long_rounded,
+                      'Bookings',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                    _NItem(
+                      3,
+                      Icons.person_outline_rounded,
+                      'Account',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -833,30 +777,43 @@ class _NItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool active = selectedIndex == index;
-    final Color color = active
+    final Color iconColor = active
+        ? const Color(0xFFE53935) // red when active
+        : const ui.Color.fromARGB(
+            255,
+            24,
+            30,
+            36,
+          ); // dark blue‑grey when inactive
+    final Color labelColor = active
         ? const Color(0xFFE53935)
-        : const Color(0xFF6A6A7E);
+        : const ui.Color.fromARGB(255, 24, 30, 36);
 
     return Expanded(
       child: GestureDetector(
         onTap: () => onChanged(index),
         behavior: HitTestBehavior.opaque,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(
+            vertical: 1,
+          ), // reduced to prevent overflow
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(icon, color: color, size: 23),
-              const SizedBox(height: 4),
+              Icon(icon, color: iconColor, size: 24),
+              const SizedBox(height: 6),
               Text(
                 label,
                 style: TextStyle(
-                  color: color,
-                  fontSize: 10.5,
+                  color: labelColor,
+                  fontSize: 12,
                   fontWeight: active ? FontWeight.w700 : FontWeight.w500,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -867,7 +824,7 @@ class _NItem extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GLASS BADGE — route loading / clear-route indicator
+// GLASS BADGE – route loading / clear-route indicator
 // ─────────────────────────────────────────────────────────────────────────────
 class _GlassBadge extends StatelessWidget {
   final String label;

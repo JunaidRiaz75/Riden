@@ -1,267 +1,247 @@
-// bookings_bottom_sheet.dart
-// ignore_for_file: deprecated_member_use
-//
-// Place at: lib/bookings/bookings_bottom_sheet.dart
-
-<<<<<<< HEAD
-import 'package:Riden/theme/app_colors.dart';
-import 'package:Riden/widgets/glass_button.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-=======
+// your_locations_screen.dart
 import 'dart:ui';
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
->>>>>>> origin/my-version
+import 'package:google_fonts/google_fonts.dart';
 
-class BookingsBottomSheet extends StatelessWidget {
+class YourLocationsScreen extends StatelessWidget {
   final ScrollController scrollController;
 
-<<<<<<< HEAD
-class YourLocationsScreen extends StatelessWidget {
-  const YourLocationsScreen({
-    super.key,
-    required ScrollController scrollController,
-  });
-=======
-  const BookingsBottomSheet({super.key, required this.scrollController});
-
-  static const List<Map<String, String>> _locations = [
-    {
-      'title': 'Office',
-      'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
-    },
-    {
-      'title': 'Coffee shop',
-      'address': '1901 Thornridge Cir, Shiloh, Hawaii 81063',
-    },
-    {
-      'title': 'Shopping center',
-      'address': '4140 Parker Rd, Allentown, New Mexico 31134',
-    },
-    {
-      'title': 'Office',
-      'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
-    },
-    {
-      'title': 'Coffee shop',
-      'address': '1901 Thornridge Cir, Shiloh, Hawaii 81063',
-    },
-    {
-      'title': 'Shopping center',
-      'address': '4140 Parker Rd, Allentown, New Mexico 31134',
-    },
-  ];
->>>>>>> origin/my-version
+  const YourLocationsScreen({required this.scrollController, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(28),
-        topRight: Radius.circular(28),
+    const accentRed = Color(0xFFFF2B2B);
+    final List<Map<String, String>> savedLocations = [
+      {
+        'name': 'Office',
+        'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+      },
+      {
+        'name': 'Coffee shop',
+        'address': '1901 Thorndige Cir, Shiloh, Hawaii 81063',
+      },
+      {
+        'name': 'Shopping center',
+        'address': '4140 Parker Rd, Allentown, New Mexico 31134',
+      },
+      {
+        'name': 'Office',
+        'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+      },
+      {
+        'name': 'Coffee shop',
+        'address': '1901 Thorndige Cir, Shiloh, Hawaii 81063',
+      },
+      {
+        'name': 'Shopping center',
+        'address': '4140 Parker Rd, Allentown, New Mexico 31134',
+      },
+      {
+        'name': 'Office',
+        'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+      },
+      {
+        'name': 'Coffee shop',
+        'address': '1901 Thorndige Cir, Shiloh, Hawaii 81063',
+      },
+      {
+        'name': 'Shopping center',
+        'address': '4140 Parker Rd, Allentown, New Mexico 31134',
+      },
+      {
+        'name': 'Office',
+        'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+      },
+    ];
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: RidenColors.customGradient,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
       ),
-      child: BackdropFilter(
-        // ── Key: heavy blur so the map bleeds through dark glass ──────────
-        filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-        child: Container(
-          decoration: BoxDecoration(
-            // Dark semi-transparent — matches the screenshot exactly
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                const Color(0xFF1C2035).withOpacity(0.93),
-                const Color(0xFF151826).withOpacity(0.96),
-              ],
+      child: Column(
+        children: [
+          // Drag handle
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Center(
+              child: Container(
+                width: 45,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
             ),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(28),
-              topRight: Radius.circular(28),
-            ),
-            border: Border.all(color: Colors.white.withOpacity(0.10), width: 1),
           ),
-          child: Column(
-            children: [
-              // ── Drag handle ────────────────────────────────────────────
-              const SizedBox(height: 10),
-              Center(
-                child: Container(
-                  width: 38,
-                  height: 4,
+          // Scrollable content
+          Expanded(
+            child: ListView(
+              controller: scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              children: [
+                // SEARCH CARD - Pickup & Destination
+                Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.28),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Pickup + Destination white card ────────────────────────
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        blurRadius: 18,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      // ── Pickup row ─────────────────────────────────────
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
-                        child: Row(
-                          children: [
-                            // Walk icon box — light grey
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF2F2F4),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.directions_walk_rounded,
-                                size: 20,
-                                color: Color(0xFF3A3A4A),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Pickup',
-                                    style: TextStyle(
-                                      color: Colors.black.withOpacity(0.40),
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                      letterSpacing: 0.2,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  const Text(
-                                    '2972 Westheimer Rd, Santa Ana, Illinois 85486',
-                                    style: TextStyle(
-                                      color: Color(0xFF141420),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // ── Thin divider ───────────────────────────────────
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(62, 10, 14, 10),
-                        child: Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey.withOpacity(0.15),
-                        ),
-                      ),
-
-                      // ── Destination row ────────────────────────────────
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-                        child: Row(
-                          children: [
-                            // Red location icon box
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFEBEB),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.location_on_rounded,
-                                size: 20,
-                                color: Color(0xFFE53935),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Text(
-                                'Where to go?',
-                                style: TextStyle(
-                                  color: Color(0xFFB0B0BA),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            // MAP button — dark pill
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 9,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF252535),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Text(
-                                'MAP',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12.5,
-                                  letterSpacing: 0.6,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              // ── Saved locations list — white text on dark glass ────────
-              Expanded(
-                child: ListView.separated(
-                  controller: scrollController,
-                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
-                  itemCount: _locations.length,
-                  separatorBuilder: (_, __) => Padding(
-                    padding: const EdgeInsets.only(left: 28),
-                    child: Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Colors.white.withOpacity(0.08),
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 1.5,
                     ),
                   ),
-                  itemBuilder: (ctx, i) {
-                    final loc = _locations[i];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    children: [
+                      // Pickup field
+                      Row(
                         children: [
-                          // Red circle dot
+                          Icon(
+                            Icons.location_on,
+                            color: Colors.white.withOpacity(0.7),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Pickup',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white.withOpacity(0.6),
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Divider(color: Colors.white.withOpacity(0.1), height: 1),
+                      const SizedBox(height: 12),
+                      // Destination field
+                      Row(
+                        children: [
                           Container(
-                            width: 11,
-                            height: 11,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFE53935),
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
+                              color: accentRed,
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.location_on,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Destination',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white.withOpacity(0.6),
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Where to go?',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white.withOpacity(0.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'MAP',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // SAVED LOCATIONS LIST
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: savedLocations.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final location = savedLocations[index];
+                    return GestureDetector(
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Selected: ${location['name']}'),
+                            backgroundColor: accentRed,
+                            duration: const Duration(milliseconds: 800),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: accentRed,
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.location_on,
+                                color: Colors.white,
+                                size: 12,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -270,20 +250,22 @@ class YourLocationsScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  loc['title']!,
-                                  style: const TextStyle(
+                                  location['name']!,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14.5,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  loc['address']!,
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.50),
-                                    fontSize: 12.5,
+                                  location['address']!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w400,
+                                    color: Colors.white.withOpacity(0.6),
                                   ),
                                 ),
                               ],
@@ -294,6 +276,108 @@ class YourLocationsScreen extends StatelessWidget {
                     );
                   },
                 ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+          // Bottom navigation bar (fixed at bottom of sheet)
+          _BottomNavBar(
+            currentIndex: 0, // you can pass the actual index if needed
+            onChanged: (index) {
+              // Handle navigation from inside the sheet
+              // For now, close the sheet and let the home screen handle the new tab
+              Navigator.pop(context);
+              // Optionally, you could call a callback to the parent to open the other sheet
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Bottom navigation bar widget
+class _BottomNavBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onChanged;
+
+  const _BottomNavBar({required this.currentIndex, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 14),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.82),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.55),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.16),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                children: [
+                  _NavItem(0, Icons.directions_car_rounded, 'Ride', currentIndex, onChanged),
+                  _NavItem(1, Icons.support_agent_rounded, 'Support', currentIndex, onChanged),
+                  _NavItem(2, Icons.receipt_long_rounded, 'Bookings', currentIndex, onChanged),
+                  _NavItem(3, Icons.person_outline_rounded, 'Account', currentIndex, onChanged),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final int index;
+  final IconData icon;
+  final String label;
+  final int currentIndex;
+  final ValueChanged<int> onChanged;
+
+  const _NavItem(this.index, this.icon, this.label, this.currentIndex, this.onChanged);
+
+  @override
+  Widget build(BuildContext context) {
+    final bool active = currentIndex == index;
+    final Color color = active ? const Color(0xFFE53935) : const Color(0xFF6A6A7E);
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onChanged(index),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: 23),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 10.5,
+                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
