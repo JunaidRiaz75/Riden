@@ -2,14 +2,14 @@
 // ignore_for_file: unused_import, curly_braces_in_flow_control_structures, deprecated_member_use
 
 import 'dart:ui';
+
+import 'package:Riden/bookings/bookingride_loading.dart';
+import 'package:Riden/bookings/bookride.dart';
+import 'package:Riden/call_and_chat/chat_screen.dart';
+import 'package:Riden/home/add_place_screen.dart';
+import 'package:Riden/my_profile/profilesheet.dart';
+import 'package:Riden/widgets/bottom_navbar.dart';
 import 'package:flutter/material.dart';
-import 'package:riden/bookings/bookingride_loading.dart';
-import 'package:riden/bookings/bookride.dart';
-import 'package:riden/call_and_chat/chat_screen.dart';
-import 'package:riden/home/your_locations_screen.dart';
-import 'package:riden/my_profile/profilesheet.dart';
-import 'package:riden/widgets/bottom_navbar.dart';
-import 'package:riden/widgets/glass.dart'; // ← same GlassSection used by bottom nav
 
 import '../theme/app_colors.dart';
 
@@ -218,6 +218,8 @@ class _GlassyActionPill extends StatelessWidget {
       borderColor: Colors.white.withOpacity(
         0.13,
       ), // matches bottom nav border exactly
+      width: 0,
+      height: 0,
       child: SizedBox(
         width: 54,
         child: Column(

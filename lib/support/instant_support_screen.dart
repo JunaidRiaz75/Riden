@@ -1,9 +1,9 @@
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/theme/app_colors.dart';
 
 class InstantSupportScreen extends StatelessWidget {
-  const InstantSupportScreen({Key? key}) : super(key: key);
+  const InstantSupportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +20,22 @@ class InstantSupportScreen extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new,
-                            color: Colors.white, size: 21),
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.white,
+                          size: 21,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(width: 4),
-                      Text("Instant Support",
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          )),
+                      Text(
+                        "Instant Support",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -72,8 +77,12 @@ class InstantSupportScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSupportOption(BuildContext context,
-      {required IconData icon, required String title, required String subtitle}) {
+  Widget _buildSupportOption(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -101,10 +110,7 @@ class InstantSupportScreen extends StatelessWidget {
               ),
               Text(
                 subtitle,
-                style: GoogleFonts.poppins(
-                  color: Colors.white70,
-                  fontSize: 13,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
               ),
             ],
           ),

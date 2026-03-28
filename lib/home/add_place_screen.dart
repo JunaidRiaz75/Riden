@@ -1,7 +1,7 @@
 // your_locations_screen.dart
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/theme/app_colors.dart';
 
 class YourLocationsScreen extends StatelessWidget {
   final ScrollController scrollController;
@@ -181,6 +181,10 @@ class YourLocationsScreen extends StatelessWidget {
                       opacity: 0.15,
                       radius: 15,
                       padding: const EdgeInsets.all(12),
+                      blur: 0,
+                      borderColor: Colors.white10,
+                      width: 0,
+                      height: 0,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -356,6 +360,10 @@ class GlassSection extends StatelessWidget {
     this.radius = 15,
     this.padding = const EdgeInsets.all(0),
     super.key,
+    required int blur,
+    required Color borderColor,
+    required int width,
+    required int height,
   });
 
   @override

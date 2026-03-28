@@ -1,9 +1,9 @@
 // complaint_view_bottom_sheet.dart
 // ignore_for_file: deprecated_member_use
 
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/theme/app_colors.dart';
 
 class ComplaintViewBottomSheet extends StatelessWidget {
   final ScrollController scrollController;
@@ -173,7 +173,7 @@ class ComplaintViewBottomSheet extends StatelessWidget {
                                       width: 77,
                                       height: 53,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
+                                      errorBuilder: (_, _, _) => Container(
                                         width: 77,
                                         height: 53,
                                         color: Colors.white10,
@@ -254,7 +254,7 @@ class ComplaintViewBottomSheet extends StatelessWidget {
                                         width: 77,
                                         height: 53,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) => Container(
+                                        errorBuilder: (_, _, _) => Container(
                                           width: 77,
                                           height: 53,
                                           color: Colors.white10,

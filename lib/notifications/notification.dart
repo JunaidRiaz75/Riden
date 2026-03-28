@@ -1,12 +1,11 @@
 // notifications_screen.dart
+import 'package:Riden/bookings/my_bookings_screen.dart';
+import 'package:Riden/call_and_chat/chat_screen.dart';
+import 'package:Riden/my_profile/profile_setting/profile_settings_bottom_sheet.dart';
+import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/widgets/glass_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:riden/bookings/my_bookings_screen.dart'; // Import the chat bottom sheet
-import 'package:riden/call_and_chat/chat_screen.dart';
-import 'package:riden/my_profile/profile_setting/profile_settings_bottom_sheet.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/widgets/glass_bottom_nav.dart';
-
 // 🔔 NOTIFICATIONS SCREEN - DARK GLASSY THEME
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});

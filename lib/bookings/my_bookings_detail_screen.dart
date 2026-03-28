@@ -1,9 +1,9 @@
 // my_bookings_detail_screen.dart
+import 'package:Riden/bookings/report_issue_screen.dart';
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/bookings/report_issue_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // ─────────────────────────────────────────────────────────────
 // ✅ Call this to open as a bottom sheet — used by booking_bottom_sheet.dart
@@ -307,7 +307,7 @@ class _DetailContent extends StatelessWidget {
                   width: 70,
                   height: 70,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (_, _, _) => Container(
                     width: 70,
                     height: 70,
                     decoration: BoxDecoration(

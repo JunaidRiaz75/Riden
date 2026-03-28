@@ -1,9 +1,8 @@
 // ignore_for_file: unnecessary_import, deprecated_member_use, unused_field
 
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'dart:ui';
 
 class EditProfileBottomSheet extends StatefulWidget {
   final ScrollController scrollController;

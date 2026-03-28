@@ -1,9 +1,9 @@
 // terms_conditions_bottom_sheet.dart
 // ignore_for_file: deprecated_member_use
 
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/theme/app_colors.dart';
 
 class TermsConditionsBottomSheet extends StatelessWidget {
   final ScrollController scrollController;

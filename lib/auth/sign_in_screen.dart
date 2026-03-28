@@ -1,13 +1,13 @@
+import 'package:Riden/auth/forgot_password_screen.dart';
+import 'package:Riden/auth/sign_up_screen.dart';
+import 'package:Riden/home/home_screen.dart';
+import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/widgets/glass_button.dart';
+import 'package:Riden/widgets/glass_field.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/auth/forgot_password_screen.dart';
-import 'package:riden/auth/sign_up_screen.dart';
-import 'package:riden/home/home_screen.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/widgets/glass_button.dart';
-import 'package:riden/widgets/glass_field.dart';
 // If you use a splash-style background widget:
 
 class SignInScreen extends StatefulWidget {

@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:riden/theme/app_colors.dart';
-// Import your config file for Mapbox token
-import 'package:riden/config/mapbox_config.dart'; // We'll create this
+import 'package:Riden/config/mapbox_config.dart';
+import 'package:Riden/theme/app_colors.dart';
+import 'package:flutter/material.dart'; // We'll create this
 
 class RideCompletedScreen extends StatefulWidget {
   const RideCompletedScreen({super.key});
@@ -972,18 +971,14 @@ class _RideCompletedScreenState extends State<RideCompletedScreen> {
   Widget _buildMapWithToken() {
     // Get token from config
     final mapboxToken = MapboxConfig.accessToken;
-    
+
     // If token is not set, show placeholder
     if (mapboxToken.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.map,
-              color: Colors.white.withOpacity(0.3),
-              size: 48,
-            ),
+            Icon(Icons.map, color: Colors.white.withOpacity(0.3), size: 48),
             SizedBox(height: 8),
             Text(
               'Map view',
@@ -999,17 +994,13 @@ class _RideCompletedScreenState extends State<RideCompletedScreen> {
 
     // Here you would initialize your Mapbox map with the token
     // Example: return MapboxMap(accessToken: mapboxToken, ...);
-    
+
     // For now, return a placeholder with token verification
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.map,
-            color: Colors.white.withOpacity(0.3),
-            size: 48,
-          ),
+          Icon(Icons.map, color: Colors.white.withOpacity(0.3), size: 48),
           SizedBox(height: 8),
           Text(
             'Map ready (token loaded)',

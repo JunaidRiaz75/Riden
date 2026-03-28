@@ -1,6 +1,6 @@
+import 'package:Riden/widgets/glass_field.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/widgets/glass_field.dart';
 
 class GlassDropdown extends StatelessWidget {
   final String value;
@@ -29,10 +29,7 @@ class GlassDropdown extends StatelessWidget {
           style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
           onChanged: onChanged,
           items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
+            return DropdownMenuItem<String>(value: item, child: Text(item));
           }).toList(),
         ),
       ),

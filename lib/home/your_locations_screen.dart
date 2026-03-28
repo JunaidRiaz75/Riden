@@ -1,15 +1,18 @@
 // your_locations_screen.dart
 // ignore_for_file: deprecated_member_use
 
+import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/widgets/glass_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/widgets/glass_button.dart';
 
 import '../widgets/glass.dart';
 
 class YourLocationsScreen extends StatelessWidget {
-  const YourLocationsScreen({super.key, required ScrollController scrollController});
+  const YourLocationsScreen({
+    super.key,
+    required ScrollController scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {

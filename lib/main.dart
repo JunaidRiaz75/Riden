@@ -1,7 +1,7 @@
+import 'package:Riden/splash/splash_screen.dart';
+import 'package:Riden/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:riden/splash/splash_screen.dart';
-import 'package:riden/theme/theme_controller.dart';
 
 void main() {
   // Inject the ThemeController for GetX

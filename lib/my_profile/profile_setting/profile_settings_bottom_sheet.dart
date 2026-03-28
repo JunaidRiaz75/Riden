@@ -1,7 +1,7 @@
+import 'package:Riden/my_profile/profile_setting/edit_profile_bottom_sheet.dart';
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/my_profile/profile_setting/edit_profile_bottom_sheet.dart';
-import 'package:riden/theme/app_colors.dart';
 
 class ProfileSettingsBottomSheet extends StatelessWidget {
   final ScrollController scrollController;

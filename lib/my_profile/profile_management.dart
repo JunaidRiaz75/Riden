@@ -1,14 +1,14 @@
 // profile_management.dart – fixed imports and mixed navigation
+import 'package:Riden/controllers/profile_controllers.dart';
+import 'package:Riden/my_profile/about_us/about_us_bottom_sheet.dart';
+import 'package:Riden/my_profile/app_setting/app_setting.dart';
+import 'package:Riden/my_profile/complaint_ticket/complaint_tickets_screen.dart';
+import 'package:Riden/my_profile/contact_support/contact_support_screen.dart';
+import 'package:Riden/my_profile/in_app_wallet/in_app_wallet_screen.dart';
+import 'package:Riden/my_profile/payment_methods/payment_methods_screen.dart';
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:riden/controllers/profile_controllers.dart';
-import 'package:riden/my_profile/about_us/about_us_bottom_sheet.dart';
-import 'package:riden/my_profile/app_setting/app_setting.dart';
-import 'package:riden/my_profile/complaint_ticket/complaint_tickets_screen.dart'; //
-import 'package:riden/my_profile/contact_support/contact_support_screen.dart';
-import 'package:riden/my_profile/in_app_wallet/in_app_wallet_screen.dart'; // full screen
-import 'package:riden/my_profile/payment_methods/payment_methods_screen.dart'; // full screen
-import 'package:riden/theme/app_colors.dart';
 
 class ProfileSidebar extends StatelessWidget {
   ProfileSidebar({super.key});

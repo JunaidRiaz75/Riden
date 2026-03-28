@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:Riden/home/add_place_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:riden/widgets/glass.dart';
 
 class GlassyBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -18,6 +18,8 @@ class GlassyBottomNavBar extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
         child: GlassSection(
+          width: 0,
+          height: 80,
           radius: 28,
           blur: 18,
           opacity: 0.21,

@@ -1,8 +1,8 @@
+import 'package:Riden/onboarding/onboarding_screen.dart';
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/onboarding/onboarding_screen.dart';
-import 'package:riden/theme/app_colors.dart'; // ← import your On1 screen
+import 'package:google_fonts/google_fonts.dart'; // ← import your On1 screen
 
 class Splash extends StatefulWidget {
   const Splash({super.key});

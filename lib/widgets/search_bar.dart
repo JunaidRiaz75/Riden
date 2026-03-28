@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:Riden/home/add_place_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:riden/widgets/glass.dart';
 
 class GlassySearchBar extends StatelessWidget {
   final VoidCallback? onCarTap;
@@ -15,6 +15,8 @@ class GlassySearchBar extends StatelessWidget {
       opacity: 0.20,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       borderColor: Colors.white.withOpacity(0.11),
+      width: 0,
+      height: 0,
       child: Row(
         children: [
           Expanded(

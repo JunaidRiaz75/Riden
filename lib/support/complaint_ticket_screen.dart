@@ -1,8 +1,7 @@
+import 'package:Riden/support/complaint_view_screen.dart';
+import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/support/complaint_view_screen.dart';
-
 class ComplaintTicketScreen extends StatelessWidget {
   const ComplaintTicketScreen({Key? key}) : super(key: key);
 

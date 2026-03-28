@@ -1,11 +1,11 @@
+import 'package:Riden/auth/sign_up_screen.dart';
+import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/theme/theme_controller.dart';
+import 'package:Riden/widgets/glass_button.dart';
+import 'package:Riden/widgets/glassmorphic_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/auth/sign_up_screen.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/widgets/glass_button.dart';
-import 'package:riden/widgets/glassmorphic_button.dart';
-import 'package:riden/theme/theme_controller.dart';
 // for RidenDarkBackground
 
 class SignUpChoiceScreen extends StatelessWidget {

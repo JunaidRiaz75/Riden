@@ -1,12 +1,12 @@
 // widgets/glass_bottom_nav.dart
 // ignore_for_file: deprecated_member_use
 
+import 'package:Riden/bookings/my_bookings_screen.dart';
+import 'package:Riden/call_and_chat/chat_screen.dart';
+import 'package:Riden/my_profile/profilesheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/bookings/my_bookings_screen.dart'; // Import the chat bottom sheet
-import 'package:riden/call_and_chat/chat_screen.dart';
-import 'package:riden/my_profile/profilesheet.dart';
 
 class GlassBottomNav extends StatelessWidget {
   final int selectedIndex;

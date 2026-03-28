@@ -1,6 +1,6 @@
+import 'package:Riden/widgets/glass_button.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-import 'package:riden/widgets/glass_button.dart';
 
 class GlassmorphicButton extends StatelessWidget {
   final IconData? icon;
@@ -89,7 +89,8 @@ class GlassmorphicButton extends StatelessWidget {
                   ],
                   Text(
                     text,
-                    style: textStyle ??
+                    style:
+                        textStyle ??
                         const TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 17,

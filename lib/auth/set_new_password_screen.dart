@@ -1,12 +1,12 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:Riden/auth/password_reset_success_screen.dart';
+import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/widgets/glass_button.dart';
+import 'package:Riden/widgets/glass_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:riden/auth/password_reset_success_screen.dart';
-import 'package:riden/theme/app_colors.dart';
-import 'package:riden/widgets/glass_button.dart';
-import 'package:riden/widgets/glass_field.dart';
 
 class SetNewPasswordScreen extends StatefulWidget {
   const SetNewPasswordScreen({super.key});
