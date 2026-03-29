@@ -56,11 +56,10 @@ const String _kDarkMapStyle = '''
 ]
 ''';
 
-// ─── Custom red teardrop marker with white inner dot ─────────────────────────
+// ─── Custom red teardrop marker ───────────────────────────────────────────────
 Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
   final ui.PictureRecorder recorder = ui.PictureRecorder();
   final Canvas canvas = Canvas(recorder);
-
   final double w = size.toDouble();
   final double pinW = w * 0.54;
   final double radius = pinW / 2;
@@ -69,7 +68,6 @@ Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
   final double tipY = w * 0.88;
   final double circleCY = topY + radius;
 
-  // Drop shadow
   canvas.drawOval(
     Rect.fromCenter(
       center: Offset(cx, tipY + 6),
@@ -81,7 +79,6 @@ Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
   );
 
-  // Teardrop path
   final Path path = Path()
     ..addOval(Rect.fromLTWH(cx - radius, topY, pinW, pinW))
     ..moveTo(cx - radius * 0.42, circleCY + radius * 0.52)
@@ -102,8 +99,6 @@ Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5,
   );
-
-  // White inner dot
   canvas.drawCircle(
     Offset(cx, circleCY),
     radius * 0.36,
@@ -118,19 +113,13 @@ Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
 // ─────────────────────────────────────────────────────────────────────────────
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // ── Nav: -1 = nothing selected on launch ─────────────────────────────────
   int _selectedNavIndex = -1;
 
-  // ── Tracks whether the bookings sheet is open (used only for sheet state) ──
-  bool _bookingsSheetOpen = false;
-
-  // ── Map ───────────────────────────────────────────────────────────────────
   GoogleMapController? _mapController;
   bool _mapLoading = true;
 
@@ -152,6 +141,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final TextEditingController _searchController = TextEditingController();
 
+  // ── nav bar height — used to position sheet & pill ───────────────────────
+  static const double _kNavH = 80.0;
+
   @override
   void initState() {
     super.initState();
@@ -168,12 +160,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  // ─── map ────────────────────────────────────────────────────────────────
   Future<void> _onMapCreated(GoogleMapController controller) async {
     _mapController = controller;
     try {
       await controller.setMapStyle(_kDarkMapStyle);
     } catch (e) {
-      debugPrint('Map style error: $e');
+      debugPrint('Map style: $e');
     }
     if (mounted) setState(() => _mapLoading = false);
     await _startLiveTracking();
@@ -203,7 +196,6 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       _updateUserMarker(LatLng(pos.latitude, pos.longitude), flyCamera: true);
       if (mounted) setState(() => _locating = false);
-
       _locationStream =
           Geolocator.getPositionStream(
             locationSettings: const LocationSettings(
@@ -212,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ).listen(
             (p) => _updateUserMarker(LatLng(p.latitude, p.longitude)),
-            onError: (e) => debugPrint('GPS stream: $e'),
+            onError: (e) => debugPrint('GPS: $e'),
           );
     } catch (e) {
       _showSnack('Could not get location: $e');
@@ -291,11 +283,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (resp.statusCode != 200) throw Exception('HTTP ${resp.statusCode}');
       final data = jsonDecode(resp.body) as Map<String, dynamic>;
       if (data['status'] != 'OK') throw Exception('${data['status']}');
-
       final points = (decodePolyline(
         data['routes'][0]['overview_polyline']['points'] as String,
       )).map((p) => LatLng(p[0].toDouble(), p[1].toDouble())).toList();
-
       setState(() {
         _polylines
           ..clear()
@@ -363,20 +353,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final double statusBarH = MediaQuery.of(context).padding.top;
-    final double navBarH = 80.0; // approx height of floating nav bar
-
-    // Pill is always at bottom-right, above the nav bar
-    final double pillBottomClosed = navBarH + 16;
-    final double pillRightClosed = 16;
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
+    // Total height the nav bar occupies (content + safe area bottom)
+    final double navTotalH = _kNavH + bottomPadding + 14; // 14 = bottom margin
 
     return Scaffold(
       backgroundColor: Colors.black,
+      // No bottomNavigationBar here — nav bar lives in the Stack below
+      // so it always renders above the sheet route.
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // ── 1. GOOGLE MAP ─────────────────────────────────────────────
+          // ── 1. MAP ────────────────────────────────────────────────────
           Positioned.fill(
             child: GoogleMap(
               onMapCreated: _onMapCreated,
@@ -396,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen> {
               buildingsEnabled: true,
               indoorViewEnabled: true,
               mapType: MapType.normal,
-              padding: EdgeInsets.only(bottom: navBarH),
+              padding: EdgeInsets.only(bottom: navTotalH),
               onTap: (LatLng tapped) {
                 if (_userLatLng != null)
                   fetchAndDrawRoute(_userLatLng!, tapped);
@@ -404,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // ── 2. LOADING OVERLAY ────────────────────────────────────────
+          // ── 2. MAP LOADING OVERLAY ─────────────────────────────────────
           if (_mapLoading)
             Positioned.fill(
               child: IgnorePointer(
@@ -417,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-          // ── 3. SEARCH BAR — always visible ────────────────────────────
+          // ── 3. SEARCH BAR ──────────────────────────────────────────────
           Positioned(
             top: statusBarH + 10,
             left: 16,
@@ -425,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: _TopSearchBar(controller: _searchController),
           ),
 
-          // ── 4. ROUTE BADGE ────────────────────────────────────────────
+          // ── 4. ROUTE BADGE ─────────────────────────────────────────────
           if (_fetchingRoute)
             Positioned(
               top: statusBarH + 76,
@@ -446,26 +436,31 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-          // ── 5. COMBINED PILL — always at bottom-right ─────────────────
+          // ── 5. GPS + NAVIGATE PILL ─────────────────────────────────────
           Positioned(
-            bottom: pillBottomClosed,
-            right: pillRightClosed,
+            bottom: navTotalH + 8,
+            right: 16,
             child: _CombinedPill(
               locating: _locating,
               onGpsTap: _centerOnUser,
               onNavigateTap: _handleNavigate,
             ),
           ),
-        ],
-      ),
 
-      // ── BOTTOM NAV — white frosted glass, floats ──────────────────────
-      bottomNavigationBar: _HomeBottomNav(
-        selectedIndex: _selectedNavIndex,
-        onChanged: (v) {
-          setState(() => _selectedNavIndex = v);
-          _openSheet(v);
-        },
+          // ── 6. BOTTOM NAV — topmost in Stack, always above sheet ───────
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _HomeBottomNav(
+              selectedIndex: _selectedNavIndex,
+              onChanged: (v) {
+                setState(() => _selectedNavIndex = v);
+                _openSheet(v);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -482,32 +477,56 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // ── Sheet launcher ────────────────────────────────────────────────────────
+  // ── Sheet launcher ─────────────────────────────────────────────────────────
   void _openSheet(int index) {
     if (index == 0) {
-      setState(() => _bookingsSheetOpen = true);
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (_) => DraggableScrollableSheet(
-          initialChildSize: 0.50,
-          minChildSize: 0.36,
-          maxChildSize: 0.92,
-          snap: true,
-          snapSizes: const [0.36, 0.50, 0.92],
-          builder: (ctx, sc) => BookingsBottomSheet(scrollController: sc),
-        ),
-      ).then((_) {
-        if (mounted)
-          setState(() {
-            _selectedNavIndex = -1;
-            _bookingsSheetOpen = false;
+      // Bookings: push a transparent, zero-scrim route.
+      // Because the nav bar is in the body Stack (not Scaffold.bottomNavigationBar),
+      // it stays rendered above this route at all times.
+      Navigator.of(context, rootNavigator: false)
+          .push(
+            _TransparentSheetRoute(
+              builder: (ctx) {
+                final double bottomPad = MediaQuery.of(ctx).padding.bottom;
+                final double sheetBottom = _kNavH + bottomPad + 14;
+                return Stack(
+                  children: [
+                    // Tap outside → dismiss
+                    Positioned.fill(
+                      child: GestureDetector(
+                        onTap: () => Navigator.of(ctx).pop(),
+                        behavior: HitTestBehavior.opaque,
+                        child: const ColoredBox(color: Colors.transparent),
+                      ),
+                    ),
+                    // Sheet sits just above the nav bar
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: sheetBottom,
+                      top: MediaQuery.of(ctx).size.height * 0.08,
+                      child: DraggableScrollableSheet(
+                        initialChildSize: 1.0,
+                        minChildSize: 0.4,
+                        maxChildSize: 1.0,
+                        snap: true,
+                        snapSizes: const [0.4, 0.65, 1.0],
+                        builder: (ctx2, sc) =>
+                            BookingsBottomSheet(scrollController: sc),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          )
+          .then((_) {
+            if (mounted) setState(() => _selectedNavIndex = -1);
           });
-      });
       return;
     }
 
+    // Other sheets — standard modal
     Widget Function(ScrollController) builder;
     switch (index) {
       case 1:
@@ -519,7 +538,6 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         builder = (sc) => ProfileBottomSheet(scrollController: sc);
     }
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -538,9 +556,55 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SEARCH BAR — full-pill frosted glass (dark, for map overlay)
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Zero-scrim transparent route ─────────────────────────────────────────────
+class _TransparentSheetRoute<T> extends PageRoute<T> {
+  final WidgetBuilder builder;
+  _TransparentSheetRoute({required this.builder});
+
+  @override
+  Color? get barrierColor => Colors.transparent;
+  @override
+  bool get barrierDismissible => true;
+  @override
+  String? get barrierLabel => null;
+  @override
+  bool get opaque => false; // ← lets layers beneath show through
+  @override
+  bool get maintainState => true;
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 300);
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    return builder(context);
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return SlideTransition(
+      position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+          .animate(
+            CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            ),
+          ),
+      child: child,
+    );
+  }
+}
+
+// ─── Search bar ───────────────────────────────────────────────────────────────
 class _TopSearchBar extends StatelessWidget {
   final TextEditingController controller;
   const _TopSearchBar({required this.controller});
@@ -587,7 +651,6 @@ class _TopSearchBar extends StatelessWidget {
                   ),
                 ),
               ),
-              // Car icon circle
               Container(
                 margin: const EdgeInsets.only(right: 6),
                 width: 40,
@@ -614,15 +677,11 @@ class _TopSearchBar extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// COMBINED PILL — GPS + Navigate in one frosted-glass pill
-// Always positioned at bottom-right above nav bar
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── GPS + Navigate pill ──────────────────────────────────────────────────────
 class _CombinedPill extends StatelessWidget {
   final bool locating;
   final VoidCallback onGpsTap;
   final VoidCallback onNavigateTap;
-
   const _CombinedPill({
     required this.locating,
     required this.onGpsTap,
@@ -651,7 +710,6 @@ class _CombinedPill extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // GPS button
               GestureDetector(
                 onTap: onGpsTap,
                 child: SizedBox(
@@ -675,13 +733,11 @@ class _CombinedPill extends StatelessWidget {
                   ),
                 ),
               ),
-              // Divider
               Container(
                 width: 26,
                 height: 1,
                 color: Colors.white.withOpacity(0.20),
               ),
-              // Navigate button
               GestureDetector(
                 onTap: onNavigateTap,
                 child: const SizedBox(
@@ -704,13 +760,10 @@ class _CombinedPill extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BOTTOM NAV BAR — white frosted glass, floating with margin
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Bottom nav bar ───────────────────────────────────────────────────────────
 class _HomeBottomNav extends StatelessWidget {
-  final int selectedIndex; // -1 = nothing selected
+  final int selectedIndex;
   final ValueChanged<int> onChanged;
-
   const _HomeBottomNav({required this.selectedIndex, required this.onChanged});
 
   @override
@@ -785,7 +838,6 @@ class _NItem extends StatelessWidget {
   final String label;
   final int selectedIndex;
   final ValueChanged<int> onChanged;
-
   const _NItem(
     this.index,
     this.icon,
@@ -800,7 +852,6 @@ class _NItem extends StatelessWidget {
     final Color color = active
         ? const Color(0xFFE53935)
         : const Color(0xFF6A6A7E);
-
     return Expanded(
       child: GestureDetector(
         onTap: () => onChanged(index),
@@ -830,15 +881,12 @@ class _NItem extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GLASS BADGE — route loading / clear-route indicator
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Glass badge ──────────────────────────────────────────────────────────────
 class _GlassBadge extends StatelessWidget {
   final String label;
   final IconData? icon;
   final bool loading;
   final VoidCallback? onTap;
-
   const _GlassBadge({
     required this.label,
     this.icon,
