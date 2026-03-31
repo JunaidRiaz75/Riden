@@ -14,6 +14,7 @@ import 'package:Riden/home/add_place_screen.dart';
 import 'package:Riden/home/your_locations_screen.dart';
 import 'package:Riden/my_profile/profilesheet.dart';
 import 'package:Riden/notifications/notification.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -59,75 +60,23 @@ const String _kDarkMapStyle = '''
 ]
 ''';
 
-// ─── Custom red teardrop marker with white inner dot (unchanged) ────────────
-Future<BitmapDescriptor> _buildCustomMarker({int size = 120}) async {
-  final ui.PictureRecorder recorder = ui.PictureRecorder();
-  final Canvas canvas = Canvas(recorder);
-
-  final double w = size.toDouble();
-  final double pinW = w * 0.54;
-  final double radius = pinW / 2;
-  final double cx = w / 2;
-  final double topY = w * 0.05;
-  final double tipY = w * 0.88;
-  final double circleCY = topY + radius;
-
-  canvas.drawOval(
-    Rect.fromCenter(
-      center: Offset(cx, tipY + 6),
-      width: pinW * 0.65,
-      height: 9,
-    ),
-    Paint()
-      ..color = Colors.black.withOpacity(0.30)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
-  );
-
-  final Path path = Path()
-    ..addOval(Rect.fromLTWH(cx - radius, topY, pinW, pinW))
-    ..moveTo(cx - radius * 0.42, circleCY + radius * 0.52)
-    ..quadraticBezierTo(cx, tipY, cx, tipY)
-    ..quadraticBezierTo(cx, tipY, cx + radius * 0.42, circleCY + radius * 0.52)
-    ..close();
-
-  canvas.drawPath(
-    path,
-    Paint()
-      ..color = const Color(0xFFE53935)
-      ..style = PaintingStyle.fill,
-  );
-  canvas.drawPath(
-    path,
-    Paint()
-      ..color = Colors.black.withOpacity(0.18)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5,
-  );
-
-  canvas.drawCircle(
-    Offset(cx, circleCY),
-    radius * 0.36,
-    Paint()..color = Colors.white,
-  );
-
-  final ui.Image img = await recorder.endRecording().toImage(size, size);
-  final ByteData? bytes = await img.toByteData(format: ui.ImageByteFormat.png);
-  return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
-}
+// ─── Custom red teardrop marker ──────────────────────(unchanged) ────────────
+// _buildCustomMarker function was here. Now it's replaced by pointer.png asset.
 
 // ─────────────────────────────────────────────────────────────────────────────
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedNavIndex = -1;
+
+  // ── Tracks whether the bookings sheet is open (used only for sheet state) ──
   bool _bookingsSheetOpen = false;
 
-  // Map
+  // ── Map ───────────────────────────────────────────────────────────────────
   GoogleMapController? _mapController;
   bool _mapLoading = true;
   static const CameraPosition _initialCamera = CameraPosition(
@@ -147,10 +96,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final TextEditingController _searchController = TextEditingController();
 
+  // ── nav bar height — used to position sheet & pill ───────────────────────
+  static const double _kNavH = 80.0;
+
   @override
   void initState() {
     super.initState();
-    _buildCustomMarker().then((icon) {
+    // Use pointer.png from assets
+    BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(size: Size(48, 48)),
+      'assets/images/pointer.png',
+    ).then((icon) {
       if (mounted) setState(() => _customMarkerIcon = icon);
     });
   }
@@ -163,12 +119,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  // ─── map ────────────────────────────────────────────────────────────────
   Future<void> _onMapCreated(GoogleMapController controller) async {
     _mapController = controller;
     try {
       await controller.setMapStyle(_kDarkMapStyle);
     } catch (e) {
-      debugPrint('Map style error: $e');
+      debugPrint('Map style: $e');
     }
     if (mounted) setState(() => _mapLoading = false);
     await _startLiveTracking();
@@ -198,7 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       _updateUserMarker(LatLng(pos.latitude, pos.longitude), flyCamera: true);
       if (mounted) setState(() => _locating = false);
-
       _locationStream =
           Geolocator.getPositionStream(
             locationSettings: const LocationSettings(
@@ -207,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ).listen(
             (p) => _updateUserMarker(LatLng(p.latitude, p.longitude)),
-            onError: (e) => debugPrint('GPS stream: $e'),
+            onError: (e) => debugPrint('GPS: $e'),
           );
     } catch (e) {
       _showSnack('Could not get location: $e');
@@ -286,11 +242,9 @@ class _HomeScreenState extends State<HomeScreen> {
       if (resp.statusCode != 200) throw Exception('HTTP ${resp.statusCode}');
       final data = jsonDecode(resp.body) as Map<String, dynamic>;
       if (data['status'] != 'OK') throw Exception('${data['status']}');
-
       final points = (decodePolyline(
         data['routes'][0]['overview_polyline']['points'] as String,
       )).map((p) => LatLng(p[0].toDouble(), p[1].toDouble())).toList();
-
       setState(() {
         _polylines
           ..clear()
@@ -354,19 +308,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _handleNavigate() {
-    if (_userLatLng != null) {
-      fetchAndDrawRoute(_userLatLng!, _demoDestination);
-    } else {
-      _showSnack('Getting your location…');
-      _startLiveTracking().then((_) {
-        if (_userLatLng != null)
-          fetchAndDrawRoute(_userLatLng!, _demoDestination);
-      });
-    }
-  }
+  // Duplicate _handleNavigate removed to resolve naming conflict.
 
-  void _openSheet(int index) {
+  void _openMainSheet(int index) {
     // ✅ RIDE BOTTOM SHEET - Shows RideBottomSheet
     if (index == 0) {
       setState(() => _bookingsSheetOpen = true);
@@ -424,17 +368,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final double statusBarH = MediaQuery.of(context).padding.top;
-    final double navBarH = 80.0;
+    final double navBarH = 80.0; // approx height of floating nav bar
+
+    // Pill is always at bottom-right, above the nav bar
     final double pillBottomClosed = navBarH + 16;
     final double pillRightClosed = 16;
 
     return Scaffold(
       backgroundColor: Colors.black,
+      // No bottomNavigationBar here — nav bar lives in the Stack below
+      // so it always renders above the sheet route.
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // ── 1. MAP ────────────────────────────────────────────────────
           Positioned.fill(
             child: GoogleMap(
               onMapCreated: _onMapCreated,
@@ -461,6 +410,8 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
+
+          // ── 2. LOADING OVERLAY ────────────────────────────────────────
           if (_mapLoading)
             Positioned.fill(
               child: IgnorePointer(
@@ -472,14 +423,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          // ── Search bar at top ─────────────────────────────────────────
+
+          // ── 3. SEARCH BAR ──────────────────────────────────────────────
           Positioned(
             top: statusBarH + 12,
             left: 16,
             right: 16,
-            child: _SearchBar(),
+            child: _TopSearchBar(controller: _searchController),
           ),
-          // Route badges (unchanged)
+          // Route badges (unchanged)─
           if (_fetchingRoute)
             Positioned(
               top: statusBarH + 76,
@@ -499,10 +451,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: _clearRoute,
               ),
             ),
+
+          // ── 5. GPS + NAVIGATE PILL ─────────────────────────────────────
           // ── Combined pill at bottom‑right (3 icons) ─────────────────────
           Positioned(
-            bottom: pillBottomClosed,
-            right: pillRightClosed,
+            bottom: navBarH + 28, // INCREASED GAP HERE (was + 8)
+            right: 16,
             child: _CombinedPill(
               locating: _locating,
               onGpsTap: _centerOnUser,
@@ -512,21 +466,98 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: _HomeBottomNav(
+
+      // BOTTOM NAV — Standardized RidenBottomNav
+      bottomNavigationBar: RidenBottomNav(
         selectedIndex: _selectedNavIndex,
+        isFromSheet: false,
         onChanged: (v) {
           setState(() => _selectedNavIndex = v);
-          _openSheet(v);
+          // Redundant _openMainSheet call removed.
+          // RidenBottomNav now handles its own navigation autonomously.
         },
       ),
     );
   }
+
+  void _handleNavigate() {
+    if (_userLatLng != null) {
+      fetchAndDrawRoute(_userLatLng!, _demoDestination);
+    } else {
+      _showSnack('Getting your location…');
+      _startLiveTracking().then((_) {
+        if (_userLatLng != null)
+          fetchAndDrawRoute(_userLatLng!, _demoDestination);
+      });
+    }
+  }
+
+  // ── Sheet launcher ────────────────────────────────────────────────────────
+  void _openSheet(int index) {
+    if (index == 0) {
+      setState(() => _bookingsSheetOpen = true);
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => DraggableScrollableSheet(
+          initialChildSize: 0.50,
+          minChildSize: 0.36,
+          maxChildSize: 0.92,
+          snap: true,
+          snapSizes: const [0.36, 0.50, 0.92],
+          builder: (ctx, sc) => RideBottomSheet(scrollController: sc),
+        ),
+      ).then((_) {
+        if (mounted)
+          setState(() {
+            _selectedNavIndex = -1;
+            _bookingsSheetOpen = false;
+          });
+      });
+      return;
+    }
+
+    Widget Function(ScrollController) builder;
+    switch (index) {
+      case 1: // Support/Chat
+        builder = (sc) => ChatBottomSheet(scrollController: sc);
+        break;
+      case 2: // Notifications
+        builder = (sc) => NotificationsBottomSheet(scrollController: sc);
+        break;
+      case 3: // Account/Profile
+        builder = (sc) => ProfileBottomSheet(scrollController: sc);
+        break;
+      default:
+        return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        snap: true,
+        snapSizes: const [0.5, 0.85, 0.95],
+        builder: (ctx, sc) => builder(sc),
+      ),
+    ).then((_) {
+      if (mounted) setState(() => _selectedNavIndex = -1);
+    });
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SEARCH BAR – glassy, with hint and MAP button
+// SEARCH BAR — full-pill frosted glass (dark, for map overlay)
 // ─────────────────────────────────────────────────────────────────────────────
-class _SearchBar extends StatelessWidget {
+class _TopSearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  const _TopSearchBar({required this.controller});
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -578,7 +609,8 @@ class _SearchBar extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COMBINED PILL – three icons: notifications, GPS, navigate
+// COMBINED PILL — GPS + Navigate in one frosted-glass pill
+// Always positioned at bottom-right above nav bar
 // ─────────────────────────────────────────────────────────────────────────────
 class _CombinedPill extends StatelessWidget {
   final bool locating;
@@ -595,225 +627,70 @@ class _CombinedPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 40),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.20),
-                width: 1,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.18),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.white.withOpacity(0.20), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.20),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.30),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Notifications
-                Container(
-                  width: 26,
-                  height: 1,
-                  color: Colors.white.withOpacity(0.20),
-                ),
-                // GPS
-                GestureDetector(
-                  onTap: onGpsTap,
-                  child: SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: Center(
-                      child: locating
-                          ? const SizedBox(
-                              width: 19,
-                              height: 19,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(
-                              Icons.gps_fixed,
-                              color: Colors.white,
-                              size: 22,
-                            ),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 26,
-                  height: 1,
-                  color: Colors.white.withOpacity(0.20),
-                ),
-                // Navigate
-                GestureDetector(
-                  onTap: onNavigateTap,
-                  child: const SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: Center(
-                      child: Icon(
-                        Icons.near_me_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// BOTTOM NAVIGATION BAR – dark icons/text, centered, no overflow
-// ─────────────────────────────────────────────────────────────────────────────
-class _HomeBottomNav extends StatelessWidget {
-  final int selectedIndex;
-  final ValueChanged<int> onChanged;
-
-  const _HomeBottomNav({required this.selectedIndex, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 17),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(50),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(
-                0.58,
-              ), // bright white for dark text
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.7),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 12,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 15),
-                child: Row(
-                  children: [
-                    _NItem(
-                      0,
-                      Icons.directions_car_rounded,
-                      'Ride',
-                      selectedIndex,
-                      onChanged,
-                    ),
-                    _NItem(
-                      1,
-                      Icons.support_agent_rounded,
-                      'Support',
-                      selectedIndex,
-                      onChanged,
-                    ),
-                    _NItem(
-                      2,
-                      Icons.receipt_long_rounded,
-                      'Bookings',
-                      selectedIndex,
-                      onChanged,
-                    ),
-                    _NItem(
-                      3,
-                      Icons.person_outline_rounded,
-                      'Account',
-                      selectedIndex,
-                      onChanged,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NItem extends StatelessWidget {
-  final int index;
-  final IconData icon;
-  final String label;
-  final int selectedIndex;
-  final ValueChanged<int> onChanged;
-
-  const _NItem(
-    this.index,
-    this.icon,
-    this.label,
-    this.selectedIndex,
-    this.onChanged,
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    final bool active = selectedIndex == index;
-    final Color iconColor = active
-        ? const Color(0xFFE53935) // red when active
-        : const ui.Color.fromARGB(
-            255,
-            24,
-            30,
-            36,
-          ); // dark blue‑grey when inactive
-    final Color labelColor = active
-        ? const Color(0xFFE53935)
-        : const ui.Color.fromARGB(255, 24, 30, 36);
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => onChanged(index),
-        behavior: HitTestBehavior.opaque,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 1,
-          ), // reduced to prevent overflow
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(icon, color: iconColor, size: 24),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: labelColor,
-                  fontSize: 12,
-                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+              // GPS button
+              GestureDetector(
+                onTap: onGpsTap,
+                child: SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: Center(
+                    child: locating
+                        ? const SizedBox(
+                            width: 19,
+                            height: 19,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.gps_fixed,
+                            color: Colors.white,
+                            size: 22,
+                          ),
+                  ),
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
+              ),
+              // Divider
+              Container(
+                width: 26,
+                height: 1,
+                color: Colors.white.withOpacity(0.20),
+              ),
+              // Navigate button
+              GestureDetector(
+                onTap: onNavigateTap,
+                child: const SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: Center(
+                    child: Icon(
+                      Icons.near_me_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -823,15 +700,16 @@ class _NItem extends StatelessWidget {
   }
 }
 
+
+
 // ─────────────────────────────────────────────────────────────────────────────
-// GLASS BADGE – route loading / clear-route indicator
+// GLASS BADGE — route loading / clear-route indicator
 // ─────────────────────────────────────────────────────────────────────────────
 class _GlassBadge extends StatelessWidget {
   final String label;
   final IconData? icon;
   final bool loading;
   final VoidCallback? onTap;
-
   const _GlassBadge({
     required this.label,
     this.icon,

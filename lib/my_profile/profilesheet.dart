@@ -1,6 +1,7 @@
 // profile_bottom_sheet.dart
 // ignore_for_file: deprecated_member_use
 
+import 'dart:ui';
 import 'package:Riden/controllers/profile_controllers.dart';
 import 'package:Riden/my_profile/about_us/about_us_bottom_sheet.dart';
 import 'package:Riden/my_profile/app_setting/app_setting.dart';
@@ -10,6 +11,7 @@ import 'package:Riden/my_profile/in_app_wallet/in_app_wallet_screen.dart';
 import 'package:Riden/my_profile/payment_methods/payment_methods_screen.dart';
 import 'package:Riden/my_profile/profile_setting/profile_settings_bottom_sheet.dart';
 import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -88,81 +90,102 @@ class ProfileBottomSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      controller: scrollController,
-      physics: const ClampingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        fit: StackFit.expand,
         children: [
-          // ── Profile Section ─────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+          // ✅ Background Gradient
+          const Positioned.fill(child: RidenDarkBackground()),
+
+          // ✅ Blurry overlay
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+              child: Container(
+                color: Colors.white.withOpacity(0.06),
+              ),
+            ),
+          ),
+
+          SingleChildScrollView(
+            controller: scrollController,
+            physics: const ClampingScrollPhysics(),
             child: Column(
               children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
+                // Drag handle
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 2),
+                  child: Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: RidenColors.brandRed,
-                          width: 3,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: RidenColors.brandRed.withOpacity(0.3),
-                            blurRadius: 15,
-                            spreadRadius: 2,
+                        color: Colors.white.withOpacity(0.35),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                ),
+                // ── Settings Header ─────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.arrow_back_ios,
+                              color: Colors.white, size: 20),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Back',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(40),
-                        child: Image.network(
-                          'https://i.pravatar.cc/150?img=33',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: () => _openSheet(
-                          context,
-                          (sc) =>
-                              ProfileSettingsBottomSheet(scrollController: sc),
-                        ),
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: RidenColors.brandRed,
-                            border: Border.all(
-                              color: RidenColors.backgroundBase,
-                              width: 2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: RidenColors.brandRed.withOpacity(0.4),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 14,
-                            ),
-                          ),
-                        ),
-                      ),
+                  ),
+                  Text(
+                    'Settings',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // ── Profile Image & Name ───────────────────────
+            Column(
+              children: [
+                Container(
+                  width: 90,
+                  height: 90,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(45),
+                    child: Image.network(
+                      'https://i.pravatar.cc/150?img=33',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -170,246 +193,168 @@ class ProfileBottomSheetContent extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: RidenColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Columbia, Canada',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: RidenColors.textSecondary,
+                    color: Colors.white,
                   ),
                 ),
               ],
             ),
-          ),
 
-          const Divider(color: Colors.white24, height: 24, thickness: 1),
+            const SizedBox(height: 24),
 
-          // ── Menu Items (all 7 wired) ─────────────────────
-          _buildMenuItem(
-            icon: Icons.person_outline,
-            label: 'Profile Settings',
-            onTap: () => _openSheet(
-              context,
-              (sc) => ProfileSettingsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.payment,
-            label: 'Payment Methods',
-            onTap: () => _openSheet(
-              context,
-              (sc) => PaymentMethodsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.wallet,
-            label: 'In App Wallet',
-            onTap: () => _openSheet(
-              context,
-              (sc) => InAppWalletBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.confirmation_number_outlined,
-            label: 'Complaint Tickets',
-            onTap: () => _openSheet(
-              context,
-              (sc) => ComplaintTicketsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.info_outline,
-            label: 'About Us',
-            onTap: () => _openSheet(
-              context,
-              (sc) => AboutUsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.settings_outlined,
-            label: 'App Settings',
-            onTap: () => _openSheet(
-              context,
-              (sc) => AppSettingsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.support_agent_outlined,
-            label: 'Contact Support',
-            onTap: () => _openSheet(
-              context,
-              (sc) => ContactSupportBottomSheet(scrollController: sc),
-            ),
-          ),
-
-          const Divider(color: Colors.white24, height: 24, thickness: 1),
-
-          // ── Theme Toggle ─────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Row(
-              children: [
-                Text(
-                  'Theme Mode',
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: RidenColors.textPrimary,
-                  ),
-                ),
-                const Spacer(),
-                Obx(
-                  () => GestureDetector(
-                    onTap: controller.toggleLight,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: !controller.isDarkMode.value
-                            ? RidenColors.brandRed
-                            : Colors.white.withOpacity(0.08),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.light_mode,
-                          color: !controller.isDarkMode.value
-                              ? Colors.white
-                              : RidenColors.textSecondary,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Obx(
-                  () => GestureDetector(
-                    onTap: controller.toggleDark,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: controller.isDarkMode.value
-                            ? RidenColors.brandRed
-                            : Colors.white.withOpacity(0.08),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.dark_mode,
-                          color: controller.isDarkMode.value
-                              ? Colors.white
-                              : RidenColors.textSecondary,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const Divider(color: Colors.white24, height: 24, thickness: 1),
-
-          // ── Logout ───────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: GestureDetector(
-              onTap: () {
-                Get.snackbar(
-                  'Logging out',
-                  'Logging out...',
-                  backgroundColor: RidenColors.brandRed,
-                  colorText: Colors.white,
-                  duration: const Duration(milliseconds: 800),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: RidenColors.brandRed, width: 1.5),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.logout, color: RidenColors.brandRed, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Logout',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: RidenColors.brandRed,
-                      ),
-                    ),
-                  ],
+            // ── Glassy Menu List ──────────────────────────
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.58), // MATCHED TO BOTTOM NAV
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.15),
+                  width: 1,
                 ),
               ),
+              child: Column(
+                children: [
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.person,
+                    label: 'Profile Settings',
+                    onTap: () => _openSheet(
+                      context,
+                      (sc) => ProfileSettingsBottomSheet(scrollController: sc),
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.calendar_month_rounded,
+                    label: 'Ride History',
+                    onTap: () {},
+                  ),
+                  _buildDivider(),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.paid_rounded,
+                    label: 'Payment Methods',
+                    onTap: () => _openSheet(
+                      context,
+                      (sc) => PaymentMethodsBottomSheet(scrollController: sc),
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.account_balance_wallet_rounded,
+                    label: 'In App Wallet',
+                    onTap: () => _openSheet(
+                      context,
+                      (sc) => InAppWalletBottomSheet(scrollController: sc),
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.group_rounded,
+                    label: 'Complaint Tickets',
+                    onTap: () => _openSheet(
+                      context,
+                      (sc) => ComplaintTicketsBottomSheet(scrollController: sc),
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.person_pin_rounded,
+                    label: 'About us',
+                    onTap: () => _openSheet(
+                      context,
+                      (sc) => AboutUsBottomSheet(scrollController: sc),
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.settings_rounded,
+                    label: 'App Settings',
+                    onTap: () => _openSheet(
+                      context,
+                      (sc) => AppSettingsBottomSheet(scrollController: sc),
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.person_add_rounded,
+                    label: 'Contact Support',
+                    onTap: () => _openSheet(
+                      context,
+                      (sc) => ContactSupportBottomSheet(scrollController: sc),
+                    ),
+                  ),
+                  _buildDivider(),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.logout_rounded,
+                    label: 'Logout',
+                    onTap: () {
+                      Get.snackbar(
+                        'Logging out',
+                        'Good bye!',
+                        backgroundColor: RidenColors.brandRed,
+                        colorText: Colors.white,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 100), // Space for bottom nav
+              ],
             ),
           ),
-
-          const SizedBox(height: 30),
         ],
+      ),
+      bottomNavigationBar: RidenBottomNav(
+        selectedIndex: 3,
+        isFromSheet: true,
       ),
     );
   }
 
   Widget _buildMenuItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
+    return ListTile(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: RidenColors.brandRed.withOpacity(0.15),
-              ),
-              child: Center(
-                child: Icon(icon, color: RidenColors.brandRed, size: 20),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                label,
-                style: GoogleFonts.poppins(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: RidenColors.textPrimary,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white.withOpacity(0.4),
-              size: 16,
-            ),
-          ],
+      leading: Icon(icon, color: Colors.red, size: 22),
+      title: Text(
+        label,
+        style: GoogleFonts.poppins(
+          color: Colors.black87,
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
         ),
+      ),
+      trailing: const Icon(
+        Icons.chevron_right_rounded,
+        color: Colors.red,
+        size: 24,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      visualDensity: VisualDensity.compact,
+    );
+  }
+
+  Widget _buildDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Divider(
+        color: Colors.black.withOpacity(0.08),
+        height: 1,
       ),
     );
   }

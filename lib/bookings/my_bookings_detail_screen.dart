@@ -2,6 +2,7 @@
 import 'package:Riden/bookings/booking_ride_detail.dart';
 import 'package:Riden/bookings/report_issue_screen.dart';
 import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -97,7 +98,7 @@ class MyBookingsDetailScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                Expanded(
+                 Expanded(
                   child: _DetailContent(
                     scrollController: ScrollController(),
                     date: date,
@@ -105,6 +106,8 @@ class MyBookingsDetailScreen extends StatelessWidget {
                     driver: driver,
                   ),
                 ),
+                // Standardized Bottom Nav
+                RidenBottomNav(selectedIndex: 0, isFromSheet: false),
               ],
             ),
           ),
@@ -190,7 +193,7 @@ class _MyBookingsDetailSheet extends StatelessWidget {
                 ),
               ),
               // Scrollable body
-              Expanded(
+               Expanded(
                 child: _DetailContent(
                   scrollController: scrollController,
                   date: date,
@@ -198,6 +201,8 @@ class _MyBookingsDetailSheet extends StatelessWidget {
                   driver: driver,
                 ),
               ),
+              // Standardized Bottom Nav
+              RidenBottomNav(selectedIndex: 0),
             ],
           ),
         ],

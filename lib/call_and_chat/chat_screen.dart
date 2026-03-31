@@ -6,11 +6,46 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:Riden/widgets/riden_bottom_nav.dart';
+
 import '../theme/app_colors.dart';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// HOW TO OPEN (from your home screen):
+//
+//   showModalBottomSheet(
+//     context: context,
+//     isScrollControlled: true,
+//     backgroundColor: Colors.transparent,
+//     barrierColor: Colors.black54,
+//     builder: (_) => const ChatBottomSheetEntry(),
+//   );
+// ─────────────────────────────────────────────────────────────────────────────
+
+class ChatBottomSheetEntry extends StatelessWidget {
+  const ChatBottomSheetEntry({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.60,
+      minChildSize: 0.40,
+      maxChildSize: 1.0,
+      expand: false, // CRITICAL — lets modal own the outer sizing
+      snap: true,
+      snapSizes: const [0.40, 0.70, 1.0],
+      builder: (context, scrollController) {
+        return ChatBottomSheet(scrollController: scrollController);
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN SHEET BODY
+// ─────────────────────────────────────────────────────────────────────────────
 class ChatBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
-
   const ChatBottomSheet({required this.scrollController, super.key});
 
   @override
@@ -19,211 +54,240 @@ class ChatBottomSheet extends StatefulWidget {
 
 class _ChatBottomSheetState extends State<ChatBottomSheet> {
   final List<Map<String, dynamic>> messages = [
-    {
-      'type': 'received',
-      'avatar': 'assets/images/avatar.png',
-      'text': 'Good Evening!',
-      'time': '8:29 pm',
-    },
-    {
-      'type': 'received',
-      'avatar': 'assets/images/avatar.png',
-      'text': 'Welcome to Riden Customer Service',
-      'time': '8:29 pm',
-    },
-    {
-      'type': 'sent',
-      'text': 'Hello, I need help with my booking',
-      'time': '8:29 pm',
-    },
-    {
-      'type': 'received',
-      'avatar': 'assets/images/avatar.png',
-      'text': 'Sure! How can I help you?',
-      'time': '8:28 pm',
-    },
-    {
-      'type': 'sent',
-      'text': 'My driver is taking too long',
-      'time': 'Just now',
-    },
+    {'type': 'received', 'text': 'Welcome to a wonderful experience', 'time': '8:29 pm'},
+    {'type': 'sent', 'text': 'Thanks For Letting Me In', 'time': '8:30 pm'},
+    {'type': 'received', 'text': 'Well That\'s Just Kind Of You', 'time': 'Just Now'},
   ];
 
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _msgController = TextEditingController();
 
   void _sendMessage() {
-    if (_controller.text.trim().isEmpty) return;
+    if (_msgController.text.trim().isEmpty) return;
     setState(() {
       messages.add({
         'type': 'sent',
-        'text': _controller.text.trim(),
+        'text': _msgController.text.trim(),
         'time': 'Just now',
       });
-      _controller.clear();
+      _msgController.clear();
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(28),
-        topRight: Radius.circular(28),
-      ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // ── Dark gradient background (same as Splash) ──
-          const RidenDarkBackground(),
+  void dispose() {
+    _msgController.dispose();
+    super.dispose();
+  }
 
-          // ── Sheet content on top ──
-          Column(
-            children: [
-              // Drag Handle
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Center(
-                  child: Container(
-                    width: 45,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(2.5),
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double sheetH = constraints.maxHeight;
+        final double sheetW = constraints.maxWidth;
+
+        // progress: 0.0 = min collapsed, 1.0 = full screen
+        final double minH = screenHeight * 0.40;
+        final double maxH = screenHeight * 1.00;
+        final double progress =
+            ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+
+        // Corners flatten as sheet goes full screen
+        final double cornerRadius = 28.0 * (1.0 - progress);
+
+        return ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(cornerRadius),
+            topRight: Radius.circular(cornerRadius),
+          ),
+          child: SizedBox(
+            width: sheetW,
+            height: sheetH,
+            child: Stack(
+              children: [
+                // ── 1. Gradient background — CustomPainter, always exact fit ──
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: _SheetGradientPainter(),
+                  ),
+                ),
+
+                // ── 2. Frosted glass blur layer — matches Image 1 glassy feel ──
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        // semi-transparent white glass tint
+                        color: Colors.white.withOpacity(0.06),
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.white.withOpacity(0.18),
+                            width: 1.2,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              // Chat Header
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
+                // ── 3. Foreground content ──
+                Column(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white,
-                          size: 20,
+                    // Drag handle
+                    AnimatedOpacity(
+                      opacity: (1.0 - progress).clamp(0.0, 1.0),
+                      duration: const Duration(milliseconds: 150),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 2),
+                        child: Center(
+                          child: Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.35),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      "Chat Support",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1,
+
+                    // ── Header: "< Back  Chat  📞" ──
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      child: Row(
+                        children: [
+                          // Back button
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.chevron_left,
+                                    color: Colors.white, size: 22),
+                                Text(
+                                  'Back',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Title centered
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                'Chat',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Phone icon
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.call_outlined,
+                                color: Colors.white, size: 20),
+                          ),
+                        ],
                       ),
+                    ),
+
+                    // ── Messages ──
+                    Expanded(
+                      child: ListView.builder(
+                        controller: widget.scrollController,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 6),
+                        itemCount: messages.length,
+                        itemBuilder: (ctx, i) {
+                          final msg = messages[i];
+                          final isSent = msg['type'] == 'sent';
+                          return _buildMessageRow(msg, isSent);
+                        },
+                      ),
+                    ),
+
+                    // ── Input bar ──
+                    _InputArea(
+                      controller: _msgController,
+                      onSend: _sendMessage,
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    // ── Standardized Bottom Nav ──
+                    RidenBottomNav(
+                      selectedIndex: 1,
+                      isFromSheet: true,
                     ),
                   ],
                 ),
-              ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-              const Divider(color: Colors.white24, height: 1),
-
-              // Chat messages (scrollable)
-              Expanded(
-                child: ListView.builder(
-                  controller: widget.scrollController,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  itemCount: messages.length,
-                  reverse: false,
-                  itemBuilder: (context, index) {
-                    final msg = messages[index];
-                    final isSent = msg['type'] == 'sent';
-                    return Column(
-                      crossAxisAlignment: isSent
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        if (!isSent)
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: CircleAvatar(
-                                  radius: 17,
-                                  backgroundColor: Colors.red.withOpacity(0.2),
-                                  child: const Icon(
-                                    Icons.support_agent,
-                                    color: Colors.red,
-                                    size: 18,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 7),
-                              Flexible(
-                                child: GlassMessageBubble(
-                                  text: msg['text'],
-                                  isSent: false,
-                                ),
-                              ),
-                            ],
-                          ),
-                        if (isSent)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 38,
-                              top: 2,
-                              right: 2,
-                            ),
-                            child: GlassMessageBubble(
-                              text: msg['text'],
-                              isSent: true,
-                            ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 46,
-                            right: 12,
-                            top: 2,
-                            bottom: 10,
-                          ),
-                          child: Text(
-                            msg['time'],
-                            style: GoogleFonts.poppins(
-                              color: Colors.white60,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+  Widget _buildMessageRow(Map<String, dynamic> msg, bool isSent) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Column(
+        crossAxisAlignment:
+            isSent ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          if (!isSent)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Avatar circle
+                CircleAvatar(
+                  radius: 16,
+                  backgroundImage:
+                      const AssetImage('assets/images/avatar.png'),
+                  onBackgroundImageError: (_, __) {},
+                  child: const Icon(Icons.person, size: 16, color: Colors.white),
                 ),
+                const SizedBox(width: 8),
+                Flexible(child: _MessageBubble(text: msg['text'], isSent: false)),
+              ],
+            ),
+          if (isSent)
+            Padding(
+              padding: const EdgeInsets.only(left: 50),
+              child: _MessageBubble(text: msg['text'], isSent: true),
+            ),
+          Padding(
+            padding: EdgeInsets.only(
+              left: isSent ? 0 : 46,
+              right: isSent ? 4 : 0,
+              top: 3,
+              bottom: 10,
+            ),
+            child: Text(
+              msg['time'],
+              style: GoogleFonts.poppins(
+                color: Colors.white54,
+                fontSize: 11,
               ),
-
-              // Input Area
-              GlassInputArea(controller: _controller, onSend: _sendMessage),
-
-              // Bottom Navigation Bar (same as home screen)
-              const SizedBox(height: 8),
-              _HomeBottomNav(
-                selectedIndex: 1, // Support tab is active when chat is open
-                onChanged: (index) {
-                  // Close current sheet and let home screen handle navigation
-                  Navigator.pop(context);
-                  // Optionally, you could call a callback to open the new tab's sheet
-                  // For now, just close the chat and the home screen will open the selected tab.
-                },
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -231,43 +295,147 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// GRADIENT PAINTER  —  replicates Image 2: warm copper left, teal right
+// Always paints to exactly the canvas size → no fit/overflow issues ever
+// ─────────────────────────────────────────────────────────────────────────────
+class _SheetGradientPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // Base: dark navy (matches RidenColors.backgroundBase)
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF1A1B2E),
+    );
+
+    // Warm copper/brown glow — top-left (matches Image 2 left blob)
+    _radialBlob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.70,
+      ry: h * 0.50,
+      color: const Color(0xFF8B4A35), // warm copper
+      alpha: 170,
+    );
+
+    // Slightly deeper copper lower-left
+    _radialBlob(
+      canvas,
+      center: Offset(w * 0.05, h * 0.55),
+      rx: w * 0.50,
+      ry: h * 0.35,
+      color: const Color(0xFF6B3828),
+      alpha: 130,
+    );
+
+    // Teal/slate glow — bottom-right (matches Image 2 right blob)
+    _radialBlob(
+      canvas,
+      center: Offset(w * 0.82, h * 0.68),
+      rx: w * 0.70,
+      ry: h * 0.52,
+      color: const Color(0xFF2E6B72), // teal slate
+      alpha: 165,
+    );
+
+    // Lighter teal highlight
+    _radialBlob(
+      canvas,
+      center: Offset(w * 0.90, h * 0.50),
+      rx: w * 0.40,
+      ry: h * 0.30,
+      color: const Color(0xFF3D8A8F),
+      alpha: 110,
+    );
+
+    // Center neutral blend — softens the boundary
+    _radialBlob(
+      canvas,
+      center: Offset(w * 0.50, h * 0.50),
+      rx: w * 0.55,
+      ry: h * 0.40,
+      color: const Color(0xFF3A4555),
+      alpha: 80,
+    );
+  }
+
+  void _radialBlob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
+    final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
+    final clear = Color.fromARGB(0, color.red, color.green, color.blue);
+
+    final paint = Paint()
+      ..shader = RadialGradient(
+        colors: [solid, clear],
+      ).createShader(
+        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
+      );
+
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.scale(1.0, ry / rx); // squish circle into ellipse
+    canvas.translate(-center.dx, -center.dy);
+    canvas.drawCircle(center, rx, paint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_SheetGradientPainter _) => false;
+}
+
 // ─────────────────────────────────────────────
-// MESSAGE BUBBLE
+// MESSAGE BUBBLE  — matches Image 1 style
 // ─────────────────────────────────────────────
-class GlassMessageBubble extends StatelessWidget {
+class _MessageBubble extends StatelessWidget {
   final String text;
   final bool isSent;
 
-  const GlassMessageBubble({required this.text, required this.isSent, Key? key})
-    : super(key: key);
+  const _MessageBubble({required this.text, required this.isSent});
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: isSent ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: isSent
-            ? const EdgeInsets.only(left: 20)
-            : const EdgeInsets.only(right: 20),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: isSent ? Colors.transparent : Colors.white.withOpacity(0.09),
-          border: isSent
-              ? Border.all(color: Colors.redAccent, width: 1.5)
-              : null,
-          boxShadow: [
-            if (!isSent)
-              BoxShadow(
-                color: Colors.black.withOpacity(0.09),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-          ],
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(18),
+          topRight: const Radius.circular(18),
+          bottomLeft: Radius.circular(isSent ? 18 : 4),
+          bottomRight: Radius.circular(isSent ? 4 : 18),
         ),
-        child: Text(
-          text,
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
+        // Received: glassy white | Sent: deep red/maroon as in screenshot
+        color: isSent
+            ? const Color(0xFF7B2020)
+            : Colors.white.withOpacity(0.15),
+        border: Border.all(
+          color: isSent
+              ? Colors.redAccent.withOpacity(0.6)
+              : Colors.white.withOpacity(0.18),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
@@ -275,54 +443,55 @@ class GlassMessageBubble extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────
-// INPUT AREA
+// INPUT AREA  — matches Image 1
 // ─────────────────────────────────────────────
-class GlassInputArea extends StatelessWidget {
+class _InputArea extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
 
-  const GlassInputArea({
-    required this.controller,
-    required this.onSend,
-    Key? key,
-  }) : super(key: key);
+  const _InputArea({required this.controller, required this.onSend});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.13),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white.withOpacity(0.18), width: 1.2),
+        color: Colors.white.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
       ),
       child: Row(
         children: [
-          const Icon(
-            Icons.emoji_emotions_outlined,
-            color: Colors.white70,
-            size: 24,
-          ),
+          const Icon(Icons.emoji_emotions_outlined,
+              color: Colors.white60, size: 22),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
               controller: controller,
-              style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
               decoration: InputDecoration(
-                hintText: "Type your message...",
-                hintStyle: GoogleFonts.poppins(
-                  color: Colors.white60,
-                  fontSize: 14,
-                ),
+                hintText: 'Type your message',
+                hintStyle:
+                    GoogleFonts.poppins(color: Colors.white38, fontSize: 14),
                 border: InputBorder.none,
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
               ),
               onSubmitted: (_) => onSend(),
             ),
           ),
-          // Send Button
+          // Voice button
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.redAccent,
+              shape: BoxShape.circle,
+            ),
+            padding: const EdgeInsets.all(9),
+            child: const Icon(Icons.mic, color: Colors.white, size: 18),
+          ),
+          const SizedBox(width: 8),
+          // Send button
           GestureDetector(
             onTap: onSend,
             child: Container(
@@ -331,170 +500,17 @@ class GlassInputArea extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.redAccent.withOpacity(0.28),
-                    blurRadius: 14,
+                    color: Colors.redAccent.withOpacity(0.35),
+                    blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              padding: const EdgeInsets.all(10),
-              child: const Icon(
-                Icons.send_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
+              padding: const EdgeInsets.all(9),
+              child: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
             ),
-          ),
-          const SizedBox(width: 8),
-          // Voice Button
-          Container(
-            decoration: const BoxDecoration(
-              color: Colors.redAccent,
-              shape: BoxShape.circle,
-            ),
-            padding: const EdgeInsets.all(10),
-            child: const Icon(Icons.mic, color: Colors.white, size: 20),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// BOTTOM NAVIGATION BAR – dark icons/text, centered, no overflow
-// ─────────────────────────────────────────────────────────────────────────────
-class _HomeBottomNav extends StatelessWidget {
-  final int selectedIndex;
-  final ValueChanged<int> onChanged;
-
-  const _HomeBottomNav({required this.selectedIndex, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 17),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(50),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(
-                0.58,
-              ), // bright white for dark text
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.7),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 12,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 15),
-                child: Row(
-                  children: [
-                    _NItem(
-                      0,
-                      Icons.directions_car_rounded,
-                      'Ride',
-                      selectedIndex,
-                      onChanged,
-                    ),
-                    _NItem(
-                      1,
-                      Icons.support_agent_rounded,
-                      'Support',
-                      selectedIndex,
-                      onChanged,
-                    ),
-                    _NItem(
-                      2,
-                      Icons.receipt_long_rounded,
-                      'Bookings',
-                      selectedIndex,
-                      onChanged,
-                    ),
-                    _NItem(
-                      3,
-                      Icons.person_outline_rounded,
-                      'Account',
-                      selectedIndex,
-                      onChanged,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NItem extends StatelessWidget {
-  final int index;
-  final IconData icon;
-  final String label;
-  final int selectedIndex;
-  final ValueChanged<int> onChanged;
-
-  const _NItem(
-    this.index,
-    this.icon,
-    this.label,
-    this.selectedIndex,
-    this.onChanged,
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    final bool active = selectedIndex == index;
-    final Color iconColor = active
-        ? const Color(0xFFE53935) // red when active
-        : const Color.fromARGB(255, 24, 30, 36); // dark blue‑grey when inactive
-    final Color labelColor = active
-        ? const Color(0xFFE53935)
-        : const Color.fromARGB(255, 24, 30, 36);
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => onChanged(index),
-        behavior: HitTestBehavior.opaque,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 1,
-          ), // reduced to prevent overflow
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(icon, color: iconColor, size: 24),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: labelColor,
-                  fontSize: 12,
-                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -101,6 +101,19 @@ flutter:
     - assets/logo.png
     - assets/icons/google.png
     - assets/icons/facebook.png
+    - assets/images/sheet_bg.png
+    - assets/images/car.png
+    - assets/images/pickup.png
+    - assets/images/destination.png
+    - assets/images/standard_car_icon.png
+    - assets/images/premium_car_icon.png
+    - assets/images/handicap_car_icon.png
+    - assets/images/black_alto.png
+    - assets/images/white_mercedes.png
+    - assets/images/pointer.png
+   
+
+
 
 
   #   - images/a_dot_ham.jpeg
