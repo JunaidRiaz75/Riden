@@ -38,8 +38,7 @@ class DriverSelectionBottomSheetEntry extends StatelessWidget {
 class DriverSelectionBottomSheet extends StatelessWidget {
   final ScrollController scrollController;
 
-  const DriverSelectionBottomSheet(
-      {required this.scrollController, super.key});
+  const DriverSelectionBottomSheet({required this.scrollController, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -81,8 +80,10 @@ class DriverSelectionBottomSheet extends StatelessWidget {
 
         final double minH = screenHeight * 0.50;
         final double maxH = screenHeight * 1.00;
-        final double progress =
-            ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(
+          0.0,
+          1.0,
+        );
 
         final double cornerRadius = 28.0 * (1.0 - progress);
 
@@ -158,14 +159,18 @@ class DriverSelectionBottomSheet extends StatelessWidget {
                           const Spacer(),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFFE53935).withOpacity(0.15),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                  color: const Color(0xFFE53935)
-                                      .withOpacity(0.40),
-                                  width: 1),
+                                color: const Color(
+                                  0xFFE53935,
+                                ).withOpacity(0.40),
+                                width: 1,
+                              ),
                             ),
                             child: Text(
                               '${drivers.length} nearby',
@@ -263,15 +268,18 @@ class _DriverCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                     color: Colors.grey.shade300,
                     border: Border.all(
-                        color: Colors.white.withOpacity(0.70), width: 1.5),
+                      color: Colors.white.withOpacity(0.70),
+                      width: 1.5,
+                    ),
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(13),
-                    child: Image.network(driver.avatarUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(
-                            Icons.person,
-                            color: Color(0xFF1A1B2E))),
+                    child: Image.network(
+                      driver.avatarUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) =>
+                          const Icon(Icons.person, color: Color(0xFF1A1B2E)),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -292,8 +300,11 @@ class _DriverCard extends StatelessWidget {
                       const SizedBox(height: 3),
                       Row(
                         children: [
-                          const Icon(Icons.location_on,
-                              size: 13, color: Color(0xFFE53935)),
+                          const Icon(
+                            Icons.location_on,
+                            size: 13,
+                            color: Color(0xFFE53935),
+                          ),
                           const SizedBox(width: 3),
                           Text(
                             driver.distance,
@@ -324,7 +335,9 @@ class _DriverCard extends StatelessWidget {
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 10),
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -344,8 +357,7 @@ class _DriverCard extends StatelessWidget {
 
           // ── Stats row ──
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -390,10 +402,11 @@ class _DriverCard extends StatelessWidget {
                   width: 50,
                   height: 30,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(
-                      Icons.directions_car_outlined,
-                      color: Color(0xFF1A1B2E),
-                      size: 20),
+                  errorBuilder: (_, _, _) => const Icon(
+                    Icons.directions_car_outlined,
+                    color: Color(0xFF1A1B2E),
+                    size: 20,
+                  ),
                 ),
               ],
             ),
@@ -456,42 +469,67 @@ class SheetGradientPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    canvas.drawRect(Rect.fromLTWH(0, 0, w, h),
-        Paint()..color = const Color(0xFF1A1B2E));
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF1A1B2E),
+    );
 
-    _blob(canvas,
-        center: Offset(w * 0.15, h * 0.30),
-        rx: w * 0.70, ry: h * 0.50,
-        color: const Color(0xFF8B4A35), alpha: 170);
-    _blob(canvas,
-        center: Offset(w * 0.05, h * 0.55),
-        rx: w * 0.50, ry: h * 0.35,
-        color: const Color(0xFF6B3828), alpha: 130);
-    _blob(canvas,
-        center: Offset(w * 0.82, h * 0.68),
-        rx: w * 0.70, ry: h * 0.52,
-        color: const Color(0xFF2E6B72), alpha: 165);
-    _blob(canvas,
-        center: Offset(w * 0.90, h * 0.50),
-        rx: w * 0.40, ry: h * 0.30,
-        color: const Color(0xFF3D8A8F), alpha: 110);
-    _blob(canvas,
-        center: Offset(w * 0.50, h * 0.50),
-        rx: w * 0.55, ry: h * 0.40,
-        color: const Color(0xFF3A4555), alpha: 80);
+    _blob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.70,
+      ry: h * 0.50,
+      color: const Color(0xFF8B4A35),
+      alpha: 170,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.05, h * 0.55),
+      rx: w * 0.50,
+      ry: h * 0.35,
+      color: const Color(0xFF6B3828),
+      alpha: 130,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.82, h * 0.68),
+      rx: w * 0.70,
+      ry: h * 0.52,
+      color: const Color(0xFF2E6B72),
+      alpha: 165,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.90, h * 0.50),
+      rx: w * 0.40,
+      ry: h * 0.30,
+      color: const Color(0xFF3D8A8F),
+      alpha: 110,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.50, h * 0.50),
+      rx: w * 0.55,
+      ry: h * 0.40,
+      color: const Color(0xFF3A4555),
+      alpha: 80,
+    );
   }
 
-  void _blob(Canvas canvas,
-      {required Offset center,
-      required double rx,
-      required double ry,
-      required Color color,
-      required int alpha}) {
+  void _blob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
     final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
     final clear = Color.fromARGB(0, color.red, color.green, color.blue);
     final paint = Paint()
       ..shader = RadialGradient(colors: [solid, clear]).createShader(
-          Rect.fromCenter(center: center, width: rx * 2, height: ry * 2));
+        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
+      );
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.scale(1.0, ry / rx);
@@ -503,8 +541,6 @@ class SheetGradientPainter extends CustomPainter {
   @override
   bool shouldRepaint(SheetGradientPainter _) => false;
 }
-
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DRIVER MODEL

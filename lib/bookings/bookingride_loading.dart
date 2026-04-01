@@ -1,5 +1,5 @@
 // booking_loading_bottom_sheet.dart
-// ignore_for_file: use_super_parameters, deprecated_member_use
+// ignore_for_file: unused_element_parameter, use_super_parameters, deprecated_member_use
 
 import 'dart:async';
 import 'dart:ui';
@@ -38,16 +38,14 @@ class BookingLoadingBottomSheetEntry extends StatelessWidget {
 class BookingLoadingBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
 
-  const BookingLoadingBottomSheet(
-      {required this.scrollController, super.key});
+  const BookingLoadingBottomSheet({required this.scrollController, super.key});
 
   @override
   State<BookingLoadingBottomSheet> createState() =>
       _BookingLoadingBottomSheetState();
 }
 
-class _BookingLoadingBottomSheetState
-    extends State<BookingLoadingBottomSheet> {
+class _BookingLoadingBottomSheetState extends State<BookingLoadingBottomSheet> {
   Timer? _timer;
 
   @override
@@ -96,8 +94,10 @@ class _BookingLoadingBottomSheetState
 
         final double minH = screenHeight * 0.50;
         final double maxH = screenHeight * 1.00;
-        final double progress =
-            ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(
+          0.0,
+          1.0,
+        );
 
         final double cornerRadius = 28.0 * (1.0 - progress);
 
@@ -161,7 +161,9 @@ class _BookingLoadingBottomSheetState
                       child: ListView(
                         controller: widget.scrollController,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 18),
+                          horizontal: 20,
+                          vertical: 18,
+                        ),
                         children: [
                           // RIDEN wordmark
                           const SizedBox(height: 15),
@@ -174,7 +176,8 @@ class _BookingLoadingBottomSheetState
                               child: CircularProgressIndicator(
                                 strokeWidth: 7,
                                 valueColor: const AlwaysStoppedAnimation<Color>(
-                                    Color(0xFFE53935)),
+                                  Color(0xFFE53935),
+                                ),
                                 backgroundColor: Colors.white.withOpacity(0.15),
                               ),
                             ),
@@ -244,11 +247,14 @@ class _BookingLoadingBottomSheetState
                                 const SizedBox(height: 18),
                                 _DetailRow('Total Distance', '234km'),
                                 const SizedBox(height: 16),
-                                _DetailRowIcon('Sedan', icon: Image.asset(
-    'assets/images/standard_car.png',
-    width: 58,
-    height: 24,
-  ),),
+                                _DetailRowIcon(
+                                  'Sedan',
+                                  icon: Image.asset(
+                                    'assets/images/standard_car.png',
+                                    width: 58,
+                                    height: 24,
+                                  ),
+                                ),
                                 const SizedBox(height: 16),
                                 _DetailRow('Payment Method', 'Wallet'),
                                 const SizedBox(height: 16),
@@ -312,8 +318,11 @@ class _LocationRow extends StatelessWidget {
   final String label;
   final String address;
 
-  const _LocationRow(
-      {required this.isFirst, required this.label, required this.address});
+  const _LocationRow({
+    required this.isFirst,
+    required this.label,
+    required this.address,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -342,8 +351,7 @@ class _LocationRow extends StatelessWidget {
                     color: Color(0xFFE53935),
                   ),
                   child: const Center(
-                    child:
-                        Icon(Icons.navigation, size: 8, color: Colors.white),
+                    child: Icon(Icons.navigation, size: 8, color: Colors.white),
                   ),
                 ),
               if (isFirst)
@@ -401,15 +409,21 @@ class _DetailRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF1A1B2E))),
-        Text(value,
-            style: GoogleFonts.poppins(
-                fontSize: 15,
-                color: valueColor ?? const Color(0xFF1A1B2E))),
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1A1B2E),
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            fontSize: 15,
+            color: valueColor ?? const Color(0xFF1A1B2E),
+          ),
+        ),
       ],
     );
   }
@@ -426,15 +440,15 @@ class _DetailRowIcon extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF1A1B2E))),
-        Align(
-          alignment: Alignment.centerRight,
-          child: icon,
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: const Color(0xFF1A1B2E),
+          ),
         ),
+        Align(alignment: Alignment.centerRight, child: icon),
       ],
     );
   }
@@ -449,42 +463,67 @@ class SheetGradientPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    canvas.drawRect(Rect.fromLTWH(0, 0, w, h),
-        Paint()..color = const Color(0xFF1A1B2E));
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF1A1B2E),
+    );
 
-    _blob(canvas,
-        center: Offset(w * 0.15, h * 0.30),
-        rx: w * 0.70, ry: h * 0.50,
-        color: const Color(0xFF8B4A35), alpha: 170);
-    _blob(canvas,
-        center: Offset(w * 0.05, h * 0.55),
-        rx: w * 0.50, ry: h * 0.35,
-        color: const Color(0xFF6B3828), alpha: 130);
-    _blob(canvas,
-        center: Offset(w * 0.82, h * 0.68),
-        rx: w * 0.70, ry: h * 0.52,
-        color: const Color(0xFF2E6B72), alpha: 165);
-    _blob(canvas,
-        center: Offset(w * 0.90, h * 0.50),
-        rx: w * 0.40, ry: h * 0.30,
-        color: const Color(0xFF3D8A8F), alpha: 110);
-    _blob(canvas,
-        center: Offset(w * 0.50, h * 0.50),
-        rx: w * 0.55, ry: h * 0.40,
-        color: const Color(0xFF3A4555), alpha: 80);
+    _blob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.70,
+      ry: h * 0.50,
+      color: const Color(0xFF8B4A35),
+      alpha: 170,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.05, h * 0.55),
+      rx: w * 0.50,
+      ry: h * 0.35,
+      color: const Color(0xFF6B3828),
+      alpha: 130,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.82, h * 0.68),
+      rx: w * 0.70,
+      ry: h * 0.52,
+      color: const Color(0xFF2E6B72),
+      alpha: 165,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.90, h * 0.50),
+      rx: w * 0.40,
+      ry: h * 0.30,
+      color: const Color(0xFF3D8A8F),
+      alpha: 110,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.50, h * 0.50),
+      rx: w * 0.55,
+      ry: h * 0.40,
+      color: const Color(0xFF3A4555),
+      alpha: 80,
+    );
   }
 
-  void _blob(Canvas canvas,
-      {required Offset center,
-      required double rx,
-      required double ry,
-      required Color color,
-      required int alpha}) {
+  void _blob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
     final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
     final clear = Color.fromARGB(0, color.red, color.green, color.blue);
     final paint = Paint()
       ..shader = RadialGradient(colors: [solid, clear]).createShader(
-          Rect.fromCenter(center: center, width: rx * 2, height: ry * 2));
+        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
+      );
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.scale(1.0, ry / rx);
@@ -496,4 +535,3 @@ class SheetGradientPainter extends CustomPainter {
   @override
   bool shouldRepaint(SheetGradientPainter _) => false;
 }
-

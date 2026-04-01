@@ -1,5 +1,5 @@
 // rideconfirm.dart
-// ignore_for_file: use_super_parameters, deprecated_member_use
+// ignore_for_file: unused_element_parameter, use_super_parameters, deprecated_member_use
 
 import 'dart:ui';
 
@@ -44,8 +44,10 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
         final double sheetW = constraints.maxWidth;
         final double minH = screenHeight * 0.50;
         final double maxH = screenHeight * 1.00;
-        final double progress =
-            ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(
+          0.0,
+          1.0,
+        );
         final double cornerRadius = 28.0 * (1.0 - progress);
 
         return ClipRRect(
@@ -118,35 +120,42 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
                                 children: [
                                   _routeRow(
                                     icon: Image.asset(
-                                'assets/images/pickup.png',
-                                width: 30,
-                                height: 30,
-                              ),
+                                      'assets/images/pickup.png',
+                                      width: 30,
+                                      height: 30,
+                                    ),
                                     label: 'Pickup',
-                                    address: '2972 Westheimer Rd. Santa Ana, Illinois 85486',
+                                    address:
+                                        '2972 Westheimer Rd. Santa Ana, Illinois 85486',
                                   ),
                                   // Grey connector line
                                   Padding(
                                     padding: const EdgeInsets.only(left: 45),
                                     child: Divider(
-                                        color: _darkInk.withOpacity(0.04),
-                                        height: 1),
+                                      color: _darkInk.withOpacity(0.04),
+                                      height: 1,
+                                    ),
                                   ),
                                   _routeRow(
                                     icon: Image.asset(
-                                'assets/images/destination.png',
-                                width: 30,
-                                height: 30,
-                              ),
+                                      'assets/images/destination.png',
+                                      width: 30,
+                                      height: 30,
+                                    ),
                                     label: 'Destination',
-                                    address: '1901 Thornridge Cir. Shiloh, Hawaii 81603',
+                                    address:
+                                        '1901 Thornridge Cir. Shiloh, Hawaii 81603',
                                     trailing: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 6,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: _darkInk.withOpacity(0.50),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      child: Text('Stops',
+                                      child: Text(
+                                        'Stops',
                                         style: GoogleFonts.poppins(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
@@ -162,7 +171,10 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
 
                             // Selected car row (simpler, matches mockup)
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                                horizontal: 4,
+                              ),
                               child: Row(
                                 children: [
                                   Image.asset(
@@ -170,14 +182,20 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
                                     width: 100,
                                     height: 54,
                                     fit: BoxFit.contain,
-                                    errorBuilder: (_, __, ___) => const Icon(Icons.directions_car, size: 50, color: Colors.white54),
+                                    errorBuilder: (_, _, _) => const Icon(
+                                      Icons.directions_car,
+                                      size: 50,
+                                      color: Colors.white54,
+                                    ),
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(widget.selectedCar,
+                                        Text(
+                                          widget.selectedCar,
                                           style: GoogleFonts.poppins(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
@@ -186,26 +204,39 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
                                         ),
                                         Row(
                                           children: [
-                                            Icon(Icons.schedule, size: 12, color: Colors.white.withOpacity(0.50)),
+                                            Icon(
+                                              Icons.schedule,
+                                              size: 12,
+                                              color: Colors.white.withOpacity(
+                                                0.50,
+                                              ),
+                                            ),
                                             const SizedBox(width: 4),
-                                            Text('3-4 min',
+                                            Text(
+                                              '3-4 min',
                                               style: GoogleFonts.poppins(
                                                 fontSize: 11,
-                                                color: Colors.white.withOpacity(0.60),
+                                                color: Colors.white.withOpacity(
+                                                  0.60,
+                                                ),
                                               ),
                                             ),
                                           ],
                                         ),
-                                        Text('Sedan with AC',
+                                        Text(
+                                          'Sedan with AC',
                                           style: GoogleFonts.poppins(
                                             fontSize: 11,
-                                            color: Colors.white.withOpacity(0.45),
+                                            color: Colors.white.withOpacity(
+                                              0.45,
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  Text('C\$ 70.00',
+                                  Text(
+                                    'C\$ 70.00',
                                     style: GoogleFonts.poppins(
                                       fontSize: 17,
                                       fontWeight: FontWeight.w700,
@@ -237,15 +268,18 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
 
                             GestureDetector(
                               onTap: () {
-                                Navigator.pop(context); // Close current confirm sheet
-                                
+                                Navigator.pop(
+                                  context,
+                                ); // Close current confirm sheet
+
                                 // Open loading sheet
                                 showModalBottomSheet(
                                   context: context,
                                   isScrollControlled: true,
                                   backgroundColor: Colors.transparent,
                                   barrierColor: Colors.black54,
-                                  builder: (_) => const BookingLoadingBottomSheetEntry(),
+                                  builder: (_) =>
+                                      const BookingLoadingBottomSheetEntry(),
                                 );
                               },
                               child: Container(
@@ -255,7 +289,7 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
                                   gradient: const LinearGradient(
                                     colors: [
                                       Color(0xFFE53935),
-                                      Color(0xFFFF5252)
+                                      Color(0xFFFF5252),
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -263,8 +297,7 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
-                                      color:
-                                          _accentRed.withOpacity(0.35),
+                                      color: _accentRed.withOpacity(0.35),
                                       blurRadius: 14,
                                       offset: const Offset(0, 5),
                                     ),
@@ -311,24 +344,22 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       child: Row(
         children: [
-          SizedBox(
-            width: 32,
-            height: 32,
-            child: Center(child: icon),
-          ),
+          SizedBox(width: 32, height: 32, child: Center(child: icon)),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
+                Text(
+                  label,
                   style: GoogleFonts.poppins(
                     fontSize: 11,
                     color: _darkInk.withOpacity(0.50),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                Text(address,
+                Text(
+                  address,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.poppins(
@@ -340,7 +371,7 @@ class _RideconfirmScreenState extends State<RideconfirmScreen> {
               ],
             ),
           ),
-          if (trailing != null) trailing,
+          ?trailing,
         ],
       ),
     );
@@ -354,10 +385,7 @@ class _PaymentDropdown extends StatelessWidget {
   final String value;
   final ValueChanged<String?> onChanged;
 
-  const _PaymentDropdown({
-    required this.value,
-    required this.onChanged,
-  });
+  const _PaymentDropdown({required this.value, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -372,8 +400,11 @@ class _PaymentDropdown extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value,
-          icon: const Icon(Icons.keyboard_arrow_down_rounded,
-              color: Colors.white, size: 20),
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
           dropdownColor: const Color(0xFF2A2D3E),
           style: GoogleFonts.poppins(
             fontSize: 14,
@@ -381,10 +412,9 @@ class _PaymentDropdown extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
           selectedItemBuilder: (BuildContext context) {
-            return const [
-              'Wallet',
-              'Debit/Credit Card',
-            ].map<Widget>((String item) {
+            return const ['Wallet', 'Debit/Credit Card'].map<Widget>((
+              String item,
+            ) {
               return Container(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -404,8 +434,11 @@ class _PaymentDropdown extends StatelessWidget {
               value: 'Wallet',
               child: Row(
                 children: [
-                  Icon(Icons.account_balance_wallet,
-                      color: Colors.white70, size: 20),
+                  Icon(
+                    Icons.account_balance_wallet,
+                    color: Colors.white70,
+                    size: 20,
+                  ),
                   SizedBox(width: 12),
                   Text('Wallet'),
                 ],
@@ -415,8 +448,7 @@ class _PaymentDropdown extends StatelessWidget {
               value: 'Debit/Credit Card',
               child: Row(
                 children: [
-                  Icon(Icons.credit_card,
-                      color: Colors.white70, size: 20),
+                  Icon(Icons.credit_card, color: Colors.white70, size: 20),
                   SizedBox(width: 12),
                   Text('Debit/Credit Card'),
                 ],
@@ -498,7 +530,7 @@ class _GlassOutlineField extends StatelessWidget {
               ),
             ),
           ),
-          if (trailing != null) trailing!,
+          ?trailing,
         ],
       ),
     );
@@ -514,42 +546,67 @@ class _SheetGradientPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    canvas.drawRect(Rect.fromLTWH(0, 0, w, h),
-        Paint()..color = const Color(0xFF1A1B2E));
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF1A1B2E),
+    );
 
-    _blob(canvas,
-        center: Offset(w * 0.15, h * 0.30),
-        rx: w * 0.70, ry: h * 0.50,
-        color: const Color(0xFF8B4A35), alpha: 170);
-    _blob(canvas,
-        center: Offset(w * 0.05, h * 0.55),
-        rx: w * 0.50, ry: h * 0.35,
-        color: const Color(0xFF6B3828), alpha: 130);
-    _blob(canvas,
-        center: Offset(w * 0.82, h * 0.68),
-        rx: w * 0.70, ry: h * 0.52,
-        color: const Color(0xFF2E6B72), alpha: 165);
-    _blob(canvas,
-        center: Offset(w * 0.90, h * 0.50),
-        rx: w * 0.40, ry: h * 0.30,
-        color: const Color(0xFF3D8A8F), alpha: 110);
-    _blob(canvas,
-        center: Offset(w * 0.50, h * 0.50),
-        rx: w * 0.55, ry: h * 0.40,
-        color: const Color(0xFF3A4555), alpha: 80);
+    _blob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.70,
+      ry: h * 0.50,
+      color: const Color(0xFF8B4A35),
+      alpha: 170,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.05, h * 0.55),
+      rx: w * 0.50,
+      ry: h * 0.35,
+      color: const Color(0xFF6B3828),
+      alpha: 130,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.82, h * 0.68),
+      rx: w * 0.70,
+      ry: h * 0.52,
+      color: const Color(0xFF2E6B72),
+      alpha: 165,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.90, h * 0.50),
+      rx: w * 0.40,
+      ry: h * 0.30,
+      color: const Color(0xFF3D8A8F),
+      alpha: 110,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.50, h * 0.50),
+      rx: w * 0.55,
+      ry: h * 0.40,
+      color: const Color(0xFF3A4555),
+      alpha: 80,
+    );
   }
 
-  void _blob(Canvas canvas,
-      {required Offset center,
-      required double rx,
-      required double ry,
-      required Color color,
-      required int alpha}) {
+  void _blob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
     final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
     final clear = Color.fromARGB(0, color.red, color.green, color.blue);
     final paint = Paint()
       ..shader = RadialGradient(colors: [solid, clear]).createShader(
-          Rect.fromCenter(center: center, width: rx * 2, height: ry * 2));
+        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
+      );
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.scale(1.0, ry / rx);
@@ -561,4 +618,3 @@ class _SheetGradientPainter extends CustomPainter {
   @override
   bool shouldRepaint(_SheetGradientPainter _) => false;
 }
-

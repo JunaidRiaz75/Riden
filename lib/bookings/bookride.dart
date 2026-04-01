@@ -53,15 +53,42 @@ class RideBottomSheet extends StatefulWidget {
 
 class _RideBottomSheetState extends State<RideBottomSheet> {
   final List<Map<String, String>> savedLocations = [
-    {'name': 'Office', 'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486'},
-    {'name': 'Coffee shop', 'address': '1901 Thorndige Cir, Shiloh, Hawaii 81063'},
-    {'name': 'Shopping center', 'address': '4140 Parker Rd, Allentown, New Mexico 31134'},
-    {'name': 'Office', 'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486'},
-    {'name': 'Coffee shop', 'address': '1901 Thorndige Cir, Shiloh, Hawaii 81063'},
-    {'name': 'Shopping center', 'address': '4140 Parker Rd, Allentown, New Mexico 31134'},
-    {'name': 'Office', 'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486'},
-    {'name': 'Coffee shop', 'address': '1901 Thorndige Cir, Shiloh, Hawaii 81063'},
-    {'name': 'Shopping center', 'address': '4140 Parker Rd, Allentown, New Mexico 31134'},
+    {
+      'name': 'Office',
+      'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+    },
+    {
+      'name': 'Coffee shop',
+      'address': '1901 Thorndige Cir, Shiloh, Hawaii 81063',
+    },
+    {
+      'name': 'Shopping center',
+      'address': '4140 Parker Rd, Allentown, New Mexico 31134',
+    },
+    {
+      'name': 'Office',
+      'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+    },
+    {
+      'name': 'Coffee shop',
+      'address': '1901 Thorndige Cir, Shiloh, Hawaii 81063',
+    },
+    {
+      'name': 'Shopping center',
+      'address': '4140 Parker Rd, Allentown, New Mexico 31134',
+    },
+    {
+      'name': 'Office',
+      'address': '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+    },
+    {
+      'name': 'Coffee shop',
+      'address': '1901 Thorndige Cir, Shiloh, Hawaii 81063',
+    },
+    {
+      'name': 'Shopping center',
+      'address': '4140 Parker Rd, Allentown, New Mexico 31134',
+    },
   ];
 
   void _openCarSelectionSheet() {
@@ -94,8 +121,10 @@ class _RideBottomSheetState extends State<RideBottomSheet> {
 
         final double minH = screenHeight * 0.40;
         final double maxH = screenHeight * 1.00;
-        final double progress =
-            ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(
+          0.0,
+          1.0,
+        );
 
         final double cornerRadius = 28.0 * (1.0 - progress);
 
@@ -160,7 +189,9 @@ class _RideBottomSheetState extends State<RideBottomSheet> {
                         physics: const ClampingScrollPhysics(),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 16),
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -208,7 +239,8 @@ class _RideBottomSheetState extends State<RideBottomSheet> {
                                                     fontSize: 11,
                                                     fontWeight: FontWeight.w500,
                                                     color: const Color(
-                                                        0xFF1A1B2E),
+                                                      0xFF1A1B2E,
+                                                    ),
                                                     letterSpacing: 0.5,
                                                   ),
                                                 ),
@@ -222,7 +254,8 @@ class _RideBottomSheetState extends State<RideBottomSheet> {
                                                     fontSize: 13,
                                                     fontWeight: FontWeight.w600,
                                                     color: const Color(
-                                                        0xFF1A1B2E),
+                                                      0xFF1A1B2E,
+                                                    ),
                                                   ),
                                                 ),
                                               ],
@@ -239,13 +272,12 @@ class _RideBottomSheetState extends State<RideBottomSheet> {
                                       // Destination
                                       Row(
                                         children: [
-                                             Image.asset(
-                                                'assets/images/destination.png',
-                                                width: 30,
-                                                height: 30,
-                                              ),
-                                           
-                                         
+                                          Image.asset(
+                                            'assets/images/destination.png',
+                                            width: 30,
+                                            height: 30,
+                                          ),
+
                                           const SizedBox(width: 10),
                                           Expanded(
                                             child: Column(
@@ -258,7 +290,8 @@ class _RideBottomSheetState extends State<RideBottomSheet> {
                                                     fontSize: 11,
                                                     fontWeight: FontWeight.w500,
                                                     color: const Color(
-                                                        0xFF1A1B2E),
+                                                      0xFF1A1B2E,
+                                                    ),
                                                     letterSpacing: 0.5,
                                                   ),
                                                 ),
@@ -276,10 +309,13 @@ class _RideBottomSheetState extends State<RideBottomSheet> {
                                           ),
                                           Container(
                                             padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 7),
+                                              horizontal: 12,
+                                              vertical: 7,
+                                            ),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFF1A1B2E)
-                                                  .withOpacity(0.80),
+                                              color: const Color(
+                                                0xFF1A1B2E,
+                                              ).withOpacity(0.80),
                                               borderRadius:
                                                   BorderRadius.circular(12),
                                             ),
@@ -307,27 +343,32 @@ class _RideBottomSheetState extends State<RideBottomSheet> {
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: savedLocations.length,
-                                separatorBuilder: (_, __) =>
+                                separatorBuilder: (_, _) =>
                                     const SizedBox(height: 0),
                                 itemBuilder: (context, index) {
                                   final loc = savedLocations[index];
                                   return GestureDetector(
                                     onTap: () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
-                                          content:
-                                              Text('Selected: ${loc['name']}'),
-                                          backgroundColor:
-                                              const Color(0xFFE53935),
+                                          content: Text(
+                                            'Selected: ${loc['name']}',
+                                          ),
+                                          backgroundColor: const Color(
+                                            0xFFE53935,
+                                          ),
                                           duration: const Duration(
-                                              milliseconds: 800),
+                                            milliseconds: 800,
+                                          ),
                                         ),
                                       );
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 10),
+                                        vertical: 10,
+                                      ),
                                       child: Row(
                                         children: [
                                           Container(
@@ -338,9 +379,11 @@ class _RideBottomSheetState extends State<RideBottomSheet> {
                                               color: Color(0xFFE53935),
                                             ),
                                             child: const Center(
-                                              child: Icon(Icons.location_on,
-                                                  color: Colors.white,
-                                                  size: 12),
+                                              child: Icon(
+                                                Icons.location_on,
+                                                color: Colors.white,
+                                                size: 12,
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(width: 14),
@@ -419,38 +462,60 @@ class SheetGradientPainter extends CustomPainter {
       Paint()..color = const Color(0xFF1A1B2E),
     );
 
-    _blob(canvas,
-        center: Offset(w * 0.15, h * 0.30),
-        rx: w * 0.70, ry: h * 0.50,
-        color: const Color(0xFF8B4A35), alpha: 170);
+    _blob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.70,
+      ry: h * 0.50,
+      color: const Color(0xFF8B4A35),
+      alpha: 170,
+    );
 
-    _blob(canvas,
-        center: Offset(w * 0.05, h * 0.55),
-        rx: w * 0.50, ry: h * 0.35,
-        color: const Color(0xFF6B3828), alpha: 130);
+    _blob(
+      canvas,
+      center: Offset(w * 0.05, h * 0.55),
+      rx: w * 0.50,
+      ry: h * 0.35,
+      color: const Color(0xFF6B3828),
+      alpha: 130,
+    );
 
-    _blob(canvas,
-        center: Offset(w * 0.82, h * 0.68),
-        rx: w * 0.70, ry: h * 0.52,
-        color: const Color(0xFF2E6B72), alpha: 165);
+    _blob(
+      canvas,
+      center: Offset(w * 0.82, h * 0.68),
+      rx: w * 0.70,
+      ry: h * 0.52,
+      color: const Color(0xFF2E6B72),
+      alpha: 165,
+    );
 
-    _blob(canvas,
-        center: Offset(w * 0.90, h * 0.50),
-        rx: w * 0.40, ry: h * 0.30,
-        color: const Color(0xFF3D8A8F), alpha: 110);
+    _blob(
+      canvas,
+      center: Offset(w * 0.90, h * 0.50),
+      rx: w * 0.40,
+      ry: h * 0.30,
+      color: const Color(0xFF3D8A8F),
+      alpha: 110,
+    );
 
-    _blob(canvas,
-        center: Offset(w * 0.50, h * 0.50),
-        rx: w * 0.55, ry: h * 0.40,
-        color: const Color(0xFF3A4555), alpha: 80);
+    _blob(
+      canvas,
+      center: Offset(w * 0.50, h * 0.50),
+      rx: w * 0.55,
+      ry: h * 0.40,
+      color: const Color(0xFF3A4555),
+      alpha: 80,
+    );
   }
 
-  void _blob(Canvas canvas,
-      {required Offset center,
-      required double rx,
-      required double ry,
-      required Color color,
-      required int alpha}) {
+  void _blob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
     final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
     final clear = Color.fromARGB(0, color.red, color.green, color.blue);
     final paint = Paint()
@@ -468,4 +533,3 @@ class SheetGradientPainter extends CustomPainter {
   @override
   bool shouldRepaint(SheetGradientPainter _) => false;
 }
-

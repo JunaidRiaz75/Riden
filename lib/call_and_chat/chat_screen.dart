@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:Riden/widgets/riden_bottom_nav.dart';
+import 'call_screen.dart';
 
 import '../theme/app_colors.dart';
 
@@ -54,9 +55,17 @@ class ChatBottomSheet extends StatefulWidget {
 
 class _ChatBottomSheetState extends State<ChatBottomSheet> {
   final List<Map<String, dynamic>> messages = [
-    {'type': 'received', 'text': 'Welcome to a wonderful experience', 'time': '8:29 pm'},
+    {
+      'type': 'received',
+      'text': 'Welcome to a wonderful experience',
+      'time': '8:29 pm',
+    },
     {'type': 'sent', 'text': 'Thanks For Letting Me In', 'time': '8:30 pm'},
-    {'type': 'received', 'text': 'Well That\'s Just Kind Of You', 'time': 'Just Now'},
+    {
+      'type': 'received',
+      'text': 'Well That\'s Just Kind Of You',
+      'time': 'Just Now',
+    },
   ];
 
   final TextEditingController _msgController = TextEditingController();
@@ -91,8 +100,10 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
         // progress: 0.0 = min collapsed, 1.0 = full screen
         final double minH = screenHeight * 0.40;
         final double maxH = screenHeight * 1.00;
-        final double progress =
-            ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(
+          0.0,
+          1.0,
+        );
 
         // Corners flatten as sheet goes full screen
         final double cornerRadius = 28.0 * (1.0 - progress);
@@ -109,9 +120,7 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
               children: [
                 // ── 1. Gradient background — CustomPainter, always exact fit ──
                 Positioned.fill(
-                  child: CustomPaint(
-                    painter: _SheetGradientPainter(),
-                  ),
+                  child: CustomPaint(painter: _SheetGradientPainter()),
                 ),
 
                 // ── 2. Frosted glass blur layer — matches Image 1 glassy feel ──
@@ -159,7 +168,9 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
                     // ── Header: "< Back  Chat  📞" ──
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       child: Row(
                         children: [
                           // Back button
@@ -167,8 +178,11 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
                             onTap: () => Navigator.pop(context),
                             child: Row(
                               children: [
-                                const Icon(Icons.chevron_left,
-                                    color: Colors.white, size: 22),
+                                const Icon(
+                                  Icons.chevron_left,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
                                 Text(
                                   'Back',
                                   style: GoogleFonts.poppins(
@@ -195,14 +209,29 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
                             ),
                           ),
                           // Phone icon
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              shape: BoxShape.circle,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                barrierColor: Colors.black54,
+                                builder: (_) => const CallBottomSheetEntry(),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.call_outlined,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                             ),
-                            child: const Icon(Icons.call_outlined,
-                                color: Colors.white, size: 20),
                           ),
                         ],
                       ),
@@ -213,7 +242,9 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
                       child: ListView.builder(
                         controller: widget.scrollController,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 6),
+                          horizontal: 14,
+                          vertical: 6,
+                        ),
                         itemCount: messages.length,
                         itemBuilder: (ctx, i) {
                           final msg = messages[i];
@@ -232,10 +263,7 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
                     const SizedBox(height: 6),
 
                     // ── Standardized Bottom Nav ──
-                    RidenBottomNav(
-                      selectedIndex: 1,
-                      isFromSheet: true,
-                    ),
+                    RidenBottomNav(selectedIndex: 1, isFromSheet: true),
                   ],
                 ),
               ],
@@ -250,8 +278,9 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Column(
-        crossAxisAlignment:
-            isSent ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isSent
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           if (!isSent)
             Row(
@@ -260,13 +289,18 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
                 // Avatar circle
                 CircleAvatar(
                   radius: 16,
-                  backgroundImage:
-                      const AssetImage('assets/images/avatar.png'),
-                  onBackgroundImageError: (_, __) {},
-                  child: const Icon(Icons.person, size: 16, color: Colors.white),
+                  backgroundImage: const AssetImage('assets/images/avatar.png'),
+                  onBackgroundImageError: (_, _) {},
+                  child: const Icon(
+                    Icons.person,
+                    size: 16,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(width: 8),
-                Flexible(child: _MessageBubble(text: msg['text'], isSent: false)),
+                Flexible(
+                  child: _MessageBubble(text: msg['text'], isSent: false),
+                ),
               ],
             ),
           if (isSent)
@@ -283,10 +317,7 @@ class _ChatBottomSheetState extends State<ChatBottomSheet> {
             ),
             child: Text(
               msg['time'],
-              style: GoogleFonts.poppins(
-                color: Colors.white54,
-                fontSize: 11,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white54, fontSize: 11),
             ),
           ),
         ],
@@ -374,9 +405,7 @@ class _SheetGradientPainter extends CustomPainter {
     final clear = Color.fromARGB(0, color.red, color.green, color.blue);
 
     final paint = Paint()
-      ..shader = RadialGradient(
-        colors: [solid, clear],
-      ).createShader(
+      ..shader = RadialGradient(colors: [solid, clear]).createShader(
         Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
       );
 
@@ -463,8 +492,11 @@ class _InputArea extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.emoji_emotions_outlined,
-              color: Colors.white60, size: 22),
+          const Icon(
+            Icons.emoji_emotions_outlined,
+            color: Colors.white60,
+            size: 22,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
@@ -472,8 +504,10 @@ class _InputArea extends StatelessWidget {
               style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Type your message',
-                hintStyle:
-                    GoogleFonts.poppins(color: Colors.white38, fontSize: 14),
+                hintStyle: GoogleFonts.poppins(
+                  color: Colors.white38,
+                  fontSize: 14,
+                ),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -507,7 +541,11 @@ class _InputArea extends StatelessWidget {
                 ],
               ),
               padding: const EdgeInsets.all(9),
-              child: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+              child: const Icon(
+                Icons.send_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
           ),
         ],

@@ -1,117 +1,228 @@
 // ignore_for_file: unused_element_parameter
 
+import 'dart:ui';
 import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'my_bookings_detail_screen.dart';
 
-class MyBookingsScreen extends StatelessWidget {
-  const MyBookingsScreen({super.key});
+// ─────────────────────────────────────────────────────────────────────────────
+// HOW TO OPEN (from profile or other screens):
+//
+//   showModalBottomSheet(
+//     context: context,
+//     isScrollControlled: true,
+//     backgroundColor: Colors.transparent,
+//     barrierColor: Colors.black54,
+//     builder: (_) => const MyBookingsBottomSheetEntry(),
+//   );
+// ─────────────────────────────────────────────────────────────────────────────
+
+class MyBookingsBottomSheetEntry extends StatelessWidget {
+  const MyBookingsBottomSheetEntry({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          const RidenDarkBackground(),
-          SafeArea(
-            child: Column(
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.45,
+      maxChildSize: 0.96,
+      expand: false, 
+      snap: true,
+      snapSizes: const [0.45, 0.85, 0.96],
+      builder: (context, scrollController) {
+        return MyBookingsBottomSheet(scrollController: scrollController);
+      },
+    );
+  }
+}
+
+class MyBookingsBottomSheet extends StatelessWidget {
+  final ScrollController scrollController;
+  const MyBookingsBottomSheet({required this.scrollController, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double sheetH = constraints.maxHeight;
+        final double sheetW = constraints.maxWidth;
+
+        // progress: 0.0 = min collapsed, 1.0 = full screen
+        final double minH = screenHeight * 0.45;
+        final double maxH = screenHeight * 1.00;
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+
+        // Corners flatten as sheet goes full screen
+        final double cornerRadius = 32.0 * (1.0 - progress);
+
+        return ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(cornerRadius),
+            topRight: Radius.circular(cornerRadius),
+          ),
+          child: SizedBox(
+            width: sheetW,
+            height: sheetH,
+            child: Stack(
               children: [
-                const SizedBox(height: 15),
-                // Page Title
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "My Bookings",
-                      style: GoogleFonts.poppins(
-                        fontSize: 22,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1,
+                // ── 1. Gradient background ──
+                Positioned.fill(
+                  child: CustomPaint(painter: _SheetGradientPainter()),
+                ),
+
+                // ── 2. Frosted glass blur layer ──
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.06),
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.white.withOpacity(0.18),
+                            width: 1.2,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 18),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 7,
-                    ),
-                    child: Column(
-                      children: [
-                        _BookingSection(
-                          onTap: () {
-                            Get.to(() => MyBookingsDetailScreen(booking: {}));
-                          },
-                          title: "Ongoing Bookings",
-                          isOngoing: true,
-                          bookings: [
-                            BookingInfo(
-                              date: "25 May, 2025",
-                              price: "\$45.00",
-                              pickLabel: "Office",
-                              pickAddress:
-                                  "2972 Westheimer Rd. Santa Ana, Illinois 85486",
-                              pickTime: "04:30pm",
-                              dropLabel: "Coffee shop",
-                              dropAddress:
-                                  "1901 Thornridge Cir. Shiloh, Hawaii 81063",
-                              dropTime: "08:30pm",
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 22),
-                        _BookingSection(
-                          onTap: () {
-                            Get.to(() => MyBookingsDetailScreen(booking: {}));
-                          },
-                          title: "Past Bookings",
-                          isOngoing: false,
-                          bookings: [
-                            BookingInfo(
-                              date: "25 May, 2025",
-                              price: "\$45.00",
-                              pickLabel: "Office",
-                              pickAddress:
-                                  "2972 Westheimer Rd. Santa Ana, Illinois 85486",
-                              pickTime: "04:30pm",
-                              dropLabel: "Coffee shop",
-                              dropAddress:
-                                  "1901 Thornridge Cir. Shiloh, Hawaii 81063",
-                              dropTime: "08:30pm",
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 90), // Room for nav bar
-                      ],
-                    ),
-                  ),
-                ),
 
-                // Glassy bottom nav bar
+                // ── 3. Foreground content ──
+                Column(
+                  children: [
+                    // Drag handle
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 2),
+                      child: Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // ── Header: "< Back  My Bookings" ──
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.chevron_left, color: Colors.white, size: 24),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Back',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                "My Bookings",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 24,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 60), // Mirror back button space
+                        ],
+                      ),
+                    ),
+
+                    // ── Bookings List ──
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            _BookingSection(
+                              onTap: () {
+                                showBookingDetailSheet(context);
+                              },
+                              title: "Ongoing Bookings",
+                              bookings: [
+                                BookingInfo(
+                                  date: "25 May, 2025",
+                                  price: "\$45.00",
+                                  pickLabel: "Office",
+                                  pickAddress: "2972 Westheimer Rd. Santa Ana, Illinois 85486",
+                                  pickTime: "04:30pm",
+                                  dropLabel: "Coffee shop",
+                                  dropAddress: "1901 Thornridge Cir. Shiloh, Hawaii 81063",
+                                  dropTime: "06:30pm",
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            _BookingSection(
+                              onTap: () {
+                                showBookingDetailSheet(context);
+                              },
+                              title: "Previous", 
+                              bookings: [
+                                BookingInfo(
+                                  date: "25 May, 2025",
+                                  price: "\$45.00",
+                                  pickLabel: "Office",
+                                  pickAddress: "2972 Westheimer Rd. Santa Ana, Illinois 85486",
+                                  pickTime: "04:30pm",
+                                  dropLabel: "Coffee shop",
+                                  dropAddress: "1901 Thornridge Cir. Shiloh, Hawaii 81063",
+                                  dropTime: "06:30pm",
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 100),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // ── Navigation ──
+                    RidenBottomNav(selectedIndex: 0, isFromSheet: true),
+                  ],
+                ),
               ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
 class _BookingSection extends StatelessWidget {
   final String title;
-  final bool isOngoing;
   final List<BookingInfo> bookings;
   final VoidCallback? onTap;
   const _BookingSection({
     required this.title,
-    required this.isOngoing,
     required this.bookings,
     this.onTap,
     super.key,
@@ -125,31 +236,41 @@ class _BookingSection extends StatelessWidget {
         Text(
           title,
           style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 17,
-            color: isOngoing ? Colors.redAccent : Colors.red[200],
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: Colors.white,
           ),
         ),
-        const SizedBox(height: 6),
-        ...bookings.map(
-          (booking) => _GlassBookingCard(
-            info: booking,
-            isOngoing: isOngoing,
-            onTap: onTap,
-          ),
+        const SizedBox(height: 16),
+        ...bookings.asMap().entries.map(
+          (entry) {
+            int idx = entry.key;
+            BookingInfo booking = entry.value;
+            return Column(
+              children: [
+                _BookingEntry(
+                  info: booking,
+                  onTap: onTap,
+                ),
+                if (idx < bookings.length - 1)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Divider(color: Colors.white.withOpacity(0.15), height: 1),
+                  ),
+              ],
+            );
+          },
         ),
       ],
     );
   }
 }
 
-class _GlassBookingCard extends StatelessWidget {
+class _BookingEntry extends StatelessWidget {
   final BookingInfo info;
-  final bool isOngoing;
   final VoidCallback? onTap;
-  const _GlassBookingCard({
+  const _BookingEntry({
     required this.info,
-    required this.isOngoing,
     this.onTap,
     super.key,
   });
@@ -159,94 +280,79 @@ class _GlassBookingCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          color: Colors.white.withOpacity(0.13),
-          border: Border.all(color: Colors.white24, width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.055),
-              blurRadius: 12,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
+        color: Colors.transparent, // Ensures tap works everywhere
         child: Column(
           children: [
-            // Top row: date and price
+            // Top row: Date and Price
             Row(
               children: [
                 Text(
                   info.date,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13.2,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   info.price,
                   style: GoogleFonts.poppins(
-                    color: Colors.redAccent,
+                    color: RidenColors.brandRed,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: 18,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 9),
-            // Booking route chain
+            const SizedBox(height: 12),
+            // Route section
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Vertical icon chain
-                SizedBox(
-                  width: 24,
+                // Icon Chain column
+                Padding(
+                  padding: const EdgeInsets.only(top: 6, right: 14),
                   child: Column(
                     children: [
-                      Icon(Icons.circle, color: Colors.black, size: 10),
+                      const Icon(Icons.circle, color: Colors.white, size: 12),
                       Container(
-                        width: 2,
-                        height: 21,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            left: BorderSide(
-                              width: 2,
-                              color: Colors.white38,
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                        ),
+                        width: 1.5,
+                        height: 38,
+                        margin: const EdgeInsets.symmetric(vertical: 3),
+                        child: CustomPaint(painter: _DashedLinePainter()),
                       ),
-                      Icon(Icons.navigation, color: Colors.red, size: 20),
+                      const Icon(Icons.navigation, color: RidenColors.brandRed, size: 22),
                     ],
                   ),
                 ),
-                const SizedBox(width: 6),
-                // Pickup info and drop info
+                // Text columns
                 Expanded(
                   child: Column(
                     children: [
-                      _BookingPointRow(
+                      // Pickup Row
+                      _PointRow(
                         label: info.pickLabel,
                         address: info.pickAddress,
                         time: info.pickTime,
-                        isOffice: true,
+                        showChevron: true,
                       ),
-                      const SizedBox(height: 3),
-                      _BookingPointRow(
+                      const SizedBox(height: 18),
+                      // Dropoff Row
+                      _PointRow(
                         label: info.dropLabel,
                         address: info.dropAddress,
                         time: info.dropTime,
-                        isOffice: false,
+                        showChevron: false,
                       ),
                     ],
                   ),
                 ),
               ],
             ),
+            // Bottom Divider
+            const SizedBox(height: 16),
+            Divider(color: Colors.white.withOpacity(0.12), height: 1),
           ],
         ),
       ),
@@ -254,58 +360,111 @@ class _GlassBookingCard extends StatelessWidget {
   }
 }
 
-class _BookingPointRow extends StatelessWidget {
+class _PointRow extends StatelessWidget {
   final String label, address, time;
-  final bool isOffice;
-  const _BookingPointRow({
+  final bool showChevron;
+  const _PointRow({
     required this.label,
     required this.address,
     required this.time,
-    required this.isOffice,
-    super.key,
+    required this.showChevron,
   });
+
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(width: 4),
         Expanded(
-          child: Text(
-            address,
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
-            overflow: TextOverflow.ellipsis,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 17,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                address,
+                style: GoogleFonts.poppins(
+                  color: Colors.white.withOpacity(0.55),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
-        if (isOffice)
-          Icon(Icons.chevron_right, color: Colors.white54, size: 20),
-        if (!isOffice) const SizedBox(width: 12),
-        Text(
-          time,
-          style: GoogleFonts.poppins(color: Colors.white60, fontSize: 12.5),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            if (showChevron)
+              const Icon(Icons.chevron_right_rounded, color: Colors.white70, size: 24),
+            if (!showChevron) const SizedBox(height: 24),
+            const SizedBox(height: 4),
+            Text(
+              time,
+              style: GoogleFonts.poppins(
+                color: Colors.white.withOpacity(0.5),
+                fontSize: 12,
+              ),
+            ),
+          ],
         ),
       ],
     );
   }
 }
 
-// Booking data model
+class _DashedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white38
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+    double dashHeight = 4, dashSpace = 3, startY = 0;
+    while (startY < size.height) {
+      canvas.drawLine(Offset(0, startY), Offset(0, startY + dashHeight), paint);
+      startY += dashHeight + dashSpace;
+    }
+  }
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+class _SheetGradientPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = const Color(0xFF1A1B2E));
+    _radialBlob(canvas, center: Offset(w * 0.15, h * 0.3), rx: w * 0.8, ry: h * 0.6, color: const Color(0xFF8B4A35), alpha: 170);
+    _radialBlob(canvas, center: Offset(w * 0.85, h * 0.75), rx: w * 0.8, ry: h * 0.6, color: const Color(0xFF2E6B72), alpha: 170);
+  }
+  void _radialBlob(Canvas canvas, {required Offset center, required double rx, required double ry, required Color color, required int alpha}) {
+    final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
+    final clear = Color.fromARGB(0, color.red, color.green, color.blue);
+    final paint = Paint()..shader = RadialGradient(colors: [solid, clear]).createShader(Rect.fromCenter(center: center, width: rx * 2, height: ry * 2));
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.scale(1.0, ry / rx);
+    canvas.translate(-center.dx, -center.dy);
+    canvas.drawCircle(center, rx, paint);
+    canvas.restore();
+  }
+  @override
+  bool shouldRepaint(_SheetGradientPainter _) => false;
+}
+
 class BookingInfo {
-  final String date,
-      price,
-      pickLabel,
-      pickAddress,
-      pickTime,
-      dropLabel,
-      dropAddress,
-      dropTime;
+  final String date, price, pickLabel, pickAddress, pickTime, dropLabel, dropAddress, dropTime;
   BookingInfo({
     required this.date,
     required this.price,

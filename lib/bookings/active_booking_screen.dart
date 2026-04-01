@@ -58,7 +58,8 @@ class ActiveBookingBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<ActiveBookingBottomSheet> createState() => _ActiveBookingBottomSheetState();
+  State<ActiveBookingBottomSheet> createState() =>
+      _ActiveBookingBottomSheetState();
 }
 
 class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
@@ -73,7 +74,10 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.65),
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: Colors.white.withOpacity(0.70), width: 1.5),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.70),
+              width: 1.5,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.12),
@@ -107,8 +111,11 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                             color: Color(0xFFE53935),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.contact_phone_rounded,
-                              color: Colors.white, size: 28),
+                          child: const Icon(
+                            Icons.contact_phone_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
                         ),
                       ),
                     ),
@@ -142,7 +149,8 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                         minimumSize: const Size(double.infinity, 54),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
                       child: Text(
                         'Access Contacts',
@@ -159,9 +167,13 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         minimumSize: const Size(double.infinity, 54),
-                        side: const BorderSide(color: Color(0xFFE53935), width: 1),
+                        side: const BorderSide(
+                          color: Color(0xFFE53935),
+                          width: 1,
+                        ),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
                       child: Text(
                         'Skip for now',
@@ -201,7 +213,10 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
         final double sheetH = constraints.maxHeight;
         final double minH = screenHeight * 0.50;
         final double maxH = screenHeight * 1.00;
-        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(
+          0.0,
+          1.0,
+        );
         final double cornerRadius = 28.0 * (1.0 - progress);
 
         return ClipRRect(
@@ -251,8 +266,11 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                           onTap: () => Navigator.pop(context),
                           child: Row(
                             children: [
-                              const Icon(Icons.arrow_back_ios_new_rounded,
-                                  color: Colors.white, size: 18),
+                              const Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                color: Colors.white,
+                                size: 18,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 'Back',
@@ -273,7 +291,10 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                   Expanded(
                     child: ListView(
                       controller: widget.scrollController,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                       children: [
                         // ── Card 1: Driver Info ──
                         _WhiteGlassCard(
@@ -286,10 +307,11 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                                   width: 58,
                                   height: 58,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => const Icon(
-                                      Icons.person,
-                                      size: 58,
-                                      color: Colors.white24),
+                                  errorBuilder: (_, _, _) => const Icon(
+                                    Icons.person,
+                                    size: 58,
+                                    color: Colors.white24,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 14),
@@ -307,14 +329,19 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                                     ),
                                     Row(
                                       children: [
-                                        const Icon(Icons.location_on,
-                                            size: 14, color: Color(0xFFE53935)),
+                                        const Icon(
+                                          Icons.location_on,
+                                          size: 14,
+                                          color: Color(0xFFE53935),
+                                        ),
                                         const SizedBox(width: 4),
                                         Text(
                                           '(${widget.driver.distance})',
                                           style: GoogleFonts.poppins(
                                             fontSize: 12,
-                                            color: const Color(0xFF1A1B2E).withOpacity(0.6),
+                                            color: const Color(
+                                              0xFF1A1B2E,
+                                            ).withOpacity(0.6),
                                           ),
                                         ),
                                       ],
@@ -323,7 +350,9 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                                       '${widget.driver.ridesCount} Rides (${widget.driver.reviews} reviews)',
                                       style: GoogleFonts.poppins(
                                         fontSize: 11,
-                                        color: const Color(0xFF1A1B2E).withOpacity(0.5),
+                                        color: const Color(
+                                          0xFF1A1B2E,
+                                        ).withOpacity(0.5),
                                       ),
                                     ),
                                   ],
@@ -343,7 +372,8 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Ride Details',
@@ -355,7 +385,9 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                                   ),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Colors.black.withOpacity(0.12),
                                       borderRadius: BorderRadius.circular(6),
@@ -365,7 +397,9 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                                       style: GoogleFonts.poppins(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFF1A1B2E).withOpacity(0.7),
+                                        color: const Color(
+                                          0xFF1A1B2E,
+                                        ).withOpacity(0.7),
                                       ),
                                     ),
                                   ),
@@ -393,7 +427,11 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                                   ),
                                 ],
                               ),
-                              const Divider(height: 28, thickness: 1, color: Colors.black12),
+                              const Divider(
+                                height: 28,
+                                thickness: 1,
+                                color: Colors.black12,
+                              ),
                               _DetailRow('Total Distance', '435km'),
                               _DetailRow('Payment Method', 'wallet'),
                               _DetailRow('Estimated Fare', '\$450.00'),
@@ -419,9 +457,11 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                               const SizedBox(height: 20),
                               _RouteStepper(
                                 pickup: 'Office',
-                                pickupAddress: '2972 Westheimer Rd. Santa Ana, Illinois 85486',
+                                pickupAddress:
+                                    '2972 Westheimer Rd. Santa Ana, Illinois 85486',
                                 destination: 'Coffee shop',
-                                destinationAddress: '1901 Thornridge Cir. Shiloh, Hawaii 81063',
+                                destinationAddress:
+                                    '1901 Thornridge Cir. Shiloh, Hawaii 81063',
                               ),
                             ],
                           ),
@@ -537,18 +577,22 @@ class _DetailRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF1A1B2E).withOpacity(0.7),
-              )),
-          Text(value,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF1A1B2E).withOpacity(0.8),
-              )),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF1A1B2E).withOpacity(0.7),
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF1A1B2E).withOpacity(0.8),
+            ),
+          ),
         ],
       ),
     );
@@ -590,7 +634,9 @@ class _RouteStepper extends StatelessWidget {
                     child: Container(
                       width: 1.5,
                       margin: const EdgeInsets.symmetric(vertical: 2),
-                      color: index % 2 == 0 ? Colors.black26 : Colors.transparent,
+                      color: index % 2 == 0
+                          ? Colors.black26
+                          : Colors.transparent,
                     ),
                   ),
                 ),
@@ -625,12 +671,21 @@ class _LocationInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title,
-            style: GoogleFonts.poppins(
-                fontSize: 15, fontWeight: FontWeight.w700, color: const Color(0xFF1A1B2E))),
-        Text(address,
-            style: GoogleFonts.poppins(
-                fontSize: 12, color: const Color(0xFF1A1B2E).withOpacity(0.55))),
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF1A1B2E),
+          ),
+        ),
+        Text(
+          address,
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            color: const Color(0xFF1A1B2E).withOpacity(0.55),
+          ),
+        ),
       ],
     );
   }
@@ -664,12 +719,14 @@ class _ActionRow extends StatelessWidget {
         children: [
           Icon(icon, color: iconColor ?? color, size: 22),
           const SizedBox(width: 14),
-          Text(label,
-              style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: labelColor ?? color,
-              )),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: labelColor ?? color,
+            ),
+          ),
         ],
       ),
     );
@@ -685,14 +742,42 @@ class _SheetGradientPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
-    canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = const Color(0xFF1A1B2E));
-    _blob(canvas, center: Offset(w * 0.15, h * 0.30), rx: w * 0.70, ry: h * 0.50, color: const Color(0xFF8B4A35), alpha: 170);
-    _blob(canvas, center: Offset(w * 0.82, h * 0.68), rx: w * 0.70, ry: h * 0.52, color: const Color(0xFF2E6B72), alpha: 165);
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF1A1B2E),
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.70,
+      ry: h * 0.50,
+      color: const Color(0xFF8B4A35),
+      alpha: 170,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.82, h * 0.68),
+      rx: w * 0.70,
+      ry: h * 0.52,
+      color: const Color(0xFF2E6B72),
+      alpha: 165,
+    );
   }
-  void _blob(Canvas canvas, {required Offset center, required double rx, required double ry, required Color color, required int alpha}) {
+
+  void _blob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
     final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
     final clear = Color.fromARGB(0, color.red, color.green, color.blue);
-    final paint = Paint()..shader = RadialGradient(colors: [solid, clear]).createShader(Rect.fromCenter(center: center, width: rx * 2, height: ry * 2));
+    final paint = Paint()
+      ..shader = RadialGradient(colors: [solid, clear]).createShader(
+        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
+      );
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.scale(1.0, ry / rx);
@@ -700,6 +785,7 @@ class _SheetGradientPainter extends CustomPainter {
     canvas.drawCircle(center, rx, paint);
     canvas.restore();
   }
+
   @override
   bool shouldRepaint(_SheetGradientPainter _) => false;
 }

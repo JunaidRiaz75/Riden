@@ -72,10 +72,8 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
         expand: false,
         snap: true,
         snapSizes: const [0.50, 0.85, 1.0],
-        builder: (ctx, sc) => RideconfirmScreen(
-          scrollController: sc,
-          selectedCar: selectedCar,
-        ),
+        builder: (ctx, sc) =>
+            RideconfirmScreen(scrollController: sc, selectedCar: selectedCar),
       ),
     );
   }
@@ -91,8 +89,10 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
 
         final double minH = screenHeight * 0.50;
         final double maxH = screenHeight * 1.00;
-        final double progress =
-            ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(
+          0.0,
+          1.0,
+        );
         final double cornerRadius = 28.0 * (1.0 - progress);
 
         return ClipRRect(
@@ -172,24 +172,30 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
                                 width: 30,
                                 height: 30,
                               ),
-                              isGroupSelected: ['Riden Standard', 'Riden SUV', 'Riden Van']
-                                  .contains(selectedCar),
+                              isGroupSelected: [
+                                'Riden Standard',
+                                'Riden SUV',
+                                'Riden Van',
+                              ].contains(selectedCar),
                               cars: [
                                 _CarItem(
-                                    name: 'Riden Standard',
-                                    time: '3-4 min',
-                                    price: r'C$ 70.00',
-                                    description: 'Sedan with AC'),
+                                  name: 'Riden Standard',
+                                  time: '3-4 min',
+                                  price: r'C$ 70.00',
+                                  description: 'Sedan with AC',
+                                ),
                                 _CarItem(
-                                    name: 'Riden SUV',
-                                    time: '3-4 min',
-                                    price: r'C$ 70.00',
-                                    description: 'SUV with AC'),
+                                  name: 'Riden SUV',
+                                  time: '3-4 min',
+                                  price: r'C$ 70.00',
+                                  description: 'SUV with AC',
+                                ),
                                 _CarItem(
-                                    name: 'Riden Van',
-                                    time: '3-4 min',
-                                    price: r'C$ 70.00',
-                                    description: 'Van with AC'),
+                                  name: 'Riden Van',
+                                  time: '3-4 min',
+                                  price: r'C$ 70.00',
+                                  description: 'Van with AC',
+                                ),
                               ],
                               selectedCar: selectedCar,
                               onSelect: (name) =>
@@ -206,20 +212,23 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
                                 height: 30,
                               ),
                               isPremium: true,
-                              isGroupSelected:
-                                  ['Riden Premium', 'SUV Premium']
-                                      .contains(selectedCar),
+                              isGroupSelected: [
+                                'Riden Premium',
+                                'SUV Premium',
+                              ].contains(selectedCar),
                               cars: [
                                 _CarItem(
-                                    name: 'Riden Premium',
-                                    time: '3-4 min',
-                                    price: r'C$ 110.00',
-                                    description: 'Premium Sedan with AC'),
+                                  name: 'Riden Premium',
+                                  time: '3-4 min',
+                                  price: r'C$ 110.00',
+                                  description: 'Premium Sedan with AC',
+                                ),
                                 _CarItem(
-                                    name: 'SUV Premium',
-                                    time: '3-4 min',
-                                    price: r'C$ 125.00',
-                                    description: 'Premium SUV with AC'),
+                                  name: 'SUV Premium',
+                                  time: '3-4 min',
+                                  price: r'C$ 125.00',
+                                  description: 'Premium SUV with AC',
+                                ),
                               ],
                               selectedCar: selectedCar,
                               onSelect: (name) =>
@@ -239,10 +248,11 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
                                   selectedCar == 'Riden Wheel Chair',
                               cars: [
                                 _CarItem(
-                                    name: 'Riden Wheel Chair',
-                                    time: '3-4 min',
-                                    price: r'C$ 80.00',
-                                    description: 'Wheelchair accessible'),
+                                  name: 'Riden Wheel Chair',
+                                  time: '3-4 min',
+                                  price: r'C$ 80.00',
+                                  description: 'Wheelchair accessible',
+                                ),
                               ],
                               selectedCar: selectedCar,
                               onSelect: (name) =>
@@ -335,9 +345,7 @@ class _CarGroupCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           // Red when any car in group is selected, white otherwise
-          color: isGroupSelected
-              ? _accentRed
-              : Colors.white.withOpacity(0.70),
+          color: isGroupSelected ? _accentRed : Colors.white.withOpacity(0.70),
           width: isGroupSelected ? 2.0 : 1.0,
         ),
         boxShadow: [
@@ -361,10 +369,7 @@ class _CarGroupCard extends StatelessWidget {
                 SizedBox(
                   width: 30,
                   height: 30,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: icon,
-                  ),
+                  child: FittedBox(fit: BoxFit.contain, child: icon),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -404,13 +409,13 @@ class _CarGroupCard extends StatelessWidget {
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeOut,
                     margin: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       // White when selected (bright, as in screenshot)
                       // Transparent when not selected
-                      color: isRowSelected
-                          ? Colors.white
-                          : Colors.transparent,
+                      color: isRowSelected ? Colors.white : Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: isRowSelected
                           ? [
@@ -418,12 +423,14 @@ class _CarGroupCard extends StatelessWidget {
                                 color: Colors.black.withOpacity(0.06),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
-                              )
+                              ),
                             ]
                           : [],
                     ),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
                     child: Row(
                       children: [
                         // Car image placeholder
@@ -433,7 +440,7 @@ class _CarGroupCard extends StatelessWidget {
                           child: Image.asset(
                             'assets/images/car.png',
                             fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => Icon(
+                            errorBuilder: (_, _, _) => Icon(
                               Icons.directions_car,
                               size: 36,
                               color: isRowSelected ? _accentRed : _darkInk,
@@ -458,9 +465,11 @@ class _CarGroupCard extends StatelessWidget {
                               const SizedBox(height: 3),
                               Row(
                                 children: [
-                                  Icon(Icons.schedule,
-                                      size: 12,
-                                      color: _darkInk.withOpacity(0.55)),
+                                  Icon(
+                                    Icons.schedule,
+                                    size: 12,
+                                    color: _darkInk.withOpacity(0.55),
+                                  ),
                                   const SizedBox(width: 3),
                                   Text(
                                     car.time,
@@ -535,11 +544,7 @@ class _RouteCard extends StatelessWidget {
           // Pickup
           Row(
             children: [
-            Image.asset(
-              'assets/images/pickup.png',
-              width: 30,
-              height: 30,
-            ),
+              Image.asset('assets/images/pickup.png', width: 30, height: 30),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -576,11 +581,11 @@ class _RouteCard extends StatelessWidget {
           // Destination
           Row(
             children: [
-             Image.asset(
-              'assets/images/destination.png',
-              width: 30,
-              height: 30,
-            ),
+              Image.asset(
+                'assets/images/destination.png',
+                width: 30,
+                height: 30,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -611,8 +616,10 @@ class _RouteCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: _darkInk.withOpacity(0.80),
                   borderRadius: BorderRadius.circular(12),
@@ -694,34 +701,56 @@ class _SheetGradientPainter extends CustomPainter {
       Paint()..color = const Color(0xFF1A1B2E),
     );
 
-    _blob(canvas,
-        center: Offset(w * 0.15, h * 0.30),
-        rx: w * 0.70, ry: h * 0.50,
-        color: const Color(0xFF8B4A35), alpha: 170);
-    _blob(canvas,
-        center: Offset(w * 0.05, h * 0.55),
-        rx: w * 0.50, ry: h * 0.35,
-        color: const Color(0xFF6B3828), alpha: 130);
-    _blob(canvas,
-        center: Offset(w * 0.82, h * 0.68),
-        rx: w * 0.70, ry: h * 0.52,
-        color: const Color(0xFF2E6B72), alpha: 165);
-    _blob(canvas,
-        center: Offset(w * 0.90, h * 0.50),
-        rx: w * 0.40, ry: h * 0.30,
-        color: const Color(0xFF3D8A8F), alpha: 110);
-    _blob(canvas,
-        center: Offset(w * 0.50, h * 0.50),
-        rx: w * 0.55, ry: h * 0.40,
-        color: const Color(0xFF3A4555), alpha: 80);
+    _blob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.70,
+      ry: h * 0.50,
+      color: const Color(0xFF8B4A35),
+      alpha: 170,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.05, h * 0.55),
+      rx: w * 0.50,
+      ry: h * 0.35,
+      color: const Color(0xFF6B3828),
+      alpha: 130,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.82, h * 0.68),
+      rx: w * 0.70,
+      ry: h * 0.52,
+      color: const Color(0xFF2E6B72),
+      alpha: 165,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.90, h * 0.50),
+      rx: w * 0.40,
+      ry: h * 0.30,
+      color: const Color(0xFF3D8A8F),
+      alpha: 110,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.50, h * 0.50),
+      rx: w * 0.55,
+      ry: h * 0.40,
+      color: const Color(0xFF3A4555),
+      alpha: 80,
+    );
   }
 
-  void _blob(Canvas canvas,
-      {required Offset center,
-      required double rx,
-      required double ry,
-      required Color color,
-      required int alpha}) {
+  void _blob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
     final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
     final clear = Color.fromARGB(0, color.red, color.green, color.blue);
     final paint = Paint()
@@ -747,8 +776,10 @@ class _SharedBottomNav extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onChanged;
 
-  const _SharedBottomNav(
-      {required this.selectedIndex, required this.onChanged});
+  const _SharedBottomNav({
+    required this.selectedIndex,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -762,8 +793,10 @@ class _SharedBottomNav extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.58),
               borderRadius: BorderRadius.circular(28),
-              border:
-                  Border.all(color: Colors.white.withOpacity(0.70), width: 1),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.70),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.10),
@@ -778,14 +811,34 @@ class _SharedBottomNav extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 14),
                 child: Row(
                   children: [
-                    _NItem(0, Icons.directions_car_rounded, 'Ride',
-                        selectedIndex, onChanged),
-                    _NItem(1, Icons.support_agent_rounded, 'Support',
-                        selectedIndex, onChanged),
-                    _NItem(2, Icons.receipt_long_rounded, 'Bookings',
-                        selectedIndex, onChanged),
-                    _NItem(3, Icons.person_outline_rounded, 'Account',
-                        selectedIndex, onChanged),
+                    _NItem(
+                      0,
+                      Icons.directions_car_rounded,
+                      'Ride',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                    _NItem(
+                      1,
+                      Icons.support_agent_rounded,
+                      'Support',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                    _NItem(
+                      2,
+                      Icons.receipt_long_rounded,
+                      'Bookings',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                    _NItem(
+                      3,
+                      Icons.person_outline_rounded,
+                      'Account',
+                      selectedIndex,
+                      onChanged,
+                    ),
                   ],
                 ),
               ),
@@ -805,7 +858,12 @@ class _NItem extends StatelessWidget {
   final ValueChanged<int> onChanged;
 
   const _NItem(
-      this.index, this.icon, this.label, this.selectedIndex, this.onChanged);
+    this.index,
+    this.icon,
+    this.label,
+    this.selectedIndex,
+    this.onChanged,
+  );
 
   @override
   Widget build(BuildContext context) {
