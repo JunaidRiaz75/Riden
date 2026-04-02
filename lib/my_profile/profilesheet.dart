@@ -1,6 +1,7 @@
 // profile_bottom_sheet.dart
 // ignore_for_file: deprecated_member_use
 
+import 'dart:ui';
 import 'package:Riden/controllers/profile_controllers.dart';
 import 'package:Riden/my_profile/about_us/about_us_bottom_sheet.dart';
 import 'package:Riden/my_profile/app_setting/app_setting.dart';
@@ -9,62 +10,23 @@ import 'package:Riden/my_profile/contact_support/contact_support_screen.dart';
 import 'package:Riden/my_profile/in_app_wallet/in_app_wallet_screen.dart';
 import 'package:Riden/my_profile/payment_methods/payment_methods_screen.dart';
 import 'package:Riden/my_profile/profile_setting/profile_settings_bottom_sheet.dart';
+import 'package:Riden/bookings/my_bookings_screen.dart';
 import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProfileBottomSheet extends StatelessWidget {
+class ProfileBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
-
   const ProfileBottomSheet({required this.scrollController, super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(28),
-        topRight: Radius.circular(28),
-      ),
-      child: Stack(
-        children: [
-          // ── Same dark gradient as Splash ──────────────────
-          const Positioned.fill(child: RidenDarkBackground()),
-
-          Column(
-            children: [
-              // Drag Handle
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Center(
-                  child: Container(
-                    width: 45,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(2.5),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ProfileBottomSheetContent(
-                  scrollController: scrollController,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  State<ProfileBottomSheet> createState() => _ProfileBottomSheetState();
 }
 
-class ProfileBottomSheetContent extends StatelessWidget {
-  final ScrollController scrollController;
+class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
   final controller = Get.put(ProfileSidebarController());
-
-  ProfileBottomSheetContent({required this.scrollController, super.key});
 
   /// Opens any sheet using the standard DraggableScrollableSheet pattern.
   void _openSheet(
@@ -88,329 +50,420 @@ class ProfileBottomSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      controller: scrollController,
-      physics: const ClampingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Profile Section ─────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-            child: Column(
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double sheetH = constraints.maxHeight;
+        final double sheetW = constraints.maxWidth;
+
+        // progress: 0.0 = min collapsed, 1.0 = full screen
+        final double minH = screenHeight * 0.50;
+        final double maxH = screenHeight * 1.00;
+        final double progress =
+            ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+
+        // Corners flatten as sheet goes full screen
+        final double cornerRadius = 32.0 * (1.0 - progress);
+
+        return ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(cornerRadius),
+            topRight: Radius.circular(cornerRadius),
+          ),
+          child: SizedBox(
+            width: sheetW,
+            height: sheetH,
+            child: Stack(
               children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
+                // ── 1. Gradient background (Copper to Teal) ──────────────────
+                Positioned.fill(
+                  child: CustomPaint(painter: _SheetGradientPainter()),
+                ),
+
+                // ── 2. Frosted glass blur layer ──
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                    child: Container(
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: RidenColors.brandRed,
-                          width: 3,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: RidenColors.brandRed.withOpacity(0.3),
-                            blurRadius: 15,
-                            spreadRadius: 2,
+                        color: Colors.white.withOpacity(0.05),
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.white.withOpacity(0.15),
+                            width: 1.5,
                           ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // ── 3. Foreground content ──
+                Column(
+                  children: [
+                    // Drag handle
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 8),
+                      child: Center(
+                        child: Container(
+                          width: 45,
+                          height: 4.5,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(2.5),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // ── Header: "< Back  Settings" ──────────────────────────
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          // Back button
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.chevron_left,
+                                  color: Colors.white,
+                                  size: 26,
+                                ),
+                                Text(
+                                  'Back',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Title centered
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                'Settings',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Empty placeholder for symmetry
+                          const SizedBox(width: 60),
                         ],
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(40),
-                        child: Image.network(
-                          'https://i.pravatar.cc/150?img=33',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: () => _openSheet(
-                          context,
-                          (sc) =>
-                              ProfileSettingsBottomSheet(scrollController: sc),
-                        ),
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: RidenColors.brandRed,
-                            border: Border.all(
-                              color: RidenColors.backgroundBase,
-                              width: 2,
+
+                    const SizedBox(height: 10),
+
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: widget.scrollController,
+                        physics: const ClampingScrollPhysics(),
+                        child: Column(
+                          children: [
+                            // ── Profile Image & Name ───────────────────────
+                            Column(
+                              children: [
+                                Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.2),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(50),
+                                    child: Image.network(
+                                      'https://i.pravatar.cc/150?img=33',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Jesse Showalter',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: RidenColors.brandRed.withOpacity(0.4),
-                                blurRadius: 8,
+
+                            const SizedBox(height: 32),
+
+                            // ── Glassy Menu List ──────────────────────────
+                            Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.58),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.25),
+                                  width: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.12),
+                                    blurRadius: 20,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 14,
+                              child: Column(
+                                children: [
+                                  _buildMenuItem(
+                                    context: context,
+                                    icon: Icons.person_outline_rounded,
+                                    label: 'Profile Settings',
+                                    onTap: () => _openSheet(
+                                      context,
+                                      (sc) => ProfileSettingsBottomSheet(
+                                          scrollController: sc),
+                                    ),
+                                  ),
+                                  _buildDivider(),
+                                  _buildMenuItem(
+                                    context: context,
+                                    icon: Icons.calendar_month_rounded,
+                                    label: 'Booking History',
+                                    onTap: () {
+                                      Navigator.pop(context); // Close profile sheet first
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        barrierColor: Colors.black54,
+                                        builder: (_) => const MyBookingsBottomSheetEntry(),
+                                      );
+                                    },
+                                  ),
+                                  _buildDivider(),
+                                  _buildMenuItem(
+                                    context: context,
+                                    icon: Icons.payment_rounded,
+                                    label: 'Payment Methods',
+                                    onTap: () => _openSheet(
+                                      context,
+                                      (sc) => PaymentMethodsBottomSheet(
+                                          scrollController: sc),
+                                    ),
+                                  ),
+                                  _buildDivider(),
+                                  _buildMenuItem(
+                                    context: context,
+                                    icon: Icons.account_balance_wallet_outlined,
+                                    label: 'In App Wallet',
+                                    onTap: () => _openSheet(
+                                      context,
+                                      (sc) => InAppWalletBottomSheet(
+                                          scrollController: sc),
+                                    ),
+                                  ),
+                                  _buildDivider(),
+                                  _buildMenuItem(
+                                    context: context,
+                                    icon: Icons.assignment_outlined,
+                                    label: 'Complaint Tickets',
+                                    onTap: () => _openSheet(
+                                      context,
+                                      (sc) => ComplaintTicketsBottomSheet(
+                                          scrollController: sc),
+                                    ),
+                                  ),
+                                  _buildDivider(),
+                                  _buildMenuItem(
+                                    context: context,
+                                    icon: Icons.info_outline_rounded,
+                                    label: 'About us',
+                                    onTap: () => _openSheet(
+                                      context,
+                                      (sc) => AboutUsBottomSheet(
+                                          scrollController: sc),
+                                    ),
+                                  ),
+                                  _buildDivider(),
+                                  _buildMenuItem(
+                                    context: context,
+                                    icon: Icons.settings_outlined,
+                                    label: 'App Settings',
+                                    onTap: () => _openSheet(
+                                      context,
+                                      (sc) => AppSettingsBottomSheet(
+                                          scrollController: sc),
+                                    ),
+                                  ),
+                                  _buildDivider(),
+                                  _buildMenuItem(
+                                    context: context,
+                                    icon: Icons.support_agent_rounded,
+                                    label: 'Contact Support',
+                                    onTap: () => _openSheet(
+                                      context,
+                                      (sc) => ContactSupportBottomSheet(
+                                          scrollController: sc),
+                                    ),
+                                  ),
+                                  _buildDivider(),
+                                  _buildMenuItem(
+                                    context: context,
+                                    icon: Icons.logout_rounded,
+                                    label: 'Logout',
+                                    onTap: () {
+                                      Get.snackbar(
+                                        'Logging out',
+                                        'Good bye!',
+                                        backgroundColor: RidenColors.brandRed,
+                                        colorText: Colors.white,
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+
+                            const SizedBox(height: 100), // Space for bottom nav
+                          ],
                         ),
                       ),
                     ),
+
+                    // ✅ Standardized Bottom Nav
+                    RidenBottomNav(
+                      selectedIndex: 3,
+                      isFromSheet: true,
+                    ),
                   ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Jesse Showalter',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: RidenColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Columbia, Canada',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: RidenColors.textSecondary,
-                  ),
                 ),
               ],
             ),
           ),
-
-          const Divider(color: Colors.white24, height: 24, thickness: 1),
-
-          // ── Menu Items (all 7 wired) ─────────────────────
-          _buildMenuItem(
-            icon: Icons.person_outline,
-            label: 'Profile Settings',
-            onTap: () => _openSheet(
-              context,
-              (sc) => ProfileSettingsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.payment,
-            label: 'Payment Methods',
-            onTap: () => _openSheet(
-              context,
-              (sc) => PaymentMethodsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.wallet,
-            label: 'In App Wallet',
-            onTap: () => _openSheet(
-              context,
-              (sc) => InAppWalletBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.confirmation_number_outlined,
-            label: 'Complaint Tickets',
-            onTap: () => _openSheet(
-              context,
-              (sc) => ComplaintTicketsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.info_outline,
-            label: 'About Us',
-            onTap: () => _openSheet(
-              context,
-              (sc) => AboutUsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.settings_outlined,
-            label: 'App Settings',
-            onTap: () => _openSheet(
-              context,
-              (sc) => AppSettingsBottomSheet(scrollController: sc),
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.support_agent_outlined,
-            label: 'Contact Support',
-            onTap: () => _openSheet(
-              context,
-              (sc) => ContactSupportBottomSheet(scrollController: sc),
-            ),
-          ),
-
-          const Divider(color: Colors.white24, height: 24, thickness: 1),
-
-          // ── Theme Toggle ─────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Row(
-              children: [
-                Text(
-                  'Theme Mode',
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: RidenColors.textPrimary,
-                  ),
-                ),
-                const Spacer(),
-                Obx(
-                  () => GestureDetector(
-                    onTap: controller.toggleLight,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: !controller.isDarkMode.value
-                            ? RidenColors.brandRed
-                            : Colors.white.withOpacity(0.08),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.light_mode,
-                          color: !controller.isDarkMode.value
-                              ? Colors.white
-                              : RidenColors.textSecondary,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Obx(
-                  () => GestureDetector(
-                    onTap: controller.toggleDark,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: controller.isDarkMode.value
-                            ? RidenColors.brandRed
-                            : Colors.white.withOpacity(0.08),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.dark_mode,
-                          color: controller.isDarkMode.value
-                              ? Colors.white
-                              : RidenColors.textSecondary,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const Divider(color: Colors.white24, height: 24, thickness: 1),
-
-          // ── Logout ───────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: GestureDetector(
-              onTap: () {
-                Get.snackbar(
-                  'Logging out',
-                  'Logging out...',
-                  backgroundColor: RidenColors.brandRed,
-                  colorText: Colors.white,
-                  duration: const Duration(milliseconds: 800),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: RidenColors.brandRed, width: 1.5),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.logout, color: RidenColors.brandRed, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Logout',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: RidenColors.brandRed,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 30),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildMenuItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
+    return ListTile(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: RidenColors.brandRed.withOpacity(0.15),
-              ),
-              child: Center(
-                child: Icon(icon, color: RidenColors.brandRed, size: 20),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                label,
-                style: GoogleFonts.poppins(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: RidenColors.textPrimary,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white.withOpacity(0.4),
-              size: 16,
-            ),
-          ],
+      leading: Icon(
+        icon,
+        color: RidenColors.brandRed,
+        size: 22,
+      ),
+      title: Text(
+        label,
+        style: GoogleFonts.poppins(
+          color: Colors.black87,
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
         ),
+      ),
+      trailing: const Icon(
+        Icons.chevron_right_rounded,
+        color: RidenColors.brandRed,
+        size: 24,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+      visualDensity: VisualDensity.compact,
+    );
+  }
+
+  Widget _buildDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Divider(
+        color: Colors.black.withOpacity(0.08),
+        height: 1,
       ),
     );
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GRADIENT PAINTER — consistency with Chat/Call/Notification screens
+// ─────────────────────────────────────────────────────────────────────────────
+class _SheetGradientPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // Base: dark navy
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF1A1B2E),
+    );
+
+    // Warm copper glow — top-left
+    _radialBlob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.80,
+      ry: h * 0.60,
+      color: const Color(0xFF8B4A35),
+      alpha: 170,
+    );
+
+    // Teal glow — bottom-right
+    _radialBlob(
+      canvas,
+      center: Offset(w * 0.85, h * 0.75),
+      rx: w * 0.80,
+      ry: h * 0.60,
+      color: const Color(0xFF2E6B72),
+      alpha: 170,
+    );
+  }
+
+  void _radialBlob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
+    final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
+    final clear = Color.fromARGB(0, color.red, color.green, color.blue);
+
+    final paint = Paint()
+      ..shader = RadialGradient(colors: [solid, clear]).createShader(
+        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
+      );
+
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.scale(1.0, ry / rx);
+    canvas.translate(-center.dx, -center.dy);
+    canvas.drawCircle(center, rx, paint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_SheetGradientPainter _) => false;
 }

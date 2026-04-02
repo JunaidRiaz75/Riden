@@ -12,6 +12,7 @@ import 'package:Riden/my_profile/in_app_wallet/in_app_wallet_screen.dart';
 import 'package:Riden/my_profile/payment_methods/payment_methods_screen.dart';
 import 'package:Riden/my_profile/profile_setting/profile_settings_bottom_sheet.dart';
 import 'package:Riden/theme/app_colors.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -320,9 +321,9 @@ class ProfileBottomSheetContent extends StatelessWidget {
               ],
             ),
           ),
+          RidenBottomNav(selectedIndex: 3, isFromSheet: true),
         ],
       ),
-      bottomNavigationBar: RidenBottomNav(selectedIndex: 3, isFromSheet: true),
     );
   }
 
@@ -360,5 +361,3 @@ class ProfileBottomSheetContent extends StatelessWidget {
     );
   }
 }
-
-

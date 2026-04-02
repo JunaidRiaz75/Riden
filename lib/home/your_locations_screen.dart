@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, unused_element
+
 // your_locations_screen.dart
 import 'dart:ui';
 import 'package:Riden/theme/app_colors.dart';
@@ -214,7 +216,7 @@ class YourLocationsScreen extends StatelessWidget {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: savedLocations.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final location = savedLocations[index];
                     return GestureDetector(
@@ -276,21 +278,159 @@ class YourLocationsScreen extends StatelessWidget {
                     );
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
               ],
             ),
           ),
-          // Bottom navigation bar (fixed at bottom of sheet)
-          _BottomNavBar(
-            currentIndex: 0, // you can pass the actual index if needed
-            onChanged: (index) {
-              // Handle navigation from inside the sheet
-              // For now, close the sheet and let the home screen handle the new tab
-              Navigator.pop(context);
-              // Optionally, you could call a callback to the parent to open the other sheet
-            },
-          ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Pickup + Destination card ────────────────────────────────────────────────
+class _LocationCard extends StatelessWidget {
+  const _LocationCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.82),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Colors.white.withOpacity(0.55), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.28),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Pickup row
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF2F2F4),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.directions_walk_rounded,
+                        size: 20,
+                        color: Color(0xFF3A3A4A),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Pickup',
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(0.40),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          const Text(
+                            '2972 Westheimer Rd, Santa Ana, Illinois 85486',
+                            style: TextStyle(
+                              color: Color(0xFF141420),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Internal card divider — use Container not Divider widget
+              Padding(
+                padding: const EdgeInsets.fromLTRB(62, 10, 14, 10),
+                child: Container(
+                  height: 1,
+                  color: Colors.grey.withOpacity(0.15),
+                ),
+              ),
+
+              // Destination row
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEBEB),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.location_on_rounded,
+                        size: 20,
+                        color: Color(0xFFE53935),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Where to go?',
+                        style: TextStyle(
+                          color: Color(0xFFB0B0BA),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    // MAP button
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF252535),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.08),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Text(
+                        'MAP',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12.5,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -331,10 +471,34 @@ class _BottomNavBar extends StatelessWidget {
               top: false,
               child: Row(
                 children: [
-                  _NavItem(0, Icons.directions_car_rounded, 'Ride', currentIndex, onChanged),
-                  _NavItem(1, Icons.support_agent_rounded, 'Support', currentIndex, onChanged),
-                  _NavItem(2, Icons.receipt_long_rounded, 'Bookings', currentIndex, onChanged),
-                  _NavItem(3, Icons.person_outline_rounded, 'Account', currentIndex, onChanged),
+                  _NavItem(
+                    0,
+                    Icons.directions_car_rounded,
+                    'Ride',
+                    currentIndex,
+                    onChanged,
+                  ),
+                  _NavItem(
+                    1,
+                    Icons.support_agent_rounded,
+                    'Support',
+                    currentIndex,
+                    onChanged,
+                  ),
+                  _NavItem(
+                    2,
+                    Icons.receipt_long_rounded,
+                    'Bookings',
+                    currentIndex,
+                    onChanged,
+                  ),
+                  _NavItem(
+                    3,
+                    Icons.person_outline_rounded,
+                    'Account',
+                    currentIndex,
+                    onChanged,
+                  ),
                 ],
               ),
             ),
@@ -352,12 +516,20 @@ class _NavItem extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onChanged;
 
-  const _NavItem(this.index, this.icon, this.label, this.currentIndex, this.onChanged);
+  const _NavItem(
+    this.index,
+    this.icon,
+    this.label,
+    this.currentIndex,
+    this.onChanged,
+  );
 
   @override
   Widget build(BuildContext context) {
     final bool active = currentIndex == index;
-    final Color color = active ? const Color(0xFFE53935) : const Color(0xFF6A6A7E);
+    final Color color = active
+        ? const Color(0xFFE53935)
+        : const Color(0xFF6A6A7E);
     return Expanded(
       child: GestureDetector(
         onTap: () => onChanged(index),

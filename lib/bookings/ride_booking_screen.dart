@@ -1,9 +1,32 @@
+// car_selection_screen.dart
+// ignore_for_file: use_super_parameters, deprecated_member_use
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'rideconfirm.dart'; // adjust path
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENTRY  — wrap in DraggableScrollableSheet when opening as bottom sheet
+//
+//   showModalBottomSheet(
+//     context: context,
+//     isScrollControlled: true,
+//     backgroundColor: Colors.transparent,
+//     barrierColor: Colors.black54,
+//     builder: (_) => DraggableScrollableSheet(
+//       initialChildSize: 0.85,
+//       minChildSize: 0.50,
+//       maxChildSize: 1.0,
+//       expand: false,
+//       snap: true,
+//       snapSizes: const [0.50, 0.85, 1.0],
+//       builder: (ctx, sc) => CarSelectionScreen(scrollController: sc),
+//     ),
+//   );
+// ─────────────────────────────────────────────────────────────────────────────
 
 class CarSelectionScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -20,172 +43,509 @@ class CarSelectionScreen extends StatefulWidget {
 }
 
 class _CarSelectionScreenState extends State<CarSelectionScreen> {
-  int _selectedIndex = 0;
+  // Track which car is selected by name
   String selectedCar = '';
 
-  Map<String, String> carPrices = {
-    'Standard': r'C$ 70.00',
-    'SUV': r'C$ 85.00',
-    'Van': r'C$ 95.00',
-    'Premium': r'C$ 110.00',
-    'SUV Premium': r'C$ 125.00',
-    'Wheelchair': r'C$ 80.00',
-  };
+  // ── Car data ──────────────────────────────────────────────────────────────
+  static const _accentRed = Color(0xFFE53935);
+  static const _darkInk = Color(0xFF1A1B2E);
 
   void _onRequest() {
     if (selectedCar.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please select a car')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a car'),
+          backgroundColor: _accentRed,
+        ),
+      );
       return;
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RideconfirmScreen(selectedCar: selectedCar),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black54,
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.50,
+        maxChildSize: 1.0,
+        expand: false,
+        snap: true,
+        snapSizes: const [0.50, 0.85, 1.0],
+        builder: (ctx, sc) =>
+            RideconfirmScreen(scrollController: sc, selectedCar: selectedCar),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          const RidenDarkBackground(),
-          SafeArea(
-            child: Column(
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double sheetH = constraints.maxHeight;
+        final double sheetW = constraints.maxWidth;
+
+        final double minH = screenHeight * 0.50;
+        final double maxH = screenHeight * 1.00;
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(
+          0.0,
+          1.0,
+        );
+        final double cornerRadius = 28.0 * (1.0 - progress);
+
+        return ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(cornerRadius),
+            topRight: Radius.circular(cornerRadius),
+          ),
+          child: SizedBox(
+            width: sheetW,
+            height: sheetH,
+            child: Stack(
               children: [
-                // Drag handle (only if requested)
-                if (widget.showDragHandle)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: Center(
-                      child: Container(
-                        width: 45,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(2.5),
+                // ── 1. Gradient background ──────────────────────────────────
+                Positioned.fill(
+                  child: CustomPaint(painter: _SheetGradientPainter()),
+                ),
+
+                // ── 2. Frosted glass blur ───────────────────────────────────
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.06),
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.white.withOpacity(0.18),
+                            width: 1.2,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: widget.scrollController,
-                    physics: const ClampingScrollPhysics(),
-                    padding: const EdgeInsets.only(bottom: 80),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 16,
+                ),
+
+                // ── 3. Content ──────────────────────────────────────────────
+                Column(
+                  children: [
+                    // Drag handle
+                    if (widget.showDragHandle)
+                      AnimatedOpacity(
+                        opacity: (1.0 - progress).clamp(0.0, 1.0),
+                        duration: const Duration(milliseconds: 150),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10, bottom: 2),
+                          child: Center(
+                            child: Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.35),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildRouteCard(),
-                          const SizedBox(height: 20),
-                          _buildCategoryHeader(
-                            'Standard Cars',
-                            Icons.directions_car,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildCarCard(
-                            'Standard',
-                            '3-4 min',
-                            r'C$ 70.00',
-                            'Sedan with AC',
-                            onSelect: () =>
-                                setState(() => selectedCar = 'Standard'),
-                            isSelected: selectedCar == 'Standard',
-                          ),
-                          const SizedBox(height: 10),
-                          _buildCarCard(
-                            'SUV',
-                            '3-4 min',
-                            r'C$ 85.00',
-                            'SUV with AC',
-                            onSelect: () => setState(() => selectedCar = 'SUV'),
-                            isSelected: selectedCar == 'SUV',
-                          ),
-                          const SizedBox(height: 10),
-                          _buildCarCard(
-                            'Van',
-                            '3-4 min',
-                            r'C$ 95.00',
-                            'Van with AC',
-                            onSelect: () => setState(() => selectedCar = 'Van'),
-                            isSelected: selectedCar == 'Van',
-                          ),
-                          const SizedBox(height: 20),
-                          _buildPremiumSection(),
-                          const SizedBox(height: 20),
-                          _buildCategoryHeader(
-                            'Handicap Cars',
-                            Icons.accessible,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildCarCard(
-                            'Wheelchair',
-                            '3-4 min',
-                            r'C$ 80.00',
-                            'Wheelchair accessible',
-                            onSelect: () =>
-                                setState(() => selectedCar = 'Wheelchair'),
-                            isSelected: selectedCar == 'Wheelchair',
-                          ),
-                          const SizedBox(height: 24),
-                          _buildRequestButton(),
-                          const SizedBox(height: 30),
-                        ],
+
+                    // Scrollable body
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: widget.scrollController,
+                        physics: const ClampingScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Route summary card
+                            _RouteCard(),
+                            const SizedBox(height: 20),
+
+                            // ── Standard Cars group ──────────────────────────
+                            _CarGroupCard(
+                              title: 'Standard Cars',
+                              icon: Image.asset(
+                                'assets/images/standard_car_icon.png',
+                                width: 30,
+                                height: 30,
+                              ),
+                              isGroupSelected: [
+                                'Riden Standard',
+                                'Riden SUV',
+                                'Riden Van',
+                              ].contains(selectedCar),
+                              cars: [
+                                _CarItem(
+                                  name: 'Riden Standard',
+                                  time: '3-4 min',
+                                  price: r'C$ 70.00',
+                                  description: 'Sedan with AC',
+                                ),
+                                _CarItem(
+                                  name: 'Riden SUV',
+                                  time: '3-4 min',
+                                  price: r'C$ 70.00',
+                                  description: 'SUV with AC',
+                                ),
+                                _CarItem(
+                                  name: 'Riden Van',
+                                  time: '3-4 min',
+                                  price: r'C$ 70.00',
+                                  description: 'Van with AC',
+                                ),
+                              ],
+                              selectedCar: selectedCar,
+                              onSelect: (name) =>
+                                  setState(() => selectedCar = name),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // ── Premium Cars group ───────────────────────────
+                            _CarGroupCard(
+                              title: 'Premium Cars',
+                              icon: Image.asset(
+                                'assets/images/premium_car_icon.png',
+                                width: 30,
+                                height: 30,
+                              ),
+                              isPremium: true,
+                              isGroupSelected: [
+                                'Riden Premium',
+                                'SUV Premium',
+                              ].contains(selectedCar),
+                              cars: [
+                                _CarItem(
+                                  name: 'Riden Premium',
+                                  time: '3-4 min',
+                                  price: r'C$ 110.00',
+                                  description: 'Premium Sedan with AC',
+                                ),
+                                _CarItem(
+                                  name: 'SUV Premium',
+                                  time: '3-4 min',
+                                  price: r'C$ 125.00',
+                                  description: 'Premium SUV with AC',
+                                ),
+                              ],
+                              selectedCar: selectedCar,
+                              onSelect: (name) =>
+                                  setState(() => selectedCar = name),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // ── Handicap Cars group ──────────────────────────
+                            _CarGroupCard(
+                              title: 'Handicap Cars',
+                              icon: Image.asset(
+                                'assets/images/handicap_car_icon.png',
+                                width: 30,
+                                height: 30,
+                              ),
+                              isGroupSelected:
+                                  selectedCar == 'Riden Wheel Chair',
+                              cars: [
+                                _CarItem(
+                                  name: 'Riden Wheel Chair',
+                                  time: '3-4 min',
+                                  price: r'C$ 80.00',
+                                  description: 'Wheelchair accessible',
+                                ),
+                              ],
+                              selectedCar: selectedCar,
+                              onSelect: (name) =>
+                                  setState(() => selectedCar = name),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Request button
+                            _RequestButton(onTap: _onRequest),
+                            const SizedBox(height: 16),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                // Bottom Navigation Bar
-                _HomeBottomNav(
-                  selectedIndex: _selectedIndex,
-                  onChanged: (index) {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                  },
+
+                    // Bottom nav
+                    _SharedBottomNav(
+                      selectedIndex: 0,
+                      onChanged: (_) => Navigator.pop(context),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CAR ITEM DATA CLASS
+// ─────────────────────────────────────────────────────────────────────────────
+class _CarItem {
+  final String name;
+  final String time;
+  final String price;
+  final String description;
+
+  const _CarItem({
+    required this.name,
+    required this.time,
+    required this.price,
+    required this.description,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CAR GROUP CARD
+//
+// Behaviour (matching the screenshot exactly):
+//   • Outer card = white 0.58 / border white 0.70  (same as bottom nav)
+//   • When ANY car in this group is selected:
+//       – Outer card border turns RED (1.8px)
+//   • The selected car ROW inside the card gets a solid white background
+//     (full opacity white, matching the screenshot's bright selected row)
+//   • Unselected rows stay transparent (no background)
+// ─────────────────────────────────────────────────────────────────────────────
+class _CarGroupCard extends StatelessWidget {
+  final String title;
+  final Widget icon;
+  final bool isPremium;
+  final bool isGroupSelected;
+  final List<_CarItem> cars;
+  final String selectedCar;
+  final ValueChanged<String> onSelect;
+
+  const _CarGroupCard({
+    required this.title,
+    required this.icon,
+    required this.isGroupSelected,
+    required this.cars,
+    required this.selectedCar,
+    required this.onSelect,
+    this.isPremium = false,
+  });
+
+  static const _accentRed = Color(0xFFE53935);
+  static const _darkInk = Color(0xFF1A1B2E);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+      decoration: BoxDecoration(
+        // White 0.58 — identical to bottom nav
+        color: Colors.white.withOpacity(0.58),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          // Red when any car in group is selected, white otherwise
+          color: isGroupSelected ? _accentRed : Colors.white.withOpacity(0.70),
+          width: isGroupSelected ? 2.0 : 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isGroupSelected
+                ? _accentRed.withOpacity(0.12)
+                : Colors.black.withOpacity(0.07),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Group header ────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: FittedBox(fit: BoxFit.contain, child: icon),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: _darkInk,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Car rows ────────────────────────────────────────────────
+          ...cars.asMap().entries.map((entry) {
+            final i = entry.key;
+            final car = entry.value;
+            final bool isRowSelected = selectedCar == car.name;
+            final bool isLast = i == cars.length - 1;
+
+            return Column(
+              children: [
+                // Divider above each row (except first)
+                if (i != 0)
+                  Divider(
+                    color: _darkInk.withOpacity(0.08),
+                    height: 1,
+                    indent: 0,
+                    endIndent: 0,
+                  ),
+
+                // ── Single car row ────────────────────────────────────
+                GestureDetector(
+                  onTap: () => onSelect(car.name),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOut,
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      // White when selected (bright, as in screenshot)
+                      // Transparent when not selected
+                      color: isRowSelected ? Colors.white : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: isRowSelected
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.06),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : [],
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        // Car image placeholder
+                        SizedBox(
+                          width: 80,
+                          height: 48,
+                          child: Image.asset(
+                            'assets/images/car.png',
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => Icon(
+                              Icons.directions_car,
+                              size: 36,
+                              color: isRowSelected ? _accentRed : _darkInk,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+
+                        // Car info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                car.name,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: _darkInk,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.schedule,
+                                    size: 12,
+                                    color: _darkInk.withOpacity(0.55),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    car.time,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11,
+                                      color: _darkInk.withOpacity(0.60),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                car.description,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  color: _darkInk.withOpacity(0.50),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Price
+                        Text(
+                          car.price,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: isRowSelected ? _accentRed : _darkInk,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Bottom padding inside last row
+                if (isLast) const SizedBox(height: 4),
+              ],
+            );
+          }),
         ],
       ),
     );
   }
+}
 
-  // ---------- UI Components (dark glass style, matching chat) ----------
-  Widget _buildRouteCard() {
-    const accentRed = Color(0xFFFF2B2B);
+// ─────────────────────────────────────────────────────────────────────────────
+// ROUTE CARD  — white 0.58, identical to other cards
+// ─────────────────────────────────────────────────────────────────────────────
+class _RouteCard extends StatelessWidget {
+  static const _accentRed = Color(0xFFE53935);
+  static const _darkInk = Color(0xFF1A1B2E);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.58),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
+        border: Border.all(color: Colors.white.withOpacity(0.70), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.07),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(14),
       child: Column(
         children: [
+          // Pickup
           Row(
             children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.2),
-                ),
-                child: const Center(
-                  child: Icon(Icons.person, color: Colors.white70, size: 18),
-                ),
-              ),
-              const SizedBox(width: 12),
+              Image.asset('assets/images/pickup.png', width: 30, height: 30),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,7 +555,8 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: _darkInk.withOpacity(0.55),
+                        letterSpacing: 0.3,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -205,8 +566,8 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
                         fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        color: _darkInk,
                       ),
                     ),
                   ],
@@ -214,23 +575,18 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Divider(color: Colors.white.withOpacity(0.2), height: 1),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
+          Divider(color: _darkInk.withOpacity(0.08), height: 1),
+          const SizedBox(height: 10),
+          // Destination
           Row(
             children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: accentRed,
-                ),
-                child: const Center(
-                  child: Icon(Icons.location_on, color: Colors.white, size: 16),
-                ),
+              Image.asset(
+                'assets/images/destination.png',
+                width: 30,
+                height: 30,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,30 +596,32 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: _darkInk.withOpacity(0.55),
+                        letterSpacing: 0.3,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '1901 Thorndige Cir. Shiloh, Hawai 81603',
+                      '1901 Thorndige Cir. Shiloh, Hawaii 81603',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
                         fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        color: _darkInk,
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
+                  horizontal: 12,
+                  vertical: 7,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.45),
+                  color: _darkInk.withOpacity(0.80),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
@@ -271,7 +629,8 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -281,180 +640,34 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
       ),
     );
   }
+}
 
-  Widget _buildCategoryHeader(String title, IconData icon) {
-    const accentRed = Color(0xFFFF2B2B);
-    return Row(
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: accentRed,
-          ),
-          child: Center(child: Icon(icon, color: Colors.white, size: 20)),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
+// ─────────────────────────────────────────────────────────────────────────────
+// REQUEST BUTTON
+// ─────────────────────────────────────────────────────────────────────────────
+class _RequestButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _RequestButton({required this.onTap});
 
-  Widget _buildCarCard(
-    String carName,
-    String time,
-    String price,
-    String description, {
-    required VoidCallback onSelect,
-    required bool isSelected,
-  }) {
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onSelect,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.58),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isSelected
-                ? Colors.redAccent
-                : Colors.white.withOpacity(0.2),
-            width: isSelected ? 1.5 : 1,
-          ),
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Container(
-              width: 70,
-              height: 50,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white.withOpacity(0.2),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.directions_car,
-                  color: Colors.black87,
-                  size: 32,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    carName,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.schedule, color: Colors.black, size: 14),
-                      const SizedBox(width: 4),
-                      Text(
-                        time,
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    description,
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Text(
-              price,
-              style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPremiumSection() {
-    const accentRed = Color(0xFFFF2B2B);
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: accentRed, width: 2),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildCategoryHeader('Premium Cars', Icons.directions_car),
-          const SizedBox(height: 12),
-          _buildCarCard(
-            'Premium',
-            '3-4 min',
-            r'C$ 110.00',
-            'Premium Sedan with AC',
-            onSelect: () => setState(() => selectedCar = 'Premium'),
-            isSelected: selectedCar == 'Premium',
-          ),
-          const SizedBox(height: 10),
-          _buildCarCard(
-            'SUV Premium',
-            '3-4 min',
-            r'C$ 125.00',
-            'Premium SUV with AC',
-            onSelect: () => setState(() => selectedCar = 'SUV Premium'),
-            isSelected: selectedCar == 'SUV Premium',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRequestButton() {
-    const accentRed = Color(0xFFFF2B2B);
-    return GestureDetector(
-      onTap: _onRequest,
+      onTap: onTap,
       child: Container(
         width: double.infinity,
-        height: 50,
+        height: 52,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFFFF2B2B), Color(0xFFFF4B4B)],
+            colors: [Color(0xFFE53935), Color(0xFFFF5252)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: accentRed.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              color: const Color(0xFFE53935).withOpacity(0.35),
+              blurRadius: 14,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
@@ -474,32 +687,119 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
   }
 }
 
-// ---------- Bottom Navigation Bar ----------
-class _HomeBottomNav extends StatelessWidget {
+// ─────────────────────────────────────────────────────────────────────────────
+// SHARED GRADIENT PAINTER  (identical across all sheets)
+// ─────────────────────────────────────────────────────────────────────────────
+class _SheetGradientPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF1A1B2E),
+    );
+
+    _blob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.70,
+      ry: h * 0.50,
+      color: const Color(0xFF8B4A35),
+      alpha: 170,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.05, h * 0.55),
+      rx: w * 0.50,
+      ry: h * 0.35,
+      color: const Color(0xFF6B3828),
+      alpha: 130,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.82, h * 0.68),
+      rx: w * 0.70,
+      ry: h * 0.52,
+      color: const Color(0xFF2E6B72),
+      alpha: 165,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.90, h * 0.50),
+      rx: w * 0.40,
+      ry: h * 0.30,
+      color: const Color(0xFF3D8A8F),
+      alpha: 110,
+    );
+    _blob(
+      canvas,
+      center: Offset(w * 0.50, h * 0.50),
+      rx: w * 0.55,
+      ry: h * 0.40,
+      color: const Color(0xFF3A4555),
+      alpha: 80,
+    );
+  }
+
+  void _blob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
+    final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
+    final clear = Color.fromARGB(0, color.red, color.green, color.blue);
+    final paint = Paint()
+      ..shader = RadialGradient(colors: [solid, clear]).createShader(
+        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
+      );
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.scale(1.0, ry / rx);
+    canvas.translate(-center.dx, -center.dy);
+    canvas.drawCircle(center, rx, paint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_SheetGradientPainter _) => false;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SHARED BOTTOM NAV  (identical across all sheets)
+// ─────────────────────────────────────────────────────────────────────────────
+class _SharedBottomNav extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onChanged;
 
-  const _HomeBottomNav({required this.selectedIndex, required this.onChanged});
+  const _SharedBottomNav({
+    required this.selectedIndex,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 14),
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 17),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(50),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.58),
-              borderRadius: BorderRadius.circular(50),
+              borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withOpacity(0.70),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withOpacity(0.10),
                   blurRadius: 12,
                   offset: const Offset(0, 2),
                 ),
@@ -507,38 +807,40 @@ class _HomeBottomNav extends StatelessWidget {
             ),
             child: SafeArea(
               top: false,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _NItem(
-                    0,
-                    Icons.directions_car_rounded,
-                    'Ride',
-                    selectedIndex,
-                    onChanged,
-                  ),
-                  _NItem(
-                    1,
-                    Icons.support_agent_rounded,
-                    'Support',
-                    selectedIndex,
-                    onChanged,
-                  ),
-                  _NItem(
-                    2,
-                    Icons.receipt_long_rounded,
-                    'Bookings',
-                    selectedIndex,
-                    onChanged,
-                  ),
-                  _NItem(
-                    3,
-                    Icons.person_outline_rounded,
-                    'Account',
-                    selectedIndex,
-                    onChanged,
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(top: 14),
+                child: Row(
+                  children: [
+                    _NItem(
+                      0,
+                      Icons.directions_car_rounded,
+                      'Ride',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                    _NItem(
+                      1,
+                      Icons.support_agent_rounded,
+                      'Support',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                    _NItem(
+                      2,
+                      Icons.receipt_long_rounded,
+                      'Bookings',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                    _NItem(
+                      3,
+                      Icons.person_outline_rounded,
+                      'Account',
+                      selectedIndex,
+                      onChanged,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -566,53 +868,33 @@ class _NItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool active = selectedIndex == index;
-    final Color iconColor = active
+    final Color col = active
         ? const Color(0xFFE53935)
-        : const Color(0xFF2C3E50);
-    final Color labelColor = active
-        ? const Color(0xFFE53935)
-        : const Color(0xFF2C3E50);
-
+        : const Color.fromARGB(255, 24, 30, 36);
     return Expanded(
       child: GestureDetector(
         onTap: () => onChanged(index),
         behavior: HitTestBehavior.opaque,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 1),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: iconColor, size: 24),
-              const SizedBox(height: 4),
+              Icon(icon, color: col, size: 24),
+              const SizedBox(height: 5),
               Text(
                 label,
                 style: TextStyle(
-                  color: labelColor,
-                  fontSize: 11,
+                  color: col,
+                  fontSize: 12,
                   fontWeight: active ? FontWeight.w700 : FontWeight.w500,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// ---------- Dark Background ----------
-class RidenDarkBackground extends StatelessWidget {
-  const RidenDarkBackground({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
         ),
       ),
     );
