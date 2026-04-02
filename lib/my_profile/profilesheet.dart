@@ -16,6 +16,7 @@ import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:Riden/my_profile/ProfileSettingBottomSheet.dart';
 
 class ProfileBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
@@ -117,13 +118,14 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                       ),
                     ),
 
-                    // ── Header: "< Back  Settings" ──────────────────────────
+                    // ── Header ──────────────────────────
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
                         vertical: 12,
                       ),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Back button
                           GestureDetector(
@@ -131,37 +133,53 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                             child: Row(
                               children: [
                                 const Icon(
-                                  Icons.chevron_left,
+                                  Icons.arrow_back_ios,
                                   color: Colors.white,
-                                  size: 26,
+                                  size: 18,
                                 ),
+                                const SizedBox(width: 6),
                                 Text(
                                   'Back',
                                   style: GoogleFonts.poppins(
                                     color: Colors.white,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           // Title centered
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                'Settings',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
+                          Text(
+                            'Profile',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          // Empty placeholder for symmetry
-                          const SizedBox(width: 60),
+                          // Settings icon
+                        IconButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => DraggableScrollableSheet(
+                                initialChildSize: 0.9,
+                                minChildSize: 0.5,
+                                maxChildSize: 0.95,
+                                snap: true,
+                                snapSizes: const [0.5, 0.9, 0.95],
+                                builder: (context, sc) => ProfileSettingBottomSheet(scrollController: sc),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.settings,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
                         ],
                       ),
                     ),
@@ -177,29 +195,51 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                             // ── Profile Image & Name ───────────────────────
                             Column(
                               children: [
-                                Container(
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white.withOpacity(0.2),
-                                      width: 2,
+                                Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Container(
+                                      width: 90,
+                                      height: 90,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 2.5,
+                                        ),
+                                      ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(45),
+                                        child: Image.network(
+                                          'https://i.pravatar.cc/150?img=33',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(50),
-                                    child: Image.network(
-                                      'https://i.pravatar.cc/150?img=33',
-                                      fit: BoxFit.cover,
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          color: RidenColors.brandRed,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Colors.white, width: 2),
+                                        ),
+                                        child: const Icon(
+                                          Icons.camera_alt,
+                                          color: Colors.white,
+                                          size: 14,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
                                   'Jesse Showalter',
                                   style: GoogleFonts.poppins(
-                                    fontSize: 16,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,
                                   ),
@@ -209,133 +249,27 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
 
                             const SizedBox(height: 32),
 
-                            // ── Glassy Menu List ──────────────────────────
-                            Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.58),
-                                borderRadius: BorderRadius.circular(24),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.25),
-                                  width: 1,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.12),
-                                    blurRadius: 20,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
+                            // ── Cards ──────────────────────────
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: Column(
                                 children: [
-                                  _buildMenuItem(
-                                    context: context,
-                                    icon: Icons.person_outline_rounded,
-                                    label: 'Profile Settings',
-                                    onTap: () => _openSheet(
-                                      context,
-                                      (sc) => ProfileSettingsBottomSheet(
-                                          scrollController: sc),
-                                    ),
+                                  _buildProfileCard(
+                                    icon: Icons.email,
+                                    title: 'Email',
+                                    subtitle: 'example@gmail.com',
                                   ),
-                                  _buildDivider(),
-                                  _buildMenuItem(
-                                    context: context,
-                                    icon: Icons.calendar_month_rounded,
-                                    label: 'Booking History',
-                                    onTap: () {
-                                      Navigator.pop(context); // Close profile sheet first
-                                      showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        backgroundColor: Colors.transparent,
-                                        barrierColor: Colors.black54,
-                                        builder: (_) => const MyBookingsBottomSheetEntry(),
-                                      );
-                                    },
+                                  const SizedBox(height: 16),
+                                  _buildProfileCard(
+                                    icon: Icons.phone,
+                                    title: 'Phone Number',
+                                    subtitle: '+1 2345678946',
                                   ),
-                                  _buildDivider(),
-                                  _buildMenuItem(
-                                    context: context,
-                                    icon: Icons.payment_rounded,
-                                    label: 'Payment Methods',
-                                    onTap: () => _openSheet(
-                                      context,
-                                      (sc) => PaymentMethodsBottomSheet(
-                                          scrollController: sc),
-                                    ),
-                                  ),
-                                  _buildDivider(),
-                                  _buildMenuItem(
-                                    context: context,
-                                    icon: Icons.account_balance_wallet_outlined,
-                                    label: 'In App Wallet',
-                                    onTap: () => _openSheet(
-                                      context,
-                                      (sc) => InAppWalletBottomSheet(
-                                          scrollController: sc),
-                                    ),
-                                  ),
-                                  _buildDivider(),
-                                  _buildMenuItem(
-                                    context: context,
-                                    icon: Icons.assignment_outlined,
-                                    label: 'Complaint Tickets',
-                                    onTap: () => _openSheet(
-                                      context,
-                                      (sc) => ComplaintTicketsBottomSheet(
-                                          scrollController: sc),
-                                    ),
-                                  ),
-                                  _buildDivider(),
-                                  _buildMenuItem(
-                                    context: context,
-                                    icon: Icons.info_outline_rounded,
-                                    label: 'About us',
-                                    onTap: () => _openSheet(
-                                      context,
-                                      (sc) => AboutUsBottomSheet(
-                                          scrollController: sc),
-                                    ),
-                                  ),
-                                  _buildDivider(),
-                                  _buildMenuItem(
-                                    context: context,
-                                    icon: Icons.settings_outlined,
-                                    label: 'App Settings',
-                                    onTap: () => _openSheet(
-                                      context,
-                                      (sc) => AppSettingsBottomSheet(
-                                          scrollController: sc),
-                                    ),
-                                  ),
-                                  _buildDivider(),
-                                  _buildMenuItem(
-                                    context: context,
-                                    icon: Icons.support_agent_rounded,
-                                    label: 'Contact Support',
-                                    onTap: () => _openSheet(
-                                      context,
-                                      (sc) => ContactSupportBottomSheet(
-                                          scrollController: sc),
-                                    ),
-                                  ),
-                                  _buildDivider(),
-                                  _buildMenuItem(
-                                    context: context,
-                                    icon: Icons.logout_rounded,
-                                    label: 'Logout',
-                                    onTap: () {
-                                      Get.snackbar(
-                                        'Logging out',
-                                        'Good bye!',
-                                        backgroundColor: RidenColors.brandRed,
-                                        colorText: Colors.white,
-                                      );
-                                    },
+                                  const SizedBox(height: 16),
+                                  _buildProfileCard(
+                                    icon: Icons.person,
+                                    title: 'Gender',
+                                    subtitle: 'Male',
                                   ),
                                 ],
                               ),
@@ -349,7 +283,7 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
 
                     // ✅ Standardized Bottom Nav
                     RidenBottomNav(
-                      selectedIndex: 3,
+                      selectedIndex: 4,
                       isFromSheet: true,
                     ),
                   ],
@@ -362,43 +296,56 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
     );
   }
 
-  Widget _buildMenuItem({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      onTap: onTap,
-      leading: Icon(
-        icon,
-        color: RidenColors.brandRed,
-        size: 22,
-      ),
-      title: Text(
-        label,
-        style: GoogleFonts.poppins(
-          color: Colors.black87,
-          fontSize: 15,
-          fontWeight: FontWeight.w500,
+  Widget _buildProfileCard({required IconData icon, required String title, required String subtitle}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.70),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.50),
+          width: 1,
         ),
       ),
-      trailing: const Icon(
-        Icons.chevron_right_rounded,
-        color: RidenColors.brandRed,
-        size: 24,
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-      visualDensity: VisualDensity.compact,
-    );
-  }
-
-  Widget _buildDivider() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Divider(
-        color: Colors.black.withOpacity(0.08),
-        height: 1,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+              color: RidenColors.brandRed,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.poppins(
+                    color: Colors.black87,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.arrow_forward_ios,
+            color: RidenColors.brandRed,
+            size: 18,
+          ),
+        ],
       ),
     );
   }

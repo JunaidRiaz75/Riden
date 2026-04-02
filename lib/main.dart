@@ -1,5 +1,6 @@
 import 'package:Riden/splash/splash_screen.dart';
 import 'package:Riden/theme/theme_controller.dart';
+import 'package:Riden/my_profile/profilesheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         ),
         themeMode:
             themeController.themeMode.value, // Default dark, user-controlled
-        home: Splash(),
+        home: const Splash(),
       );
     });
   }
