@@ -14,10 +14,11 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
-  // Fade + scale animation for the RIDEN text
+  // Fade + scale + slide animation for the RIDEN text
   late final AnimationController _ctrl;
   late final Animation<double> _fade;
   late final Animation<double> _scale;
+  late final Animation<Offset> _slide;
 
   @override
   void initState() {
@@ -35,19 +36,43 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     // Text entrance animation
     _ctrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 1800),
     );
-    _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
+    
+    _fade = CurvedAnimation(
+      parent: _ctrl,
+      curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+    );
+    
     _scale = Tween<double>(
-      begin: 0.85,
+      begin: 0.8,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    ).animate(
+      CurvedAnimation(
+        parent: _ctrl,
+        curve: const Interval(0.0, 1.0, curve: Curves.fastOutSlowIn),
+      ),
+    );
 
-    // Start text animation immediately
-    _ctrl.forward();
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.5), // starts down by 50% of its size
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _ctrl,
+        curve: const Interval(0.0, 1.0, curve: Curves.fastOutSlowIn),
+      ),
+    );
 
-    // After 3 seconds navigate to On1
-    Future.delayed(const Duration(seconds: 3), _goToOn1);
+    // Start text animation reliably after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _ctrl.forward(from: 0.0);
+      }
+    });
+
+    // After 3.5 seconds navigate
+    Future.delayed(const Duration(milliseconds: 3500), _goToOn1);
   }
 
   @override
@@ -59,9 +84,9 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   void _goToOn1() {
     if (!mounted) return;
     Get.off(
-      () => SignUpChoiceScreen(),
-      transition: Transition.fade,
-      duration: const Duration(milliseconds: 500),
+      () => const SignUpChoiceScreen(),
+      transition: Transition.fadeIn,
+      duration: const Duration(milliseconds: 800),
     );
   }
 
@@ -78,18 +103,18 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
           // ── Animated RIDEN text ───────────────────────────
           Center(
-            child: AnimatedBuilder(
-              animation: _ctrl,
-              builder: (_, _) => Opacity(
-                opacity: _fade.value,
-                child: Transform.scale(
-                  scale: _scale.value,
+            child: FadeTransition(
+              opacity: _fade,
+              child: SlideTransition(
+                position: _slide,
+                child: ScaleTransition(
+                  scale: _scale,
                   child: Text(
                     'RIDEN',
                     style: GoogleFonts.audiowide(
                       fontSize: 44,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 141, 145, 148),
+                      color: const Color.fromARGB(255, 141, 145, 148),
                       letterSpacing: 7,
                       shadows: const [
                         Shadow(color: Color(0x33FFFFFF), blurRadius: 20),

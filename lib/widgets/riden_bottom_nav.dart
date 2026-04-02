@@ -1,8 +1,6 @@
 // riden_bottom_nav.dart
 // ignore_for_file: use_super_parameters, deprecated_member_use
 
-import 'dart:ui';
-
 import 'package:Riden/bookings/bookride.dart';
 import 'package:Riden/call_and_chat/chat_screen.dart';
 import 'package:Riden/my_profile/profilesheet.dart';
@@ -11,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CENTRALIZED GLASSMORPHIC BOTTOM NAV
+// CLEAN BOTTOM NAV — No borders, shadows, or glass effects
 // ─────────────────────────────────────────────────────────────────────────────
 class RidenBottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -31,33 +29,19 @@ class RidenBottomNav extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 17),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.58),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: Colors.white.withOpacity(0.70), width: 1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 12,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 14),
-                child: Row(
-                  children: [
-                    _NItem(0, Icons.directions_car_rounded, 'Bookings', selectedIndex, _handleNavigation),
-                    _NItem(1, Icons.support_agent_rounded, 'Support', selectedIndex, _handleNavigation),
-                    _NItem(2, Icons.notifications_none_rounded, 'Notifications', selectedIndex, _handleNavigation),
-                    _NItem(3, Icons.person_outline_rounded, 'Account', selectedIndex, _handleNavigation),
-                  ],
-                ),
+        child: Container(
+          color: Colors.white,
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 14),
+              child: Row(
+                children: [
+                  _NItem(0, Icons.directions_car_rounded, 'Bookings', selectedIndex, _handleNavigation),
+                  _NItem(1, Icons.support_agent_rounded, 'Support', selectedIndex, _handleNavigation),
+                  _NItem(2, Icons.notifications_none_rounded, 'Notifications', selectedIndex, _handleNavigation),
+                  _NItem(3, Icons.person_outline_rounded, 'Account', selectedIndex, _handleNavigation),
+                ],
               ),
             ),
           ),
@@ -143,14 +127,14 @@ class _NItem extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: col, size: 24),
+            Icon(icon, color: col, size: 26),
             const SizedBox(height: 5),
             Text(
               label,
               style: GoogleFonts.poppins(
                 color: col,
-                fontSize: 12,
-                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 10,
+                fontWeight: FontWeight.w400,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

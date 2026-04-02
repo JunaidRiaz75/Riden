@@ -1,228 +1,411 @@
-import 'package:Riden/config/mapbox_config.dart';
+// ride_completed_bottom_sheet.dart
+// ============================================================
+// Draggable bottom sheet for the ride‑completed screen
+// ============================================================
+
+import 'dart:ui';
+
+import 'package:Riden/bookings/booking_ride_detail.dart';
 import 'package:Riden/theme/app_colors.dart';
-import 'package:flutter/material.dart'; // We'll create this
+import 'package:Riden/widgets/riden_bottom_nav.dart';
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class RideCompletedScreen extends StatefulWidget {
-  const RideCompletedScreen({super.key});
+// ─────────────────────────────────────────────────────────────
+// ENTRY – use this in showModalBottomSheet
+// ─────────────────────────────────────────────────────────────
+class RideCompletedBottomSheetEntry extends StatelessWidget {
+  final Driver? driver;
+  final String? bookingId;
 
-  @override
-  State<RideCompletedScreen> createState() => _RideCompletedScreenState();
-}
-
-class _RideCompletedScreenState extends State<RideCompletedScreen> {
-  bool _isTipHovered = false;
-  bool _isRateHovered = false;
-  int _selectedTip = 1; // 0=15%, 1=20%, 2=25%, 3=custom
-  int _selectedRating = 0; // 0-5 stars
-  final TextEditingController _reviewController = TextEditingController();
-  final TextEditingController _customTipController = TextEditingController();
+  const RideCompletedBottomSheetEntry({super.key, this.driver, this.bookingId});
 
   @override
-  void dispose() {
-    _reviewController.dispose();
-    _customTipController.dispose();
-    super.dispose();
-  }
-
-  void _showTipDialog() {
-    _selectedTip = 1; // Reset to 20%
-    _customTipController.clear();
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.symmetric(horizontal: 20),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color(0xFF1a1a1a),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.15),
-                width: 1.5,
-              ),
-            ),
-            padding: EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Tip Your Driver',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 24),
-                // Tip Options
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildTipOption(
-                      setDialogState,
-                      label: '15%',
-                      index: 0,
-                      isSelected: _selectedTip == 0,
-                    ),
-                    _buildTipOption(
-                      setDialogState,
-                      label: '20%',
-                      index: 1,
-                      isSelected: _selectedTip == 1,
-                    ),
-                    _buildTipOption(
-                      setDialogState,
-                      label: '25%',
-                      index: 2,
-                      isSelected: _selectedTip == 2,
-                    ),
-                    _buildTipOption(
-                      setDialogState,
-                      label: 'Custom',
-                      index: 3,
-                      isSelected: _selectedTip == 3,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24),
-                // Confirm Button
-                StatefulBuilder(
-                  builder: (buttonContext, setButtonState) {
-                    bool isConfirmPressed = false;
-                    return GestureDetector(
-                      onTapDown: (_) {
-                        setButtonState(() {
-                          isConfirmPressed = true;
-                        });
-                      },
-                      onTapUp: (_) {
-                        setButtonState(() {
-                          isConfirmPressed = false;
-                        });
-                        Navigator.of(dialogContext).pop();
-                      },
-                      onTapCancel: () {
-                        setButtonState(() {
-                          isConfirmPressed = false;
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 150),
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: isConfirmPressed
-                              ? RidenColors.brandRed.withOpacity(0.85)
-                              : RidenColors.brandRed,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Confirm',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(height: 12),
-                // Skip Button
-                StatefulBuilder(
-                  builder: (buttonContext, setButtonState) {
-                    bool isSkipPressed = false;
-                    return GestureDetector(
-                      onTapDown: (_) {
-                        setButtonState(() {
-                          isSkipPressed = true;
-                        });
-                      },
-                      onTapUp: (_) {
-                        setButtonState(() {
-                          isSkipPressed = false;
-                        });
-                        Navigator.of(dialogContext).pop();
-                      },
-                      onTapCancel: () {
-                        setButtonState(() {
-                          isSkipPressed = false;
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 150),
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: isSkipPressed
-                              ? Colors.grey.shade800
-                              : Colors.transparent,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Skip for now',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white.withOpacity(0.8),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.92,
+        minChildSize: 0.50,
+        maxChildSize: 1.0,
+        expand: false,
+        snap: true,
+        snapSizes: const [0.50, 0.92, 1.0],
+        builder: (context, scrollController) {
+          return RideCompletedBottomSheet(
+            scrollController: scrollController,
+            driver: driver,
+            bookingId: bookingId,
+          );
+        },
       ),
     );
   }
+}
 
-  Widget _buildTipOption(
-    StateSetter setDialogState, {
-    required String label,
-    required int index,
-    required bool isSelected,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        setDialogState(() {
-          _selectedTip = index;
-        });
-      },
-      child: Container(
-        width: 70,
-        padding: EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          border: Border.all(
-            color: isSelected
-                ? RidenColors.brandRed
-                : Colors.white.withOpacity(0.3),
-            width: isSelected ? 2 : 1.5,
+// ─────────────────────────────────────────────────────────────
+// MAIN SHEET CONTENT (draggable)
+// ─────────────────────────────────────────────────────────────
+class RideCompletedBottomSheet extends StatefulWidget {
+  final ScrollController scrollController;
+  final Driver? driver;
+  final String? bookingId;
+
+  const RideCompletedBottomSheet({
+    super.key,
+    required this.scrollController,
+    this.driver,
+    this.bookingId,
+  });
+
+  @override
+  State<RideCompletedBottomSheet> createState() =>
+      _RideCompletedBottomSheetState();
+}
+
+class _RideCompletedBottomSheetState extends State<RideCompletedBottomSheet> {
+  bool _isTipPressed = false;
+  bool _isRatePressed = false;
+  int _selectedTip = 1;
+  int _selectedRating = 0;
+  final TextEditingController _reviewCtrl = TextEditingController();
+  final TextEditingController _customTipCtrl = TextEditingController();
+
+  // Thumbnail map – static demo route
+  static const LatLng _pickup = LatLng(51.5074, -0.1278);
+  static const LatLng _destination = LatLng(51.5155, -0.0922);
+  final Set<Marker> _markers = {
+    const Marker(
+      markerId: MarkerId('pickup'),
+      position: _pickup,
+      infoWindow: InfoWindow(title: 'Office'),
+    ),
+    const Marker(
+      markerId: MarkerId('destination'),
+      position: _destination,
+      infoWindow: InfoWindow(title: 'Coffee shop'),
+    ),
+  };
+  final Set<Polyline> _polylines = {
+    const Polyline(
+      polylineId: PolylineId('route'),
+      points: [_pickup, _destination],
+      color: Color(0xFFFF161F),
+      width: 4,
+    ),
+  };
+
+  @override
+  void dispose() {
+    _reviewCtrl.dispose();
+    _customTipCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double sheetH = constraints.maxHeight;
+        final double minH = screenHeight * 0.50;
+        final double maxH = screenHeight * 1.00;
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(
+          0.0,
+          1.0,
+        );
+        final double cornerRadius = 28.0 * (1.0 - progress);
+
+        return ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(cornerRadius),
+            topRight: Radius.circular(cornerRadius),
           ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              color: isSelected
-                  ? RidenColors.brandRed
-                  : Colors.white.withOpacity(0.7),
+          child: Stack(
+            children: [
+              // Gradient background
+              Positioned.fill(
+                child: CustomPaint(painter: _SheetGradientPainter()),
+              ),
+              // Frosted glass blur
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                  child: Container(color: Colors.white.withOpacity(0.05)),
+                ),
+              ),
+              // Content
+              Column(
+                children: [
+                  // Drag handle
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 2),
+                    child: Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.35),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.arrow_back_ios,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Back',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Text(
+                          'Sun, 23 May 2025',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Scrollable content
+                  Expanded(
+                    child: ListView(
+                      controller: widget.scrollController,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      children: [
+                        // Thumbnail map (non‑interactive)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            height: 180,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.18),
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: GoogleMap(
+                              initialCameraPosition: const CameraPosition(
+                                target: LatLng(51.5114, -0.1100),
+                                zoom: 13,
+                              ),
+                              markers: _markers,
+                              polylines: _polylines,
+                              myLocationButtonEnabled: false,
+                              zoomControlsEnabled: false,
+                              scrollGesturesEnabled: false,
+                              zoomGesturesEnabled: false,
+                              style: _darkMapStyle,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Booking ID
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.58),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'Booking ID : ${widget.bookingId ?? '2345'}',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Route stepper
+                        _RouteStepper(
+                          pickup: 'Office',
+                          pickupAddress:
+                              '2972 Westheimer Rd. Santa Ana, Illinois 85486',
+                          destination: 'Coffee shop',
+                          destinationAddress:
+                              '1901 Thornridge Cir. Shiloh, Hawaii 81063',
+                        ),
+                        const SizedBox(height: 16),
+                        // Duration & Distance
+                        Divider(color: Colors.white.withOpacity(0.3)),
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Row(
+                            
+                            children: [
+                              Icon(Icons.schedule, color: RidenColors.brandRed),
+                              const SizedBox(width: 12),  
+                              const Text('Duration : 34 mins', style: TextStyle(color: Colors.white)),
+                              const SizedBox(width: 155),
+                              Icon(Icons.location_on, color: RidenColors.brandRed),const SizedBox(width: 12), 
+                              const Text('Distance : 5.2km', style: TextStyle(color: Colors.white)),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Divider(color: Colors.white.withOpacity(0.3)),
+                        // Driver info
+                        Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                widget.driver?.avatarUrl ??
+                                    'https://i.pravatar.cc/150?img=33',
+                                width: 56,
+                                height: 56,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, _, _) => const Icon(
+                                  Icons.person,
+                                  size: 56,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.driver?.name ?? 'Sergio',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                Text(
+                                  widget.driver?.carModel ??
+                                      'Black Suzuki Alto',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        // Buttons row
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _AnimatedButton(
+                                onTap: _showTipDialog,
+                                label: 'Tip your Driver',
+                                color: RidenColors.brandRed,
+
+                                isHover: _isTipPressed,
+                                onHoverChanged: (val) =>
+                                    setState(() => _isTipPressed = val),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _AnimatedButton(
+                                onTap: _showRatingDialog,
+                                label: 'Rate your Driver',
+                                color: Colors.white.withOpacity(0.58),
+                                textColor: RidenColors.brandRed,
+                                isOutline: false,
+                                isHover: _isRatePressed,
+                                onHoverChanged: (val) =>
+                                    setState(() => _isRatePressed = val),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                  // Bottom navigation bar
+                  RidenBottomNav(selectedIndex: 3, isFromSheet: true),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  //  DIALOGS
+  // ─────────────────────────────────────────────────────────────
+  void _showTipDialog() {
+    setState(() => _selectedTip = 1);
+    _customTipCtrl.clear();
+    showDialog(
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setD) => Dialog(
+          backgroundColor: Colors.white.withOpacity(0.58),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.58),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: Colors.black.withOpacity(0.15),
+                width: 1.5,
+              ),
+            ),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Tip Your Driver',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _tipOption(setD, '15%', 0),
+                    _tipOption(setD, '20%', 1),
+                    _tipOption(setD, '25%', 2),
+                    _tipOption(setD, 'Custom', 3),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _redBtn('Confirm', () => Navigator.pop(ctx)),
+                const SizedBox(height: 12),
+                _outlineBtn('Skip for now', () => Navigator.pop(ctx)),
+              ],
             ),
           ),
         ),
@@ -231,808 +414,414 @@ class _RideCompletedScreenState extends State<RideCompletedScreen> {
   }
 
   void _showRatingDialog() {
-    _selectedRating = 0;
-    _reviewController.clear();
+    setState(() => _selectedRating = 0);
+    _reviewCtrl.clear();
     showDialog(
       context: context,
-      builder: (BuildContext dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.symmetric(horizontal: 20),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color(0xFF1a1a1a),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.15),
-                width: 1.5,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setD) {
+          final bool showReviewField =
+              _selectedRating <= 4 && _selectedRating > 0;
+          return Dialog(
+            backgroundColor: Colors.white.withOpacity(0.58),
+            insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.58),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.black.withOpacity(0.15),
+                  width: 1.5,
+                ),
               ),
-            ),
-            padding: EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Close Button
-                Align(
-                  alignment: Alignment.topRight,
-                  child: StatefulBuilder(
-                    builder: (buttonContext, setButtonState) {
-                      bool isClosePressed = false;
-                      return GestureDetector(
-                        onTapDown: (_) {
-                          setButtonState(() {
-                            isClosePressed = true;
-                          });
-                        },
-                        onTapUp: (_) {
-                          setButtonState(() {
-                            isClosePressed = false;
-                          });
-                          Navigator.of(dialogContext).pop();
-                        },
-                        onTapCancel: () {
-                          setButtonState(() {
-                            isClosePressed = false;
-                          });
-                        },
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 150),
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: isClosePressed
-                                ? Colors.grey.shade700
-                                : Colors.grey.shade800,
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(height: 12),
-                // Star Rating
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(5, (index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setDialogState(() {
-                          _selectedRating = index + 1;
-                        });
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Icon(
-                          Icons.star_rounded,
-                          size: 36,
-                          color: index < _selectedRating
-                              ? RidenColors.brandRed
-                              : Colors.white.withOpacity(0.3),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-                SizedBox(height: 20),
-                // Rating Title
-                Text(
-                  _getRatingTitle(_selectedRating),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 8),
-                // Rating Subtitle
-                Text(
-                  'You rated Sergio $_selectedRating star${_selectedRating != 1 ? 's' : ''}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withOpacity(0.6),
-                  ),
-                ),
-                SizedBox(height: 20),
-                // Review Text Field
-                TextField(
-                  controller: _reviewController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText: 'Write your text',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Colors.white.withOpacity(0.2),
-                        width: 1.5,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Colors.white.withOpacity(0.2),
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: RidenColors.brandRed,
-                        width: 2,
-                      ),
-                    ),
-                    contentPadding: EdgeInsets.all(16),
-                  ),
-                  style: TextStyle(color: Colors.white),
-                ),
-                SizedBox(height: 20),
-                // Submit Button
-                StatefulBuilder(
-                  builder: (buttonContext, setButtonState) {
-                    bool isSubmitPressed = false;
-                    return GestureDetector(
-                      onTapDown: (_) {
-                        setButtonState(() {
-                          isSubmitPressed = true;
-                        });
-                      },
-                      onTapUp: (_) {
-                        setButtonState(() {
-                          isSubmitPressed = false;
-                        });
-                        Navigator.of(dialogContext).pop();
-                      },
-                      onTapCancel: () {
-                        setButtonState(() {
-                          isSubmitPressed = false;
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 150),
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: isSubmitPressed
-                              ? RidenColors.brandRed.withOpacity(0.85)
-                              : RidenColors.brandRed,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Submit',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _getRatingTitle(int rating) {
-    switch (rating) {
-      case 1:
-        return 'Poor';
-      case 2:
-        return 'Good';
-      case 3:
-        return 'Very Good';
-      case 4:
-        return 'Excellent';
-      case 5:
-        return 'Excellent';
-      default:
-        return 'Rate';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: RidenColors.backgroundBase,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // ✅ Use RidenDarkBackground from your theme file
-          RidenDarkBackground(),
-
-          // Content
-          SafeArea(
-            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Header with Back Button
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_back_ios,
-                                color: RidenColors.textPrimary,
-                                size: 20,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Back',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: RidenColors.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          'Sun, 23 May 2025',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: RidenColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // Map Section - Using Mapbox token from config
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1.5,
-                        ),
-                        color: Colors.grey.shade800,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: _buildMapWithToken(),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  // Booking ID
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: RidenColors.textPrimary,
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'Booking ID: 2345',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: RidenColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  // Route Details
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Origin
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Office',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: RidenColors.textPrimary,
-                                        ),
-                                      ),
-                                      Text(
-                                        '04:30pm',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: RidenColors.textSecondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    '2972 Westheimer Rd. Santa Ana, Illinois 85486',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: RidenColors.textSecondary,
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 12),
-
-                        // Dashed Line
-                        Container(
-                          width: 2,
-                          height: 30,
-                          margin: EdgeInsets.only(left: 5),
-                          child: CustomPaint(painter: DashedLinePainter()),
-                        ),
-
-                        SizedBox(height: 12),
-
-                        // Destination
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 16,
-                              height: 16,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: RidenColors.brandRed,
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  Icons.navigation,
-                                  size: 8,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Coffee shop',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: RidenColors.textPrimary,
-                                        ),
-                                      ),
-                                      Text(
-                                        '06:30pm',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: RidenColors.textSecondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    '1901 Thornridge Cir. Shiloh, Hawaii 81063',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: RidenColors.textSecondary,
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  // Duration and Distance Stats
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: BorderSide(
-                            color: Colors.white.withOpacity(0.1),
-                            width: 1,
-                          ),
-                          bottom: BorderSide(
-                            color: Colors.white.withOpacity(0.1),
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 32,
-                                height: 32,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: RidenColors.brandRed.withOpacity(0.2),
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.schedule,
-                                    color: RidenColors.brandRed,
-                                    size: 16,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Duration',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: RidenColors.textSecondary,
-                                    ),
-                                  ),
-                                  Text(
-                                    '34 mins',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: RidenColors.textPrimary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                width: 32,
-                                height: 32,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: RidenColors.brandRed.withOpacity(0.2),
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.location_on,
-                                    color: RidenColors.brandRed,
-                                    size: 16,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Distance',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: RidenColors.textSecondary,
-                                    ),
-                                  ),
-                                  Text(
-                                    '5.2km',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: RidenColors.textPrimary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  // Driver Info
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 56,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.grey.shade800,
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              'https://i.pravatar.cc/150?img=33',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Sergio',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: RidenColors.textPrimary,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Black Suzuki Alto, (BKG-220)',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: RidenColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 24),
-
-                  // Tip your Driver Button
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                  Align(
+                    alignment: Alignment.topRight,
                     child: GestureDetector(
-                      onTapDown: (_) {
-                        setState(() {
-                          _isTipHovered = true;
-                        });
-                      },
-                      onTapUp: (_) {
-                        setState(() {
-                          _isTipHovered = false;
-                        });
-                      },
-                      onTapCancel: () {
-                        setState(() {
-                          _isTipHovered = false;
-                        });
-                      },
-                      onTap: () {
-                        _showTipDialog();
-                      },
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 150),
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                      onTap: () => Navigator.pop(ctx),
+                      child: Container(
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
-                          color: _isTipHovered
-                              ? RidenColors.brandRed.withOpacity(0.85)
-                              : RidenColors.brandRed,
+                          shape: BoxShape.circle,
+                          color: Colors.grey.shade300,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.black87,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      5,
+                      (i) => GestureDetector(
+                        onTap: () => setD(() => _selectedRating = i + 1),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(
+                            Icons.star_rounded,
+                            size: 36,
+                            color: i < _selectedRating
+                                ? RidenColors.brandRed
+                                : Colors.black26,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    _ratingTitle(_selectedRating),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _selectedRating > 0
+                        ? 'You rated ${widget.driver?.name ?? 'Sergio'} $_selectedRating star${_selectedRating != 1 ? 's' : ''}'
+                        : 'Tap a star to rate',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  if (showReviewField) ...[
+                    const Text(
+                      'Please share your feedback',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _reviewCtrl,
+                      maxLines: 4,
+                      style: const TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        hintText: 'Write your review...',
+                        hintStyle: const TextStyle(
+                          color: Colors.black54,
+                        ),
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: RidenColors.brandRed.withOpacity(
-                                _isTipHovered ? 0.6 : 0.4,
-                              ),
-                              blurRadius: _isTipHovered ? 20 : 15,
-                              offset: Offset(0, _isTipHovered ? 10 : 8),
-                            ),
-                          ],
+                          borderSide: const BorderSide(color: Colors.black26),
                         ),
-                        child: Center(
-                          child: Text(
-                            'Tip your Driver',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.black26),
                         ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 12),
-
-                  // Rate your Driver Button
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: GestureDetector(
-                      onTapDown: (_) {
-                        setState(() {
-                          _isRateHovered = true;
-                        });
-                      },
-                      onTapUp: (_) {
-                        setState(() {
-                          _isRateHovered = false;
-                        });
-                      },
-                      onTapCancel: () {
-                        setState(() {
-                          _isRateHovered = false;
-                        });
-                      },
-                      onTap: () {
-                        _showRatingDialog();
-                      },
-                      child: AnimatedContainer(
-                        duration: Duration(milliseconds: 150),
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: _isRateHovered
-                              ? RidenColors.brandRed.withOpacity(0.15)
-                              : Colors.transparent,
-                          border: Border.all(
-                            color: _isRateHovered
-                                ? RidenColors.brandRed.withOpacity(0.8)
-                                : RidenColors.brandRed,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: RidenColors.brandRed,
                             width: 2,
                           ),
-                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Center(
-                          child: Text(
-                            'Rate your Driver',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: _isRateHovered
-                                  ? RidenColors.brandRed.withOpacity(0.9)
-                                  : RidenColors.brandRed,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
+                        contentPadding: const EdgeInsets.all(16),
                       ),
                     ),
-                  ),
-
-                  SizedBox(height: 40),
+                    const SizedBox(height: 20),
+                  ],
+                  _redBtn('Submit', () => Navigator.pop(ctx)),
                 ],
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 
-  // Method to build map with token
-  Widget _buildMapWithToken() {
-    // Get token from config
-    final mapboxToken = MapboxConfig.accessToken;
+  String _ratingTitle(int r) => switch (r) {
+    1 => 'Poor',
+    2 => 'Good',
+    3 => 'Very Good',
+    4 => 'Excellent',
+    5 => 'Excellent',
+    _ => 'Rate',
+  };
 
-    // If token is not set, show placeholder
-    if (mapboxToken.isEmpty) {
-      return Center(
+  Widget _tipOption(StateSetter setD, String label, int index) {
+    final sel = _selectedTip == index;
+    return GestureDetector(
+      onTap: () => setD(() => _selectedTip = index),
+      child: Container(
+        width: 70,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: sel ? RidenColors.brandRed : Colors.black26,
+            width: sel ? 2 : 1.5,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: sel ? RidenColors.brandRed : Colors.black87,
+              fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _redBtn(String label, VoidCallback onTap) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: RidenColors.brandRed,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white, // Keeping white text since bg is bright red
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _outlineBtn(String label, VoidCallback onTap) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black45),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Text(
+          label,
+          style: const TextStyle(color: Colors.black87),
+        ),
+      ),
+    ),
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+//  HELPER WIDGETS
+// ─────────────────────────────────────────────────────────────
+class _RouteStepper extends StatelessWidget {
+  final String pickup, pickupAddress, destination, destinationAddress;
+  const _RouteStepper({
+    required this.pickup,
+    required this.pickupAddress,
+    required this.destination,
+    required this.destinationAddress,
+  });
+
+  @override
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Column(
+        children: [
+          const Icon(Icons.circle, size: 10, color: Colors.white),
+          Container(width: 1.5, height: 40, color: Colors.white30),
+          const Icon(Icons.navigation, size: 18, color: Colors.red),
+        ],
+      ),
+      const SizedBox(width: 16),
+      Expanded(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.map, color: Colors.white.withOpacity(0.3), size: 48),
-            SizedBox(height: 8),
             Text(
-              'Map view',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 12,
+              pickup,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
               ),
+            ),
+            Text(
+              pickupAddress,
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+            const SizedBox(height: 16),
+            const Divider(color: Colors.white24),
+            const SizedBox(height: 8),
+            Text(
+              destination,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              destinationAddress,
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ],
         ),
-      );
-    }
+      ),
+    ],
+  );
+}
 
-    // Here you would initialize your Mapbox map with the token
-    // Example: return MapboxMap(accessToken: mapboxToken, ...);
+class _StatItem extends StatelessWidget {
+  final IconData icon;
+  final String label, value;
+  const _StatItem(this.icon, this.label, this.value);
 
-    // For now, return a placeholder with token verification
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: RidenColors.brandRed.withOpacity(0.2),
+        ),
+        child: Icon(icon, color: RidenColors.brandRed, size: 16),
+      ),
+      const SizedBox(width: 10),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.map, color: Colors.white.withOpacity(0.3), size: 48),
-          SizedBox(height: 8),
           Text(
-            'Map ready (token loaded)',
-            style: TextStyle(
-              color: Colors.green.withOpacity(0.7),
-              fontSize: 12,
+            label,
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
       ),
-    );
-  }
+    ],
+  );
 }
 
-// Dashed Line Painter
-class DashedLinePainter extends CustomPainter {
+class _AnimatedButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final String label;
+  final Color color;
+  final Color? textColor;
+  final bool isOutline, isHover;
+  final ValueChanged<bool> onHoverChanged;
+  const _AnimatedButton({
+    required this.onTap,
+    required this.label,
+    required this.color,
+    this.textColor,
+    this.isOutline = false,
+    this.isHover = false,
+    required this.onHoverChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+    onTap: onTap,
+    onTapDown: (_) => onHoverChanged(true),
+    onTapUp: (_) => onHoverChanged(false),
+    onTapCancel: () => onHoverChanged(false),
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: isOutline
+            ? (isHover ? color.withOpacity(0.15) : Colors.transparent)
+            : (isHover ? color.withOpacity(0.85) : color),
+        border: isOutline ? Border.all(color: color, width: 2) : null,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Center(
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isOutline ? color : (textColor ?? Colors.white),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+//  GRADIENT PAINTER (exact copy from active sheet)
+// ─────────────────────────────────────────────────────────────
+class _SheetGradientPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = Colors.white.withOpacity(0.3)
-      ..strokeWidth = 1.5;
+    final w = size.width, h = size.height;
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF1A1B2E),
+    );
+    _blob(
+      canvas,
+      Offset(w * 0.15, h * 0.30),
+      w * 0.70,
+      h * 0.50,
+      const Color(0xFF8B4A35),
+      170,
+    );
+    _blob(
+      canvas,
+      Offset(w * 0.82, h * 0.68),
+      w * 0.70,
+      h * 0.52,
+      const Color(0xFF2E6B72),
+      165,
+    );
+  }
 
-    var y = 0.0;
-    final dashHeight = 4;
-    final spaceHeight = 4;
-
-    while (y < size.height) {
-      canvas.drawLine(Offset(0, y), Offset(0, y + dashHeight), paint);
-      y += dashHeight + spaceHeight;
-    }
+  void _blob(
+    Canvas canvas,
+    Offset center,
+    double rx,
+    double ry,
+    Color color,
+    int alpha,
+  ) {
+    final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
+    final clear = Color.fromARGB(0, color.red, color.green, color.blue);
+    final paint = Paint()
+      ..shader = RadialGradient(colors: [solid, clear]).createShader(
+        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
+      );
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.scale(1.0, ry / rx);
+    canvas.translate(-center.dx, -center.dy);
+    canvas.drawCircle(center, rx, paint);
+    canvas.restore();
   }
 
   @override
-  bool shouldRepaint(DashedLinePainter oldDelegate) => false;
+  bool shouldRepaint(_SheetGradientPainter _) => false;
 }
+
+const String _darkMapStyle = '''
+[
+  {"elementType":"geometry","stylers":[{"color":"#1d2c4d"}]},
+  {"elementType":"labels.text.fill","stylers":[{"color":"#8ec3b9"}]},
+  {"featureType":"road","elementType":"geometry","stylers":[{"color":"#304a7d"}]},
+  {"featureType":"water","elementType":"geometry","stylers":[{"color":"#0e1626"}]}
+]
+''';

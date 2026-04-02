@@ -111,6 +111,7 @@ flutter:
     - assets/images/black_alto.png
     - assets/images/white_mercedes.png
     - assets/images/pointer.png
+    - assets/images/riden_text.png
    
 
 
@@ -122,8 +123,7 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/logo.png"
-  adaptive_icon_background: "#000000"
-  adaptive_icon_foreground: "assets/logo.png"
+  
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

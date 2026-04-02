@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:Riden/bookings/booking_ride_detail.dart';
 import 'package:Riden/bookings/cancel_ride_bottom_sheet.dart';
+import 'package:Riden/bookings/ridecomplete.dart';
 import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -63,6 +65,60 @@ class ActiveBookingBottomSheet extends StatefulWidget {
 }
 
 class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
+  // ── Auto-navigation timer ──────────────────────────────
+  Timer? _navTimer;
+  int _secondsLeft = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  @override
+  void dispose() {
+    _navTimer?.cancel();
+    super.dispose();
+  }
+
+  /// Starts a 1-second tick countdown from 3 → 0, then navigates.
+  void _startCountdown() {
+    _navTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() => _secondsLeft--);
+
+      if (_secondsLeft <= 0) {
+        timer.cancel();
+        _navigateToRideComplete();
+      }
+    });
+  }
+
+  /// Pushes to RideCompleteScreen, closing the bottom sheet first.
+  void _navigateToRideComplete() {
+    if (!mounted) return;
+
+    // Close the bottom sheet
+    Navigator.of(context).pop();
+
+    // Then push the ride complete screen
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (_, _, _) => RideCompletedBottomSheetEntry(
+          driver: widget.driver,
+          bookingId: widget.bookingId,
+        ),
+        transitionsBuilder: (_, animation, _, child) =>
+            FadeTransition(opacity: animation, child: child),
+        transitionDuration: const Duration(milliseconds: 500),
+      ),
+    );
+  }
+
+  // ── Cancel timer if user manually dismisses ───────────
   void _showAccessContactsDialog() {
     showDialog(
       context: context,
@@ -95,7 +151,6 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Top Icon
                     Container(
                       width: 72,
                       height: 72,
@@ -120,7 +175,6 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Text Content
                     Text(
                       'Access Contacts',
                       style: GoogleFonts.poppins(
@@ -141,7 +195,6 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    // Buttons
                     ElevatedButton(
                       onPressed: () => Navigator.pop(ctx),
                       style: ElevatedButton.styleFrom(
@@ -195,6 +248,8 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
   }
 
   void _showCancelRideSheet() {
+    // Cancel auto-nav if user is cancelling the ride
+    _navTimer?.cancel();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -255,6 +310,99 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
                         ),
                       ),
                     ),
+                  ),
+
+                  // ── Auto-nav countdown banner ──────────────────
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: _secondsLeft > 0
+                        ? Container(
+                            key: const ValueKey('banner'),
+                            margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE53935).withOpacity(0.18),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFFE53935,
+                                ).withOpacity(0.35),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                // Circular countdown ring
+                                SizedBox(
+                                  width: 36,
+                                  height: 36,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      CircularProgressIndicator(
+                                        value: _secondsLeft / 3,
+                                        strokeWidth: 3,
+                                        backgroundColor: Colors.white
+                                            .withOpacity(0.15),
+                                        valueColor:
+                                            const AlwaysStoppedAnimation<Color>(
+                                              Color(0xFFE53935),
+                                            ),
+                                      ),
+                                      Text(
+                                        '$_secondsLeft',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    'Navigating to Ride Complete in $_secondsLeft second${_secondsLeft == 1 ? '' : 's'}...',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white.withOpacity(0.90),
+                                    ),
+                                  ),
+                                ),
+                                // Skip button
+                                GestureDetector(
+                                  onTap: () {
+                                    _navTimer?.cancel();
+                                    _navigateToRideComplete();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFE53935),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'Go now',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : const SizedBox.shrink(key: ValueKey('empty')),
                   ),
 
                   // Header with Back
@@ -519,7 +667,7 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// UI HELPERS
+// UI HELPERS  (unchanged)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _WhiteGlassCard extends StatelessWidget {
@@ -620,23 +768,17 @@ class _RouteStepper extends StatelessWidget {
         Column(
           children: [
             const Icon(Icons.circle, size: 10, color: Colors.black),
-            Container(
+            SizedBox(
               width: 1.5,
               height: 45,
-              decoration: BoxDecoration(
-                color: Colors.black12,
-                borderRadius: BorderRadius.circular(1),
-              ),
               child: Column(
                 children: List.generate(
                   8,
-                  (index) => Expanded(
+                  (i) => Expanded(
                     child: Container(
                       width: 1.5,
                       margin: const EdgeInsets.symmetric(vertical: 2),
-                      color: index % 2 == 0
-                          ? Colors.black26
-                          : Colors.transparent,
+                      color: i % 2 == 0 ? Colors.black26 : Colors.transparent,
                     ),
                   ),
                 ),
@@ -734,7 +876,7 @@ class _ActionRow extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SHARED PAINTERS & NAV (Adapted from current system)
+// GRADIENT PAINTER  (unchanged)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _SheetGradientPainter extends CustomPainter {
