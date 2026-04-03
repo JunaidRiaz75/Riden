@@ -2,6 +2,8 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:Riden/my_profile/payment_methods/add_new_card_screen.dart';
+import 'dart:ui';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -150,6 +152,7 @@ class _PaymentMethodsBottomSheetState extends State<PaymentMethodsBottomSheet> {
   }
 
   void _openAddNewCardSheet(BuildContext context) {
+    Navigator.pop(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -167,156 +170,209 @@ class _PaymentMethodsBottomSheetState extends State<PaymentMethodsBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(28),
-        topRight: Radius.circular(28),
-      ),
-      child: Stack(
-        children: [
-          // ── Dark gradient background ──────────────────────
-          const Positioned.fill(child: RidenDarkBackground()),
+    final screenHeight = MediaQuery.of(context).size.height;
 
-          // ── Sheet content ─────────────────────────────────
-          Column(
-            children: [
-              // Drag Handle
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Center(
-                  child: Container(
-                    width: 45,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(2.5),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double sheetH = constraints.maxHeight;
+        final double sheetW = constraints.maxWidth;
+
+        final double minH = screenHeight * 0.50;
+        final double maxH = screenHeight * 1.00;
+        final double progress = ((sheetH - minH) / (maxH - minH)).clamp(0.0, 1.0);
+
+        final double cornerRadius = 32.0 * (1.0 - progress);
+
+        return ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(cornerRadius),
+            topRight: Radius.circular(cornerRadius),
+          ),
+          child: SizedBox(
+            width: sheetW,
+            height: sheetH,
+            child: Stack(
+              children: [
+                // ── 1. Gradient background ──────────────────
+                Positioned.fill(
+                  child: CustomPaint(painter: _SheetGradientPainter()),
+                ),
+
+                // ── 2. Frosted glass blur layer ──
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.05),
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.white.withOpacity(0.15),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              // Scrollable content
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: widget.scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 20,
-                    horizontal: 24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header
-                      Row(
+
+                // ── 3. Foreground content ──
+                Column(
+                  children: [
+                    // Drag handle
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 8),
+                      child: Center(
+                        child: Container(
+                          width: 45,
+                          height: 4.5,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(2.5),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
                             onTap: () => Navigator.pop(context),
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Back',
+                                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 14),
                           Text(
                             'Your Cards',
                             style: GoogleFonts.poppins(
                               color: Colors.white,
                               fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
+                          const SizedBox(width: 50),
                         ],
                       ),
-                      const SizedBox(height: 28),
+                    ),
 
-                      // Primary Methods
-                      Text(
-                        'Primary Methods',
-                        style: GoogleFonts.poppins(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                    const SizedBox(height: 10),
+
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: widget.scrollController,
+                        physics: const ClampingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            // White box
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.85),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Primary Methods',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ...List.generate(primaryMethods.length, (idx) {
+                                    return PaymentCardRow(
+                                      logo: primaryMethods[idx]['logo'],
+                                      name: primaryMethods[idx]['name'],
+                                      number: primaryMethods[idx]['number'],
+                                      onMenuTap: (ctx) => _onCardMenuTap(ctx, 0, idx),
+                                    );
+                                  }),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 8),
+                                    child: Divider(color: Colors.black26),
+                                  ),
+                                  Text(
+                                    'Other Methods',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ...List.generate(otherMethods.length, (idx) {
+                                    return PaymentCardRow(
+                                      logo: otherMethods[idx]['logo'],
+                                      name: otherMethods[idx]['name'],
+                                      number: otherMethods[idx]['number'],
+                                      onMenuTap: (ctx) => _onCardMenuTap(ctx, 1, idx),
+                                    );
+                                  }),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                            
+                            // Add New button
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  elevation: 0,
+                                ),
+                                onPressed: () => _openAddNewCardSheet(context),
+                                child: Text(
+                                  'Add New',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 100),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      ...List.generate(primaryMethods.length, (idx) {
-                        return PaymentCardRow(
-                          logo: primaryMethods[idx]['logo'],
-                          name: primaryMethods[idx]['name'],
-                          number: primaryMethods[idx]['number'],
-                          onMenuTap: (ctx) => _onCardMenuTap(ctx, 0, idx),
-                        );
-                      }),
-                      const SizedBox(height: 22),
+                    ),
 
-                      // Other Methods
-                      Text(
-                        'Other Methods',
-                        style: GoogleFonts.poppins(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      ...List.generate(otherMethods.length, (idx) {
-                        return PaymentCardRow(
-                          logo: otherMethods[idx]['logo'],
-                          name: otherMethods[idx]['name'],
-                          number: otherMethods[idx]['number'],
-                          onMenuTap: (ctx) => _onCardMenuTap(ctx, 1, idx),
-                        );
-                      }),
-                      const SizedBox(height: 26),
-
-                      // Add New button
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.15),
-                          foregroundColor: Colors.red,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(9),
-                          ),
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
-                          ),
-                        ),
-                        icon: const Icon(Icons.add, color: Colors.red),
-                        label: Text(
-                          'Add New',
-                          style: GoogleFonts.poppins(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15.5,
-                          ),
-                        ),
-                        onPressed: () => _openAddNewCardSheet(context),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
+                    // Bottom Nav
+                    RidenBottomNav(
+                      selectedIndex: 3,
+                      isFromSheet: true,
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
-
-// ── PaymentCardRow (unchanged widget, kept here for self-containment) ──
 
 class PaymentCardRow extends StatelessWidget {
   final String logo;
@@ -335,16 +391,11 @@ class PaymentCardRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 9),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.19),
-        borderRadius: BorderRadius.circular(12),
-      ),
+      margin: const EdgeInsets.only(bottom: 8, top: 4),
       child: Row(
         children: [
-          Image.asset(logo, width: 33, height: 33),
-          const SizedBox(width: 12),
+          Image.asset(logo, width: 40, height: 40),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,15 +403,15 @@ class PaymentCardRow extends StatelessWidget {
                 Text(
                   name,
                   style: GoogleFonts.poppins(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 14.4,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 Text(
                   number,
                   style: GoogleFonts.poppins(
-                    color: Colors.white,
+                    color: Colors.black54,
                     fontSize: 12.7,
                   ),
                 ),
@@ -368,18 +419,78 @@ class PaymentCardRow extends StatelessWidget {
             ),
           ),
           Builder(
-            builder: (ctx) => IconButton(
-              splashRadius: 20,
-              icon: const Icon(
+            builder: (ctx) => GestureDetector(
+              onTap: () => onMenuTap(ctx),
+              child: const Icon(
                 Icons.more_vert,
-                color: Colors.white70,
-                size: 22,
+                color: Colors.red,
+                size: 20,
               ),
-              onPressed: () => onMenuTap(ctx),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+class _SheetGradientPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // Base: dark navy
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF1A1B2E),
+    );
+
+    // Warm copper glow — top-left
+    _radialBlob(
+      canvas,
+      center: Offset(w * 0.15, h * 0.30),
+      rx: w * 0.80,
+      ry: h * 0.60,
+      color: const Color(0xFF8B4A35),
+      alpha: 170,
+    );
+
+    // Teal glow — bottom-right
+    _radialBlob(
+      canvas,
+      center: Offset(w * 0.85, h * 0.75),
+      rx: w * 0.80,
+      ry: h * 0.60,
+      color: const Color(0xFF2E6B72),
+      alpha: 170,
+    );
+  }
+
+  void _radialBlob(
+    Canvas canvas, {
+    required Offset center,
+    required double rx,
+    required double ry,
+    required Color color,
+    required int alpha,
+  }) {
+    final solid = Color.fromARGB(alpha, color.red, color.green, color.blue);
+    final clear = Color.fromARGB(0, color.red, color.green, color.blue);
+
+    final paint = Paint()
+      ..shader = RadialGradient(colors: [solid, clear]).createShader(
+        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
+      );
+
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.scale(1.0, ry / rx);
+    canvas.translate(-center.dx, -center.dy);
+    canvas.drawCircle(center, rx, paint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_SheetGradientPainter _) => false;
 }

@@ -250,6 +250,7 @@ class _ActiveBookingBottomSheetState extends State<ActiveBookingBottomSheet> {
   void _showCancelRideSheet() {
     // Cancel auto-nav if user is cancelling the ride
     _navTimer?.cancel();
+    Navigator.pop(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

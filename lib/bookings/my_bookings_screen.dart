@@ -163,6 +163,7 @@ class MyBookingsBottomSheet extends StatelessWidget {
                             const SizedBox(height: 10),
                             _BookingSection(
                               onTap: () {
+                                Navigator.pop(context);
                                 showBookingDetailSheet(context);
                               },
                               title: "Ongoing Bookings",
@@ -182,6 +183,7 @@ class MyBookingsBottomSheet extends StatelessWidget {
                             const SizedBox(height: 20),
                             _BookingSection(
                               onTap: () {
+                                Navigator.pop(context);
                                 showBookingDetailSheet(context);
                               },
                               title: "Previous", 

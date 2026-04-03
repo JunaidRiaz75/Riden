@@ -2,7 +2,7 @@
 // ignore_for_file: use_super_parameters, deprecated_member_use
 
 import 'package:Riden/bookings/bookride.dart';
-import 'package:Riden/call_and_chat/chat_screen.dart';
+import 'package:Riden/call_and_chat/support_bottom_sheet.dart';
 import 'package:Riden/my_profile/profilesheet.dart';
 import 'package:Riden/notifications/notification.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +28,10 @@ class RidenBottomNav extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 17),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(50),
+        borderRadius: BorderRadius.circular(40),
         child: Container(
+          height: 76,
+          width: 390,
           color: Colors.white,
           child: SafeArea(
             top: false,
@@ -73,7 +75,7 @@ class RidenBottomNav extends StatelessWidget {
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
           barrierColor: Colors.black54,
-          builder: (_) => const ChatBottomSheetEntry(),
+          builder: (_) => const SupportBottomSheetEntry(),
         );
         break;
       case 2: // Notifications

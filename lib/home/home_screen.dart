@@ -14,6 +14,7 @@ import 'package:Riden/home/add_place_screen.dart';
 import 'package:Riden/home/your_locations_screen.dart';
 import 'package:Riden/my_profile/profilesheet.dart';
 import 'package:Riden/notifications/notification.dart';
+import 'package:Riden/widgets/glass_field.dart';
 import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -731,18 +732,13 @@ class _TopSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(40),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.40),
-            borderRadius: BorderRadius.circular(40),
-            border: Border.all(color: Colors.white.withOpacity(0.20), width: 1),
-          ),
-          child: Row(
+    return GlassContainer(
+      width: 390,
+      height: 50,
+      borderRadius: 40,
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
             children: [
               Expanded(
                 child: TextField(
@@ -783,8 +779,6 @@ class _TopSearchBar extends StatelessWidget {
                 ),
             ],
           ),
-        ),
-      ),
     );
   }
 }
@@ -807,17 +801,13 @@ class _CombinedPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withOpacity(0.20), width: 1),
-          ),
-          child: Column(
+    return GlassContainer(
+      width: 48,
+      height: 97,
+      borderRadius: 40,
+      margin: EdgeInsets.zero,
+      padding: EdgeInsets.zero,
+      child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
@@ -864,8 +854,6 @@ class _CombinedPill extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 }

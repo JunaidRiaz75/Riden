@@ -60,6 +60,7 @@ class _CarSelectionScreenState extends State<CarSelectionScreen> {
       );
       return;
     }
+    Navigator.pop(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

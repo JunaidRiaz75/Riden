@@ -8,6 +8,7 @@ class ProfileSettingsBottomSheet extends StatelessWidget {
   const ProfileSettingsBottomSheet({required this.scrollController, super.key});
 
   void _openEditProfileSheet(BuildContext context) {
+    Navigator.pop(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
