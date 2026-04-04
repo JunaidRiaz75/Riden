@@ -14,6 +14,7 @@ import 'package:Riden/home/add_place_screen.dart';
 import 'package:Riden/home/your_locations_screen.dart';
 import 'package:Riden/my_profile/profilesheet.dart';
 import 'package:Riden/notifications/notification.dart';
+import 'package:Riden/widgets/glass_field.dart';
 import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,45 +24,47 @@ import 'package:http/http.dart' as http;
 
 import '../theme/app_colors.dart';
 
-// ─── Dark blue map style (unchanged) ────────────────────────────────────────
+// ─── Dark map style (enhanced with more details) ────────────────────────────
 const String _kDarkMapStyle = '''
 [
-  { "elementType": "geometry", "stylers": [{ "color": "#1d2c4d" }] },
-  { "elementType": "labels.text.fill", "stylers": [{ "color": "#8ec3b9" }] },
-  { "elementType": "labels.text.stroke", "stylers": [{ "color": "#1a3646" }] },
-  { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#334e87" }] },
-  { "featureType": "administrative", "elementType": "labels.text.fill", "stylers": [{ "color": "#c7e0ff" }] },
+  { "elementType": "geometry", "stylers": [{ "color": "#1a1a1a" }] },
+  { "elementType": "labels.text.fill", "stylers": [{ "color": "#aaaaaa" }] },
+  { "elementType": "labels.text.stroke", "stylers": [{ "color": "#1a1a1a" }] },
+  { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#2a2a2a" }] },
+  { "featureType": "administrative", "elementType": "labels.text.fill", "stylers": [{ "color": "#cccccc" }] },
   { "featureType": "administrative.country", "elementType": "labels.text.fill", "stylers": [{ "color": "#ffffff" }] },
-  { "featureType": "administrative.locality", "elementType": "labels.text.fill", "stylers": [{ "color": "#c7e0ff" }] },
-  { "featureType": "administrative.province", "elementType": "labels.text.fill", "stylers": [{ "color": "#a0c4ff" }] },
-  { "featureType": "landscape", "elementType": "geometry", "stylers": [{ "color": "#1d2c4d" }] },
-  { "featureType": "landscape.man_made", "elementType": "geometry.fill", "stylers": [{ "color": "#263551" }] },
-  { "featureType": "landscape.natural", "elementType": "geometry", "stylers": [{ "color": "#1a3646" }] },
-  { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#283d6a" }] },
-  { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#6f9ba5" }] },
+  { "featureType": "administrative.locality", "elementType": "labels.text.fill", "stylers": [{ "color": "#bbbbbb" }] },
+  { "featureType": "administrative.province", "elementType": "labels.text.fill", "stylers": [{ "color": "#aaaaaa" }] },
+  { "featureType": "landscape", "elementType": "geometry", "stylers": [{ "color": "#1a1a1a" }] },
+  { "featureType": "landscape.man_made", "elementType": "geometry.fill", "stylers": [{ "color": "#232323" }] },
+  { "featureType": "landscape.natural", "elementType": "geometry", "stylers": [{ "color": "#161616" }] },
+  { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#2a2a2a" }] },
+  { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#888888" }] },
   { "featureType": "poi", "elementType": "labels.icon", "stylers": [{ "visibility": "on" }] },
+  { "featureType": "poi.attraction", "elementType": "labels.text.fill", "stylers": [{ "color": "#999999" }] },
+  { "featureType": "poi.business", "elementType": "labels.text.fill", "stylers": [{ "color": "#999999" }] },
+  { "featureType": "poi.government", "elementType": "labels.text.fill", "stylers": [{ "color": "#999999" }] },
+  { "featureType": "poi.medical", "elementType": "labels.text.fill", "stylers": [{ "color": "#999999" }] },
   { "featureType": "poi.park", "elementType": "geometry.fill", "stylers": [{ "color": "#1f3d2e" }] },
-  { "featureType": "poi.park", "elementType": "labels.text.fill", "stylers": [{ "color": "#3C7680" }] },
-  { "featureType": "poi.business", "elementType": "labels", "stylers": [{ "visibility": "on" }] },
-  { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#304a7d" }] },
-  { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#98a5be" }] },
-  { "featureType": "road", "elementType": "labels.text.stroke", "stylers": [{ "color": "#1d2c4d" }] },
-  { "featureType": "road.arterial", "elementType": "geometry", "stylers": [{ "color": "#3a5491" }] },
-  { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#3c67a5" }] },
-  { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "color": "#255763" }] },
-  { "featureType": "road.highway.controlled_access", "elementType": "geometry", "stylers": [{ "color": "#2a5ea6" }] },
-  { "featureType": "road.local", "elementType": "labels.text.fill", "stylers": [{ "color": "#7a8ea9" }] },
-  { "featureType": "transit", "elementType": "labels.text.fill", "stylers": [{ "color": "#98a5be" }] },
+  { "featureType": "poi.park", "elementType": "labels.text.fill", "stylers": [{ "color": "#7db89a" }] },
+  { "featureType": "poi.place_of_worship", "elementType": "labels.text.fill", "stylers": [{ "color": "#999999" }] },
+  { "featureType": "poi.school", "elementType": "labels.text.fill", "stylers": [{ "color": "#999999" }] },
+  { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#3a3a3a" }] },
+  { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#888888" }] },
+  { "featureType": "road", "elementType": "labels.text.stroke", "stylers": [{ "color": "#1a1a1a" }] },
+  { "featureType": "road.arterial", "elementType": "geometry", "stylers": [{ "color": "#414141" }] },
+  { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#4a4a4a" }] },
+  { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "color": "#2a2a2a" }] },
+  { "featureType": "road.highway.controlled_access", "elementType": "geometry", "stylers": [{ "color": "#474747" }] },
+  { "featureType": "road.local", "elementType": "labels.text.fill", "stylers": [{ "color": "#777777" }] },
+  { "featureType": "transit", "elementType": "labels.text.fill", "stylers": [{ "color": "#888888" }] },
   { "featureType": "transit", "elementType": "labels.icon", "stylers": [{ "visibility": "on" }] },
-  { "featureType": "transit.line", "elementType": "geometry.fill", "stylers": [{ "color": "#283d6a" }] },
-  { "featureType": "transit.station", "elementType": "geometry", "stylers": [{ "color": "#3a4762" }] },
-  { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#0e1626" }] },
-  { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#4e6d70" }] }
+  { "featureType": "transit.line", "elementType": "geometry.fill", "stylers": [{ "color": "#2a2a2a" }] },
+  { "featureType": "transit.station", "elementType": "geometry", "stylers": [{ "color": "#323232" }] },
+  { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#0f0f0f" }] },
+  { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#555555" }] }
 ]
 ''';
-
-// ─── Custom red teardrop marker ──────────────────────(unchanged) ────────────
-// _buildCustomMarker function was here. Now it's replaced by pointer.png asset.
 
 // ─────────────────────────────────────────────────────────────────────────────
 class HomeScreen extends StatefulWidget {
@@ -72,8 +75,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedNavIndex = -1;
-
-  // ── Tracks whether the bookings sheet is open (used only for sheet state) ──
   bool _bookingsSheetOpen = false;
 
   // ── Map ───────────────────────────────────────────────────────────────────
@@ -95,20 +96,112 @@ class _HomeScreenState extends State<HomeScreen> {
   static const LatLng _demoDestination = LatLng(33.1480, 72.7850);
 
   final TextEditingController _searchController = TextEditingController();
+  List<SearchResult> _searchResults = [];
+  bool _searching = false;
+  bool _showSearchResults = false;
 
-  // ── nav bar height — used to position sheet & pill ───────────────────────
   static const double _kNavH = 80.0;
 
   @override
   void initState() {
     super.initState();
-    // Use pointer.png from assets
     BitmapDescriptor.fromAssetImage(
       const ImageConfiguration(size: Size(48, 48)),
       'assets/images/pointer.png',
     ).then((icon) {
       if (mounted) setState(() => _customMarkerIcon = icon);
     });
+
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    if (_searchController.text.isEmpty) {
+      setState(() {
+        _searchResults = [];
+        _showSearchResults = false;
+      });
+      return;
+    }
+    _performPlaceSearch(_searchController.text);
+  }
+
+  Future<void> _performPlaceSearch(String query) async {
+    if (query.isEmpty) return;
+
+    setState(() => _searching = true);
+    try {
+      const key = 'AIzaSyD3Tw1rkB9PWTx_7vRUrGvgQfxIrBbNYkg';
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json'
+        '?input=$query'
+        '&key=$key'
+        '${_userLatLng != null ? '&location=${_userLatLng!.latitude},${_userLatLng!.longitude}&radius=50000' : ''}',
+      );
+
+      final resp = await http.get(url);
+      if (resp.statusCode != 200) throw Exception('HTTP ${resp.statusCode}');
+
+      final data = jsonDecode(resp.body) as Map<String, dynamic>;
+      final predictions =
+          (data['predictions'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+
+      setState(() {
+        _searchResults = predictions
+            .map(
+              (p) => SearchResult(
+                placeId: p['place_id'] as String? ?? '',
+                mainText: p['main_text'] as String? ?? '',
+                secondaryText: p['secondary_text'] as String? ?? '',
+              ),
+            )
+            .toList();
+        _showSearchResults = true;
+      });
+    } catch (e) {
+      _showSnack('Search error: $e');
+    } finally {
+      if (mounted) setState(() => _searching = false);
+    }
+  }
+
+  Future<void> _getPlaceDetails(String placeId) async {
+    try {
+      const key = 'AIzaSyD3Tw1rkB9PWTx_7vRUrGvgQfxIrBbNYkg';
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/details/json'
+        '?place_id=$placeId'
+        '&fields=geometry'
+        '&key=$key',
+      );
+
+      final resp = await http.get(url);
+      if (resp.statusCode != 200) throw Exception('HTTP ${resp.statusCode}');
+
+      final data = jsonDecode(resp.body) as Map<String, dynamic>;
+      final location =
+          data['result']['geometry']['location'] as Map<String, dynamic>;
+      final lat = location['lat'] as double;
+      final lng = location['lng'] as double;
+
+      final dest = LatLng(lat, lng);
+
+      if (_userLatLng != null) {
+        fetchAndDrawRoute(_userLatLng!, dest);
+      } else {
+        await _startLiveTracking();
+        if (_userLatLng != null) {
+          fetchAndDrawRoute(_userLatLng!, dest);
+        }
+      }
+
+      setState(() {
+        _showSearchResults = false;
+        _searchController.clear();
+      });
+    } catch (e) {
+      _showSnack('Could not get place details: $e');
+    }
   }
 
   @override
@@ -119,7 +212,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  // ─── map ────────────────────────────────────────────────────────────────
   Future<void> _onMapCreated(GoogleMapController controller) async {
     _mapController = controller;
     try {
@@ -308,10 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Duplicate _handleNavigate removed to resolve naming conflict.
-
   void _openMainSheet(int index) {
-    // ✅ RIDE BOTTOM SHEET - Shows RideBottomSheet
     if (index == 0) {
       setState(() => _bookingsSheetOpen = true);
       showModalBottomSheet(
@@ -368,16 +457,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final double statusBarH = MediaQuery.of(context).padding.top;
-    final double navBarH = 80.0; // approx height of floating nav bar
+    final double navBarH = 80.0;
 
-    // Pill is always at bottom-right, above the nav bar
     final double pillBottomClosed = navBarH + 16;
     final double pillRightClosed = 16;
 
     return Scaffold(
       backgroundColor: Colors.black,
-      // No bottomNavigationBar here — nav bar lives in the Stack below
-      // so it always renders above the sheet route.
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: Stack(
@@ -399,7 +485,7 @@ class _HomeScreenState extends State<HomeScreen> {
               tiltGesturesEnabled: true,
               compassEnabled: false,
               mapToolbarEnabled: false,
-              trafficEnabled: false,
+              trafficEnabled: true,
               buildingsEnabled: true,
               indoorViewEnabled: true,
               mapType: MapType.normal,
@@ -416,7 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Positioned.fill(
               child: IgnorePointer(
                 child: Container(
-                  color: const Color(0xFF1d2c4d),
+                  color: const Color(0xFF1a1a1a),
                   child: const Center(
                     child: CircularProgressIndicator(color: Color(0xFF4FC3F7)),
                   ),
@@ -424,17 +510,92 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-          // ── 3. SEARCH BAR ──────────────────────────────────────────────
+          // ── 3. SEARCH BAR WITH RESULTS ─────────────────────────────────
           Positioned(
             top: statusBarH + 12,
             left: 16,
             right: 16,
-            child: _TopSearchBar(controller: _searchController),
+            child: Column(
+              children: [
+                _TopSearchBar(
+                  controller: _searchController,
+                  searching: _searching,
+                ),
+                if (_showSearchResults && _searchResults.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.85),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.15),
+                        width: 1,
+                      ),
+                    ),
+                    constraints: const BoxConstraints(maxHeight: 300),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _searchResults.length,
+                      itemBuilder: (ctx, i) {
+                        final result = _searchResults[i];
+                        return GestureDetector(
+                          onTap: () => _getPlaceDetails(result.placeId),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              border: i < _searchResults.length - 1
+                                  ? Border(
+                                      bottom: BorderSide(
+                                        color: Colors.white.withOpacity(0.1),
+                                        width: 0.5,
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  result.mainText,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (result.secondaryText.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      result.secondaryText,
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.6),
+                                        fontSize: 12,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
           ),
-          // Route badges (unchanged)─
+
+          // Route badges
           if (_fetchingRoute)
             Positioned(
-              top: statusBarH + 76,
+              top: statusBarH + 130,
               left: 0,
               right: 0,
               child: Center(
@@ -443,7 +604,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           if (_polylines.isNotEmpty && !_fetchingRoute)
             Positioned(
-              top: statusBarH + 76,
+              top: statusBarH + 130,
               left: 16,
               child: _GlassBadge(
                 label: 'Clear route',
@@ -453,28 +614,24 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
           // ── 5. GPS + NAVIGATE PILL ─────────────────────────────────────
-          // ── Combined pill at bottom‑right (3 icons) ─────────────────────
           Positioned(
-            bottom: navBarH + 28, // INCREASED GAP HERE (was + 8)
+            bottom: navBarH + 28,
             right: 16,
             child: _CombinedPill(
               locating: _locating,
               onGpsTap: _centerOnUser,
               onNavigateTap: _handleNavigate,
-              onNotificationsTap: () => _openSheet(2), // notifications sheet
+              onNotificationsTap: () => _openSheet(2),
             ),
           ),
         ],
       ),
 
-      // BOTTOM NAV — Standardized RidenBottomNav
       bottomNavigationBar: RidenBottomNav(
         selectedIndex: _selectedNavIndex,
         isFromSheet: false,
         onChanged: (v) {
           setState(() => _selectedNavIndex = v);
-          // Redundant _openMainSheet call removed.
-          // RidenBottomNav now handles its own navigation autonomously.
         },
       ),
     );
@@ -492,7 +649,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // ── Sheet launcher ────────────────────────────────────────────────────────
   void _openSheet(int index) {
     if (index == 0) {
       setState(() => _bookingsSheetOpen = true);
@@ -520,13 +676,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Widget Function(ScrollController) builder;
     switch (index) {
-      case 1: // Support/Chat
+      case 1:
         builder = (sc) => ChatBottomSheet(scrollController: sc);
         break;
-      case 2: // Notifications
+      case 2:
         builder = (sc) => NotificationsBottomSheet(scrollController: sc);
         break;
-      case 3: // Account/Profile
+      case 3:
         builder = (sc) => ProfileBottomSheet(scrollController: sc);
         break;
       default:
@@ -552,65 +708,81 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SEARCH BAR — full-pill frosted glass (dark, for map overlay)
+// SEARCH RESULT MODEL
+// ─────────────────────────────────────────────────────────────────────────────
+class SearchResult {
+  final String placeId;
+  final String mainText;
+  final String secondaryText;
+
+  SearchResult({
+    required this.placeId,
+    required this.mainText,
+    required this.secondaryText,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEARCH BAR WITH AUTOCOMPLETE
 // ─────────────────────────────────────────────────────────────────────────────
 class _TopSearchBar extends StatelessWidget {
   final TextEditingController controller;
-  const _TopSearchBar({required this.controller});
+  final bool searching;
+
+  const _TopSearchBar({required this.controller, this.searching = false});
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.10),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withOpacity(0.25), width: 1),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.search, color: Colors.white70, size: 20),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Where to go...',
-                    hintStyle: const TextStyle(color: Colors.white70),
-                    border: InputBorder.none,
-                  ),
-                  style: const TextStyle(color: Colors.white),
-                ),
+    return GlassContainer(
+      width: 390,
+      height: 50,
+      borderRadius: 40,
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: 'Where to go...',
+                hintStyle: const TextStyle(color: Colors.white70, fontSize: 14),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 11,
-                  vertical: 11,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(
-                  Icons.directions_car_rounded,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-            ],
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
           ),
-        ),
+          if (searching)
+            const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.directions_car_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
+        ],
       ),
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COMBINED PILL — GPS + Navigate in one frosted-glass pill
-// Always positioned at bottom-right above nav bar
+// COMBINED PILL — GPS + Navigate
 // ─────────────────────────────────────────────────────────────────────────────
 class _CombinedPill extends StatelessWidget {
   final bool locating;
@@ -627,80 +799,62 @@ class _CombinedPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.18),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withOpacity(0.20), width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.20),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+    return GlassContainer(
+      width: 48,
+      height: 97,
+      borderRadius: 40,
+      margin: EdgeInsets.zero,
+      padding: EdgeInsets.zero,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: onGpsTap,
+            child: SizedBox(
+              width: 48,
+              height: 48,
+              child: Center(
+                child: locating
+                    ? const SizedBox(
+                        width: 19,
+                        height: 19,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.gps_fixed,
+                        color: Colors.white,
+                        size: 22,
+                      ),
               ),
-            ],
+            ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // GPS button
-              GestureDetector(
-                onTap: onGpsTap,
-                child: SizedBox(
-                  width: 48,
-                  height: 48,
-                  child: Center(
-                    child: locating
-                        ? const SizedBox(
-                            width: 19,
-                            height: 19,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(
-                            Icons.gps_fixed,
-                            color: Colors.white,
-                            size: 22,
-                          ),
-                  ),
+          Container(
+            width: 26,
+            height: 1,
+            color: Colors.white.withOpacity(0.15),
+          ),
+          GestureDetector(
+            onTap: onNavigateTap,
+            child: const SizedBox(
+              width: 48,
+              height: 48,
+              child: Center(
+                child: Icon(
+                  Icons.near_me_rounded,
+                  color: Colors.white,
+                  size: 22,
                 ),
               ),
-              // Divider
-              Container(
-                width: 26,
-                height: 1,
-                color: Colors.white.withOpacity(0.20),
-              ),
-              // Navigate button
-              GestureDetector(
-                onTap: onNavigateTap,
-                child: const SizedBox(
-                  width: 48,
-                  height: 48,
-                  child: Center(
-                    child: Icon(
-                      Icons.near_me_rounded,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 }
-
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GLASS BADGE — route loading / clear-route indicator
@@ -710,6 +864,7 @@ class _GlassBadge extends StatelessWidget {
   final IconData? icon;
   final bool loading;
   final VoidCallback? onTap;
+
   const _GlassBadge({
     required this.label,
     this.icon,
@@ -724,11 +879,11 @@ class _GlassBadge extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.20),
+              color: Colors.white.withOpacity(0.15),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white.withOpacity(0.12)),
             ),

@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'faqs_bottom_sheet.dart';
 import 'legal_bottom_sheet.dart';
 import 'terms_conditions_bottom_sheet.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 
 class AboutUsBottomSheet extends StatelessWidget {
   final ScrollController scrollController;
@@ -119,15 +120,20 @@ class AboutUsBottomSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
                         // Menu Items
-                        ...menuItems.map(
-                          (item) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: GlassyAboutRow(
-                              icon: item['icon'] as IconData,
-                              label: item['label'] as String,
-                              onTap: item['onTap'] as VoidCallback,
-                            ),
-                          ),
+                        Row(
+                          children: [
+                            Expanded(child: GlassyAboutGridItem(icon: menuItems[0]['icon'] as IconData, label: menuItems[0]['label'] as String, onTap: menuItems[0]['onTap'] as VoidCallback)),
+                            const SizedBox(width: 12),
+                            Expanded(child: GlassyAboutGridItem(icon: menuItems[1]['icon'] as IconData, label: menuItems[1]['label'] as String, onTap: menuItems[1]['onTap'] as VoidCallback)),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(child: GlassyAboutGridItem(icon: menuItems[2]['icon'] as IconData, label: menuItems[2]['label'] as String, onTap: menuItems[2]['onTap'] as VoidCallback)),
+                            const SizedBox(width: 12),
+                            Expanded(child: GlassyAboutGridItem(icon: menuItems[3]['icon'] as IconData, label: menuItems[3]['label'] as String, onTap: menuItems[3]['onTap'] as VoidCallback)),
+                          ],
                         ),
                         const SizedBox(height: 30),
                       ],
@@ -136,6 +142,12 @@ class AboutUsBottomSheet extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          // ── Standardized Bottom Nav ──
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: RidenBottomNav(selectedIndex: 1, isFromSheet: true),
+          
           ),
         ],
       ),
@@ -173,12 +185,12 @@ class AboutUsBottomSheet extends StatelessWidget {
   );
 }
 
-class GlassyAboutRow extends StatelessWidget {
+class GlassyAboutGridItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
 
-  const GlassyAboutRow({
+  const GlassyAboutGridItem({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -190,40 +202,39 @@ class GlassyAboutRow extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withOpacity(0.58),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+          border: Border.all(color: Colors.white.withOpacity(0.8), width: 1.5),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.2),
+                color: RidenColors.brandRed,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: Colors.red, size: 24),
+              child: Icon(icon, color: Colors.white, size: 20),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 label,
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.white54,
-              size: 24,
+          
             ),
           ],
         ),
+        
       ),
     );
   }

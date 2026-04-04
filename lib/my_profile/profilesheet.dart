@@ -34,6 +34,7 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
     BuildContext context,
     Widget Function(ScrollController) builder,
   ) {
+    Navigator.pop(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -158,28 +159,29 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                             ),
                           ),
                           // Settings icon
-                        IconButton(
-                          onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (context) => DraggableScrollableSheet(
-                                initialChildSize: 0.9,
-                                minChildSize: 0.5,
-                                maxChildSize: 0.95,
-                                snap: true,
-                                snapSizes: const [0.5, 0.9, 0.95],
-                                builder: (context, sc) => ProfileSettingBottomSheet(scrollController: sc),
-                              ),
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.settings,
-                            color: Colors.white,
-                            size: 24,
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) => DraggableScrollableSheet(
+                                  initialChildSize: 0.9,
+                                  minChildSize: 0.5,
+                                  maxChildSize: 0.95,
+                                  snap: true,
+                                  snapSizes: const [0.5, 0.9, 0.95],
+                                  builder: (context, sc) => ProfileSettingBottomSheet(scrollController: sc),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.settings,
+                              color: Colors.white,
+                              size: 24,
+                            ),
                           ),
-                        ),
                         ],
                       ),
                     ),

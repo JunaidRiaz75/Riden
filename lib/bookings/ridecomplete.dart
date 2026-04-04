@@ -216,7 +216,6 @@ class _RideCompletedBottomSheetState extends State<RideCompletedBottomSheet> {
                               zoomControlsEnabled: false,
                               scrollGesturesEnabled: false,
                               zoomGesturesEnabled: false,
-                              style: _darkMapStyle,
                             ),
                           ),
                         ),
@@ -817,11 +816,23 @@ class _SheetGradientPainter extends CustomPainter {
   bool shouldRepaint(_SheetGradientPainter _) => false;
 }
 
-const String _darkMapStyle = '''
-[
-  {"elementType":"geometry","stylers":[{"color":"#1d2c4d"}]},
-  {"elementType":"labels.text.fill","stylers":[{"color":"#8ec3b9"}]},
-  {"featureType":"road","elementType":"geometry","stylers":[{"color":"#304a7d"}]},
-  {"featureType":"water","elementType":"geometry","stylers":[{"color":"#0e1626"}]}
-]
-''';
+class DashedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = Colors.white.withOpacity(0.3)
+      ..strokeWidth = 1.5;
+
+    var y = 0.0;
+    final dashHeight = 4;
+    final spaceHeight = 4;
+
+    while (y < size.height) {
+      canvas.drawLine(Offset(0, y), Offset(0, y + dashHeight), paint);
+      y += dashHeight + spaceHeight;
+    }
+  }
+
+  @override
+  bool shouldRepaint(DashedLinePainter oldDelegate) => false;
+}

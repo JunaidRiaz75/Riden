@@ -2,10 +2,43 @@
 import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
+import 'otp_verification_bottom_sheet.dart';
 
-class ChangePasswordBottomSheet extends StatelessWidget {
+class ChangePasswordBottomSheet extends StatefulWidget {
   final ScrollController scrollController;
   const ChangePasswordBottomSheet({required this.scrollController, super.key});
+
+  @override
+  State<ChangePasswordBottomSheet> createState() => _ChangePasswordBottomSheetState();
+}
+
+class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet> {
+  String selectedCountryCode = '+1';
+
+  final List<Map<String, String>> countryCodes = [
+    {'code': '+1', 'flag': '🇨🇦'},
+    {'code': '+44', 'flag': '🇬🇧'},
+    {'code': '+91', 'flag': '🇮🇳'},
+    {'code': '+61', 'flag': '🇦🇺'},
+  ];
+
+  void _openOtpVerification(BuildContext context) {
+    Navigator.pop(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        snap: true,
+        snapSizes: const [0.5, 0.85, 0.95],
+        builder: (context, sc) => OtpVerificationBottomSheet(scrollController: sc),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +67,9 @@ class ChangePasswordBottomSheet extends StatelessWidget {
               ),
               Expanded(
                 child: SingleChildScrollView(
-                  controller: scrollController,
+                  controller: widget.scrollController,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -103,29 +133,43 @@ class ChangePasswordBottomSheet extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 14,
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Text(
-                                      '🇨🇦',
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '+1',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
+                              Padding(
+                                padding: const EdgeInsets.only(left: 12),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: selectedCountryCode,
+                                    dropdownColor: const Color(0xFF2C2C2C),
+                                    icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                                    onChanged: (String? newValue) {
+                                      if (newValue != null) {
+                                        setState(() {
+                                          selectedCountryCode = newValue;
+                                        });
+                                      }
+                                    },
+                                    items: countryCodes.map<DropdownMenuItem<String>>((Map<String, String> value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value['code'],
+                                        child: Row(
+                                          children: [
+                                            Text(value['flag']!, style: const TextStyle(fontSize: 18)),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              value['code']!,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
                                 ),
                               ),
+                              const SizedBox(width: 8),
                               Container(
                                 width: 1,
                                 height: 24,
@@ -156,13 +200,8 @@ class ChangePasswordBottomSheet extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 28),
-                        // Send OTP Button
                         GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                            // Handle sending OTP...
-                            // Optionally open next sheet
-                          },
+                          onTap: () => _openOtpVerification(context),
                           child: Container(
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -190,13 +229,17 @@ class ChangePasswordBottomSheet extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 100),
                       ],
                     ),
                   ),
                 ),
               ),
             ],
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: RidenBottomNav(selectedIndex: 4, isFromSheet: true),
           ),
         ],
       ),

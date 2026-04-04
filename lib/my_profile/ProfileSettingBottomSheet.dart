@@ -11,6 +11,7 @@ import 'package:Riden/my_profile/contact_support/contact_support_screen.dart';
 import 'package:Riden/my_profile/in_app_wallet/in_app_wallet_screen.dart';
 import 'package:Riden/my_profile/payment_methods/payment_methods_screen.dart';
 import 'package:Riden/my_profile/profile_setting/profile_settings_bottom_sheet.dart';
+import 'package:Riden/bookings/my_bookings_screen.dart';
 import 'package:Riden/theme/app_colors.dart';
 import 'package:Riden/widgets/riden_bottom_nav.dart';
 
@@ -21,6 +22,7 @@ class ProfileSettingBottomSheet extends StatelessWidget {
   ProfileSettingBottomSheet({required this.scrollController, super.key});
 
   void _openSheet(BuildContext context, Widget Function(ScrollController) builder) {
+    Navigator.pop(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -214,7 +216,10 @@ class ProfileSettingBottomSheet extends StatelessWidget {
                                     context: context,
                                     icon: Icons.calendar_month_rounded,
                                     label: 'Booking History',
-                                    onTap: () {},
+                                    onTap: () => _openSheet(
+                                      context,
+                                      (sc) => MyBookingsBottomSheet(scrollController: sc),
+                                    ),
                                   ),
                                   _buildDivider(),
                                   _buildMenuItem(

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 // For navigating to Change Password
 import 'change_password_bottom_sheet.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 
 class AppSettingsBottomSheet extends StatelessWidget {
   final ScrollController scrollController;
@@ -24,6 +25,36 @@ class AppSettingsBottomSheet extends StatelessWidget {
         snapSizes: const [0.5, 0.85, 0.95],
         builder: (context, sc) =>
             ChangePasswordBottomSheet(scrollController: sc),
+      ),
+    );
+  }
+
+  Widget _buildSettingsRow({required IconData icon, required String label, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          children: [
+            Icon(icon, color: RidenColors.brandRed, size: 22),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                label,
+                style: GoogleFonts.poppins(
+                  color: Colors.black87,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: RidenColors.brandRed,
+              size: 22,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -98,64 +129,67 @@ class AppSettingsBottomSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
 
-                        // Change Password Row
-                        GlassySettingsRow(
-                          icon: Icons.lock,
-                          label: 'Change Password',
-                          onTap: () => _openChangePasswordSheet(context),
-                        ),
-                        const SizedBox(height: 12),
-                        GlassySettingsRow(
-                          icon: Icons.share,
-                          label: 'Share App',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Share App feature',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                                backgroundColor: RidenColors.brandRed,
-                                duration: const Duration(milliseconds: 800),
+                        // Unified Settings Container
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.58),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.white.withOpacity(0.8), width: 1.5),
+                          ),
+                          child: Column(
+                            children: [
+                              _buildSettingsRow(
+                                icon: Icons.lock,
+                                label: 'Change Password',
+                                onTap: () => _openChangePasswordSheet(context),
                               ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        GlassySettingsRow(
-                          icon: Icons.star,
-                          label: 'Rate the app',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Rate App feature',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                                backgroundColor: RidenColors.brandRed,
-                                duration: const Duration(milliseconds: 800),
+                              const Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Divider(color: Colors.black12, height: 1)),
+                              _buildSettingsRow(
+                                icon: Icons.star,
+                                label: 'Rate The App',
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Rate App feature', style: GoogleFonts.poppins()),
+                                      backgroundColor: RidenColors.brandRed,
+                                      duration: const Duration(milliseconds: 800),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        GlassySettingsRow(
-                          icon: Icons.logout,
-                          label: 'Logout',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Logging out...',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                                backgroundColor: RidenColors.brandRed,
-                                duration: const Duration(milliseconds: 800),
+                              const Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Divider(color: Colors.black12, height: 1)),
+                              _buildSettingsRow(
+                                icon: Icons.share,
+                                label: 'Share App',
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Share App feature', style: GoogleFonts.poppins()),
+                                      backgroundColor: RidenColors.brandRed,
+                                      duration: const Duration(milliseconds: 800),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
+                              const Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Divider(color: Colors.black12, height: 1)),
+                              _buildSettingsRow(
+                                icon: Icons.logout,
+                                label: 'Logout',
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Logging out...', style: GoogleFonts.poppins()),
+                                      backgroundColor: RidenColors.brandRed,
+                                      duration: const Duration(milliseconds: 800),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 28),
+                        const SizedBox(height: 100), // Spacing for BottomNav
                       ],
                     ),
                   ),
@@ -163,63 +197,12 @@ class AppSettingsBottomSheet extends StatelessWidget {
               ),
             ],
           ),
+          // ── Standardized Bottom Nav ──
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: RidenBottomNav(selectedIndex: 4, isFromSheet: true),
+          ),
         ],
-      ),
-    );
-  }
-}
-
-class GlassySettingsRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const GlassySettingsRow({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: Colors.red, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                label,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.white54,
-              size: 24,
-            ),
-          ],
-        ),
       ),
     );
   }

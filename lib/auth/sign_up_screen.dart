@@ -439,9 +439,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Expanded(child: Divider(color: Colors.white24)),
                       ],
                     ),
-                    const SizedBox(height: 12),
-
-                    // Google & Facebook buttons (replacing email & phone)
+                    // Google & Facebook buttons (glassy 3D)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -450,20 +448,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onTap: () {
                             // Google sign‑in logic
                           },
-                          child: Container(
+                          child: const GlassContainer(
                             width: 60,
                             height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.11),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.white12,
-                                width: 1,
-                              ),
-                            ),
+                            borderRadius: 8,
                             child: Center(
-                              child: Image.asset(
-                                'assets/icons/google.png',
+                              child: Image(
+                                image: AssetImage('assets/icons/google.png'),
                                 width: 30,
                                 height: 30,
                               ),
@@ -476,20 +467,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onTap: () {
                             // Facebook sign‑in logic
                           },
-                          child: Container(
+                          child: const GlassContainer(
                             width: 60,
                             height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.11),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.white12,
-                                width: 1,
-                              ),
-                            ),
+                            borderRadius: 8,
                             child: Center(
-                              child: Image.asset(
-                                'assets/icons/facebook.png',
+                              child: Image(
+                                image: AssetImage('assets/icons/facebook.png'),
                                 width: 30,
                                 height: 30,
                               ),

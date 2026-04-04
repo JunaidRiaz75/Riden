@@ -4,6 +4,7 @@
 import 'package:Riden/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:Riden/widgets/riden_bottom_nav.dart';
 
 class LegalBottomSheet extends StatelessWidget {
   final ScrollController scrollController;
@@ -116,6 +117,11 @@ class LegalBottomSheet extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          // ── Standardized Bottom Nav ──
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: RidenBottomNav(selectedIndex: 1, isFromSheet: true),
           ),
         ],
       ),
