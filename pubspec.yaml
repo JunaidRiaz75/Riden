@@ -97,7 +97,6 @@ flutter:
     - assets/images/car1.png
     - assets/images/car2.png
     - assets/images/riden_light_logo.png
-    - assets/images/riden_dark_logo.png
     - assets/logo.png
     - assets/icons/google.png
     - assets/icons/facebook.png
@@ -113,6 +112,7 @@ flutter:
     - assets/images/pointer.png
     - assets/images/riden_text.png
     - assets/images/add_card_illustration.png
+    - assets/logo.png 
    
 
 
