@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 // ─────────────── LIGHT THEME COLORS ────────────────
@@ -88,7 +89,33 @@ class RidenDarkBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(child: CustomPaint(painter: _DarkGradientPainter()));
+    return Stack(
+      children: [
+        // 1. Gradient background blobs
+        Positioned.fill(
+          child: CustomPaint(painter: _DarkGradientPainter()),
+        ),
+
+        // 2. Frosted glass blur layer
+        Positioned.fill(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+            child: Container(
+              decoration: BoxDecoration(
+                // semi-transparent white glass tint
+                color: Colors.white.withOpacity(0.06),
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.white.withOpacity(0.18),
+                    width: 1.2,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -98,90 +125,60 @@ class _DarkGradientPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    // 1. Base fill
+    // Base: dark navy
     canvas.drawRect(
       Rect.fromLTWH(0, 0, w, h),
-      Paint()..color = RidenColors.backgroundBase,
+      Paint()..color = const Color(0xFF1A1B2E),
     );
 
-    // 2. Top-left dark purple-plum band
+    // Warm copper/brown glow — top-left
     _blob(
       canvas,
-      center: Offset(w * 0.0, h * 0.0),
-      rx: w * 1.0,
-      ry: h * 0.45,
-      color: RidenColors.backgroundTopLeft,
-      alpha: 200,
-    );
-
-    // 3. Top-right deep navy accent
-    _blob(
-      canvas,
-      center: Offset(w * 1.05, h * 0.0),
+      center: Offset(w * 0.15, h * 0.30),
       rx: w * 0.70,
+      ry: h * 0.50,
+      color: const Color(0xFF8B4A35), // warm copper
+      alpha: 170,
+    );
+
+    // Slightly deeper copper lower-left
+    _blob(
+      canvas,
+      center: Offset(w * 0.05, h * 0.55),
+      rx: w * 0.50,
       ry: h * 0.35,
-      color: RidenColors.backgroundTopRight,
-      alpha: 220,
+      color: const Color(0xFF6B3828),
+      alpha: 130,
     );
 
-    // 4. Left warm copper/brown glow
+    // Teal/slate glow — bottom-right
     _blob(
       canvas,
-      center: Offset(w * -0.05, h * 0.38),
-      rx: w * 0.72,
-      ry: h * 0.38,
-      color: RidenColors.warmCopper,
-      alpha: 190,
+      center: Offset(w * 0.82, h * 0.68),
+      rx: w * 0.70,
+      ry: h * 0.52,
+      color: const Color(0xFF2E6B72), // teal slate
+      alpha: 165,
     );
 
-    // 5. Left deeper copper highlight
+    // Lighter teal highlight
     _blob(
       canvas,
-      center: Offset(w * 0.02, h * 0.46),
-      rx: w * 0.45,
-      ry: h * 0.22,
-      color: RidenColors.warmCopperDeep,
-      alpha: 140,
+      center: Offset(w * 0.90, h * 0.50),
+      rx: w * 0.40,
+      ry: h * 0.30,
+      color: const Color(0xFF3D8A8F),
+      alpha: 110,
     );
 
-    // 6. Right teal/slate glow
-    _blob(
-      canvas,
-      center: Offset(w * 1.05, h * 0.50),
-      rx: w * 0.72,
-      ry: h * 0.42,
-      color: RidenColors.tealSlate,
-      alpha: 200,
-    );
-
-    // 7. Right teal lighter highlight
-    _blob(
-      canvas,
-      center: Offset(w * 0.92, h * 0.55),
-      rx: w * 0.45,
-      ry: h * 0.28,
-      color: RidenColors.tealSlateLight,
-      alpha: 155,
-    );
-
-    // 8. Center muted teal-gray blend
+    // Center neutral blend
     _blob(
       canvas,
       center: Offset(w * 0.50, h * 0.50),
-      rx: w * 0.65,
-      ry: h * 0.30,
-      color: RidenColors.centerBlend,
-      alpha: 100,
-    );
-
-    // 9. Bottom dark overlay — returns to near-black
-    _blob(
-      canvas,
-      center: Offset(w * 0.50, h * 1.08),
-      rx: w * 0.90,
-      ry: h * 0.38,
-      color: RidenColors.backgroundBase,
-      alpha: 255,
+      rx: w * 0.55,
+      ry: h * 0.40,
+      color: const Color(0xFF3A4555),
+      alpha: 80,
     );
   }
 
@@ -202,7 +199,7 @@ class _DarkGradientPainter extends CustomPainter {
     final clearColor = Color.fromARGB(0, color.red, color.green, color.blue);
 
     final paint = Paint()
-      ..shader = RadialGradient(colors: [solidColor, clearColor]).createShader(
+      ..shader = RadialGradient(colors: solidColor == clearColor ? [solidColor, clearColor] : [solidColor, clearColor]).createShader(
         Rect.fromCenter(center: center, width: rx * 2, height: ry * 2),
       );
 

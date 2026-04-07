@@ -1,5 +1,5 @@
 // otp_verification_bottom_sheet.dart
-import 'package:Riden/my_profile/app_setting/setnewpassword.dart';
+import 'package:Riden/my_profile/app_setting/set_new_password_bottom_sheet.dart';
 import 'package:Riden/theme/app_colors.dart';
 import 'package:Riden/widgets/riden_bottom_nav.dart';
 import 'package:flutter/material.dart';
@@ -202,14 +202,21 @@ class _OtpVerificationBottomSheetState
                         const SizedBox(height: 32),
                         GestureDetector(
                           onTap: () {
-                            // Verify OTP logic
-                            // For demo, just navigate to SetNewPassword screen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => Setnewpassword(
-                                  context,
-                                  scrollController: ScrollController(),
+                            // Verify OTP → open Set New Password as a bottom sheet
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              isDismissible: false,
+                              enableDrag: false,
+                              builder: (ctx) => DraggableScrollableSheet(
+                                initialChildSize: 0.60,
+                                minChildSize: 0.50,
+                                maxChildSize: 0.85,
+                                expand: false,
+                                builder: (_, sc) =>
+                                    SetNewPasswordBottomSheet(
+                                  scrollController: sc,
                                 ),
                               ),
                             );
