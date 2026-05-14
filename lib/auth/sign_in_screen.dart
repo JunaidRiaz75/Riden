@@ -37,7 +37,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     Text(
                       'RIDEN',
                       style: GoogleFonts.audiowide(
-                        fontSize: 48,
+                        fontSize: 45,
                         fontWeight: FontWeight.w400,
                         color: Colors.white, // Pure white as seen in image
                         height: 1.0,

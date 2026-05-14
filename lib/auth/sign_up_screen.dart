@@ -62,7 +62,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               Text(
                                 'RIDEN',
                                 style: GoogleFonts.audiowide(
-                                  fontSize: 48,
+                                  fontSize: 45,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.white,
                                   height: 1.0,
@@ -179,7 +179,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ],
                           ),
-                        ),
+                        ), const SizedBox(height: 16),
 
                         const Spacer(flex: 2),
 

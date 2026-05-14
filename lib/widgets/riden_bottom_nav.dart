@@ -14,7 +14,7 @@ class RidenBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
+      height: 70,
       decoration: BoxDecoration(
         color: const Color(0xFF0B0C10),
         borderRadius: BorderRadius.circular(25),
@@ -39,18 +39,19 @@ class RidenBottomNav extends StatelessWidget {
     return GestureDetector(
       onTap: () => onItemSelected(index),
       child: Container(
+        height: 45, 
         width: 80,
         color: Colors.transparent, // Expand tap area
         child: Stack(
           alignment: Alignment.center,
-          clipBehavior: Clip.none,
+          clipBehavior: Clip.none,  
           children: [
             if (isActive)
               Positioned(
                 bottom: 0,
                 child: Container(
                   width: 50,
-                  height: 50,
+                  height: 30,
                   decoration: BoxDecoration(
                     gradient: RadialGradient(
                       center: const Alignment(0, 1.0),
@@ -69,9 +70,9 @@ class RidenBottomNav extends StatelessWidget {
                 Icon(
                   icon,
                   color: isActive ? Colors.white : Colors.white54,
-                  size: 26,
+                  size: 20,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 2),
                 Text(
                   label,
                   style: GoogleFonts.poppins(
@@ -80,7 +81,7 @@ class RidenBottomNav extends StatelessWidget {
                     fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 3),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   width: isActive ? 18 : 0,
@@ -92,8 +93,8 @@ class RidenBottomNav extends StatelessWidget {
                         ? [
                             BoxShadow(
                               color: const Color(0xFF12C5ED).withOpacity(0.6),
-                              blurRadius: 20,
-                              spreadRadius: 4,
+                              blurRadius: 12,
+                              spreadRadius: 6,
                             )
                           ]
                         : [],
